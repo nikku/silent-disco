@@ -28,7 +28,6 @@ import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
-import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 
 /**
@@ -38,69 +37,66 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
  * http://localhost:8080/websocket
  * </pre>
  *
- * The example differs from many of the other examples in Netty in that is does
- * not have an acomponying client. Instead a html page is provided that
- * interacts with this server. <br>
+ * The example differs from many of the other examples in Netty in that is does not have an acomponying client. Instead
+ * a html page is provided that interacts with this server. <br>
  * Open up the following file a web browser that supports WebSocket's:
  *
  * <pre>
  * example/src/main/resources/websocketx/html5/websocket.html
  * </pre>
  *
- * The html page is very simple were you simply enter some text and the server
- * will echo the same text back, but in uppercase. You, also see getStatus messages
- * in the "Response From Server" area when client has connected, disconnected
- * etc.
- *
+ * The html page is very simple were you simply enter some text and the server will echo the same text back, but in
+ * uppercase. You, also see getStatus messages in the "Response From Server" area when client has connected,
+ * disconnected etc.
  */
 public class WebSocketServer {
 
-    private final int port;
+  private final int port;
 
-    public WebSocketServer(int port) {
-        this.port = port;
-    }
+  public WebSocketServer(int port) {
+    this.port = port;
+  }
 
-    public void run() throws Exception {
-        EventLoopGroup bossGroup = new NioEventLoopGroup();
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
-        try {
-            final ServerBootstrap sb = new ServerBootstrap();
-            sb.group(bossGroup, workerGroup)
-             .channel(NioServerSocketChannel.class)
-             .childHandler(new ChannelInitializer<SocketChannel>() {
-                @Override
-                public void initChannel(final SocketChannel ch) throws Exception {
-                    ch.pipeline().addLast(
-                        new HttpRequestDecoder(),
-                        new HttpObjectAggregator(65536),
-                        new HttpResponseEncoder(),
-                        new CustomWebSocketServerProtocolHandler("/websocket"),
-                        new PojoDecoder(),
-                        new PojoEncoder(),
-                        new RoomHandler());
-                }
-            });
-
-            final Channel ch = sb.bind(port).sync().channel();
-            System.out.println("Web socket server started at port " + port);
-
-            ch.closeFuture().sync();
-        } finally {
-            bossGroup.shutdownGracefully();
-            workerGroup.shutdownGracefully();
+  public void run() throws Exception {
+    EventLoopGroup bossGroup = new NioEventLoopGroup();
+    EventLoopGroup workerGroup = new NioEventLoopGroup();
+    try {
+      final ServerBootstrap sb = new ServerBootstrap();
+      sb.group(bossGroup, workerGroup)
+          .channel(NioServerSocketChannel.class)
+          .childHandler(new ChannelInitializer<SocketChannel>() {
+        @Override
+        public void initChannel(final SocketChannel ch) throws Exception {
+          ch.pipeline().addLast(
+              new HttpRequestDecoder(),
+              new HttpObjectAggregator(65536),
+              new HttpResponseEncoder(),
+              new CustomWebSocketServerProtocolHandler("/websocket"),
+              new PojoDecoder(),
+              new PojoEncoder(),
+              new RoomHandler());
         }
-    }
+      });
 
-    public static void main(String[] args) throws Exception {
-        int port;
-        if (args.length > 0) {
-            port = Integer.parseInt(args[0]);
-        } else {
-            port = 8080;
-        }
-        new WebSocketServer(port).run();
+      final Channel ch = sb.bind(port).sync().channel();
+      System.out.println("Web socket server started at port " + port);
+
+      ch.closeFuture().sync();
+    } finally {
+      bossGroup.shutdownGracefully();
+      workerGroup.shutdownGracefully();
     }
+  }
+
+  public static void main(String[] args) throws Exception {
+    int port;
+    if (args.length > 0) {
+      port = Integer.parseInt(args[0]);
+    } else {
+      port = 8080;
+    }
+    new WebSocketServer(port).run();
+  }
 
   private static class CustomWebSocketServerProtocolHandler extends WebSocketServerProtocolHandler {
 
@@ -129,7 +125,7 @@ public class WebSocketServer {
       }
 
       super.userEventTriggered(ctx, evt);
-   }
+    }
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, WebSocketFrame frame) throws Exception {
