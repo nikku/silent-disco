@@ -21,15 +21,15 @@ public class Disco {
 
   public static Datastore DATA_STORE;
 
-  private static String MONGO_DB_HOST;
-  private static String MONGO_DB_NAME;
+  private static String MONGO_DB_HOST = "localhost";
+  private static String MONGO_DB_NAME = "silent-disco";
 
   public static Track getTrack(String id) {
     return getDatastore().get(Track.class, new ObjectId(id));
   }
 
   public static Room getRoom(String name) {
-    Room room = getRoomByNameQuery( name).get();
+    Room room = getRoomByNameQuery(name).get();
 
     if (room == null) {
       room = new Room(name);
@@ -90,7 +90,7 @@ public class Disco {
   public static Datastore getDatastore() {
     if (DATA_STORE == null) {
       try {
-      DATA_STORE = createDatastore(MONGO_DB_HOST, MONGO_DB_NAME);
+        DATA_STORE = createDatastore(MONGO_DB_HOST, MONGO_DB_NAME);
       } catch (UnknownHostException e) {
         throw new RuntimeException("Failed to connect to database", e);
       }

@@ -1,4 +1,4 @@
-package de.nixis.web.disco.ws;
+package de.nixis.web.disco.json;
 
 import java.io.StringWriter;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -12,7 +12,7 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
  *
  * @author nico.rehwaldt
  */
-class PojoEncoder extends MessageToMessageEncoder<Base> {
+public class PojoEncoder extends MessageToMessageEncoder<Base> {
 
   @Override
   protected void encode(ChannelHandlerContext ctx, Base msg, MessageBuf<Object> out) throws Exception {
@@ -28,7 +28,7 @@ class PojoEncoder extends MessageToMessageEncoder<Base> {
     mapper.writeValue(writer, msg);
 
     writer.append("}");
-    
+
     out.add(new TextWebSocketFrame(writer.toString()));
   }
 }

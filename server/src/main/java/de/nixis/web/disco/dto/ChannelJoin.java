@@ -6,13 +6,13 @@ package de.nixis.web.disco.dto;
  */
 public class ChannelJoin extends Base {
 
-  private String name;
+  private String participantName;
 
-  public String getName() {
-    return name;
+  public String getParticipantName() {
+    return participantName;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setParticipantName(String name) {
+    this.participantName = name;
   }
 }

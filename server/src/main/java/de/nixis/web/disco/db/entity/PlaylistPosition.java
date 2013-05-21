@@ -1,7 +1,6 @@
 package de.nixis.web.disco.db.entity;
 
 import java.util.Date;
-import com.google.code.morphia.annotations.Reference;
 
 /**
  *

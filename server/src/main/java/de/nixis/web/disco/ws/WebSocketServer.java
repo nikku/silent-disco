@@ -15,25 +15,18 @@
  */
 package de.nixis.web.disco.ws;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import de.nixis.web.disco.json.PojoDecoder;
+import de.nixis.web.disco.json.PojoEncoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundMessageHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
-import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.WebSocketFrame;
-import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
-import io.netty.util.AttributeKey;
 
 /**
  * A WebSocket Server that respondes to requests at:
@@ -75,12 +68,12 @@ public class WebSocketServer {
           ch.pipeline().addLast(
               new HttpRequestDecoder(),
               new HttpObjectAggregator(65536),
+              new RoomAwareHandler.RoomIdExtractor(),
               new HttpResponseEncoder(),
-              new SocketAttributeStuff(),
-              new CustomWebSocketServerProtocolHandler("/websocket"),
+              new RoomAwareWebSocketHandler("/"),
               new PojoDecoder(),
               new PojoEncoder(),
-              new RoomHandler());
+              new RoomAwareHandler(new DefaultRoomHandler()));
         }
       });
 
@@ -102,56 +95,5 @@ public class WebSocketServer {
       port = 8080;
     }
     new WebSocketServer(port).run();
-  }
-
-  private static class CustomWebSocketServerProtocolHandler extends WebSocketServerProtocolHandler {
-
-    public CustomWebSocketServerProtocolHandler(String websocket) {
-      super(websocket);
-    }
-
-    @Override
-    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-      ctx.fireUserEventTriggered(RoomHandler.ChannelEvent.CLOSE);
-
-      super.channelUnregistered(ctx);
-    }
-
-    @Override
-    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-      if (evt == WebSocketServerProtocolHandler.ServerHandshakeStateEvent.HANDSHAKE_COMPLETE) {
-        ctx.fireUserEventTriggered(RoomHandler.ChannelEvent.OPEN);
-
-        return;
-      }
-
-      super.userEventTriggered(ctx, evt);
-    }
-
-    @Override
-    public void messageReceived(ChannelHandlerContext ctx, WebSocketFrame frame) throws Exception {
-
-      super.messageReceived(ctx, frame);
-
-      if (frame instanceof CloseWebSocketFrame) {
-        ctx.fireUserEventTriggered(RoomHandler.ChannelEvent.CLOSE);
-      }
-    }
-  }
-
-  public static class SocketAttributeStuff extends ChannelInboundMessageHandlerAdapter<FullHttpRequest> {
-
-    public void messageReceived(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
-      String uri = msg.getUri();
-
-      Matcher matcher = Pattern.compile("/([^/]+)/websocket").matcher(uri);
-
-      if (matcher.matches()) {
-        ctx.channel().attr(RoomHandler.ROOM_ID).set(matcher.group(1));
-      }
-
-      msg.retain();
-      ctx.nextInboundMessageBuffer().add(msg);
-    }
   }
 }

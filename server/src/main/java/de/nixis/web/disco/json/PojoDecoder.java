@@ -1,4 +1,4 @@
-package de.nixis.web.disco.ws;
+package de.nixis.web.disco.json;
 
 
 import de.nixis.web.disco.dto.Base;

@@ -53,7 +53,7 @@ ngDefine('disco.pages', [
         return;
       }
 
-      room.emit('channelJoin', { name: name });
+      room.emit('channelJoin', { participantName: name });
     };
 
     room.on('channelJoined', function(data) {

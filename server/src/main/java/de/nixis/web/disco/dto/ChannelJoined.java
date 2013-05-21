@@ -2,7 +2,7 @@ package de.nixis.web.disco.dto;
 
 import java.util.List;
 
-import de.nixis.web.disco.db.entity.PlaylistPosition;
+import de.nixis.web.disco.db.entity.Room;
 import de.nixis.web.disco.db.entity.Track;
 
 /**
@@ -15,10 +15,15 @@ public class ChannelJoined extends ParticipantJoined {
 
   private List<Track> tracks;
 
-  private PlaylistPosition playlistPosition;
+  private Room room;
 
-  public ChannelJoined(String name) {
+  public ChannelJoined(String name, List<String> participants, List<Track> tracks, Room room) {
     super(name);
+
+    this.tracks = tracks;
+    this.participants = participants;
+
+    this.room = room;
   }
 
   public ChannelJoined() {
@@ -28,16 +33,16 @@ public class ChannelJoined extends ParticipantJoined {
     return participants;
   }
 
-  public PlaylistPosition getPlaylistPosition() {
-    return playlistPosition;
+  public Room getRoom() {
+    return room;
   }
 
   public void setParticipants(List<String> participants) {
     this.participants = participants;
   }
 
-  public void setPlaylistPosition(PlaylistPosition playlistPosition) {
-    this.playlistPosition = playlistPosition;
+  public void setRoom(Room room) {
+    this.room = room;
   }
 
   public List<Track> getTracks() {
