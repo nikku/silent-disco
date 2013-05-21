@@ -22,7 +22,7 @@ ngDefine('disco', [
     };
 
     $scope.getParticipantInfo = function (participants) {
-      angular.forEach(participants, function (name){
+      angular.forEach(participants, function (name) {
         SC.get("/users/"+name, function (user) {
           $scope.$apply(function () {
             $scope.participants.push(user);

@@ -42,8 +42,6 @@ public class RoomAwareHandler extends ChannelInboundMessageHandlerAdapter<Base> 
   @Override
   public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
 
-    System.out.println(ctx.channel().attr(ROOM_ID).get());
-
     if (evt == ChannelEvent.OPEN) {
       handleMessage(ctx, new ChannelOpen());
     }
@@ -88,8 +86,6 @@ public class RoomAwareHandler extends ChannelInboundMessageHandlerAdapter<Base> 
       Matcher matcher = Pattern.compile("/([^/]+)/websocket").matcher(uri);
 
       if (matcher.matches()) {
-        System.out.println("Extract room id " + matcher.group(1) + " -> " + ctx.channel());
-
         ctx.channel().attr(RoomAwareHandler.ROOM_ID).set(matcher.group(1));
       } else {
         throw new RuntimeException("Failed to extract room id from uri " + uri);

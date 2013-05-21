@@ -1,18 +1,3 @@
-/*
- * Copyright 2012 The Netty Project
- *
- * The Netty Project licenses this file to you under the Apache License, version
- * 2.0 (the "License"); you may not use this file except in compliance with the
- * License. You may obtain a copy of the License at:
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
 package de.nixis.web.disco.ws;
 
 import de.nixis.web.disco.json.PojoDecoder;
@@ -29,23 +14,15 @@ import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 
 /**
- * A WebSocket Server that respondes to requests at:
+ * A websocket server that implements
+ * the silent disco backend.
  *
- * <pre>
- * http://localhost:8080/websocket
- * </pre>
+ * <p>
  *
- * The example differs from many of the other examples in Netty in that is does not have an acomponying client. Instead
- * a html page is provided that interacts with this server. <br>
- * Open up the following file a web browser that supports WebSocket's:
+ * Accepts websockets on the url <code>http://localhost:8080/{ROOM_ID}/websocket</code>, whereas the room id
+ * is the disco room a web socket connected to.
  *
- * <pre>
- * example/src/main/resources/websocketx/html5/websocket.html
- * </pre>
- *
- * The html page is very simple were you simply enter some text and the server will echo the same text back, but in
- * uppercase. You, also see getStatus messages in the "Response From Server" area when client has connected,
- * disconnected etc.
+ * @author nico.rehwaldt
  */
 public class WebSocketServer {
 
@@ -78,7 +55,7 @@ public class WebSocketServer {
       });
 
       final Channel ch = sb.bind(port).sync().channel();
-      System.out.println("Web socket server started at port " + port);
+      System.out.println("silent disco backend started at http://localhost:" + port);
 
       ch.closeFuture().sync();
     } finally {

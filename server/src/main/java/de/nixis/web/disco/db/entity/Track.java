@@ -15,7 +15,12 @@ import com.google.code.morphia.annotations.Id;
 public class Track {
 
   @Id
-  private ObjectId id;
+  private ObjectId trackId;
+
+  /**
+   * The soundcloud id of the track
+   */
+  private String id;
 
   private String artwork_url;
 
@@ -38,17 +43,23 @@ public class Track {
 
   }
 
-  public Track(String artwork_url, String permalink_url, String title, User user, long duration, String roomName) {
+  public Track(String id, String artwork_url, String permalink_url, String title, User user, long duration, String roomName) {
     this.artwork_url = artwork_url;
     this.permalink_url = permalink_url;
     this.title = title;
     this.user = user;
     this.duration = duration;
     this.roomName = roomName;
+
+    this.id = id;
   }
 
   public String getId() {
-    return id.toString();
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
   }
 
   public String getArtwork_url() {
@@ -105,5 +116,9 @@ public class Track {
 
   public void setRoomName(String roomName) {
     this.roomName = roomName;
+  }
+
+  public String getTrackId() {
+    return trackId.toString();
   }
 }

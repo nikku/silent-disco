@@ -21,8 +21,6 @@ public class RoomAwareWebSocketHandler extends WebSocketServerProtocolHandler {
 
   @Override
   public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-    System.out.println(ctx.attr(RoomAwareHandler.ROOM_ID).get());
-
     ctx.fireUserEventTriggered(ChannelEvent.CLOSE);
 
     super.channelUnregistered(ctx);

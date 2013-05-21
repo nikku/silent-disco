@@ -49,11 +49,9 @@ public class DatabaseTest {
     Room room = new Room("FOO");
     datastore.save(room);
 
-    Track track = new Track("http://foo/aw", new Date(), "http://foo", "foo", new User("klaus", "http://klaus"), 200000, "FOO");
+    Track track = new Track("1234112", "http://foo/aw", "http://foo", "foo", new User("klaus", "http://klaus"), 200000, "FOO");
 
     Key<Track> key = datastore.save(track);
-
-    System.out.println(key);
 
     Object id = key.getId();
 
@@ -68,8 +66,6 @@ public class DatabaseTest {
 
     assertThat(roomFromDB).isNotNull();
     assertThat(roomFromDB.getId()).isEqualTo(room.getId());
-
-    System.out.println(datastore.createQuery(Track.class).asList());
   }
 
   @Test
@@ -93,15 +89,15 @@ public class DatabaseTest {
 
     Track firstTrack = tracks.get(0);
 
-    assertThat(firstTrack.getId()).isEqualTo(track.getId());
+    assertThat(firstTrack.getTrackId()).isEqualTo(track.getTrackId());
 
-    Disco.startPlay(firstTrack.getId());
+    Disco.startPlay(firstTrack.getTrackId());
 
     Room roomPlaying = Disco.getRoom(room.getName());
 
     PlaylistPosition position = roomPlaying.getPosition();
 
     assertThat(position).isNotNull();
-    assertThat(position.getTrackId()).isEqualTo(firstTrack.getId());
+    assertThat(position.getTrackId()).isEqualTo(firstTrack.getTrackId());
   }
 }

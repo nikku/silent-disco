@@ -40,8 +40,8 @@ ngDefine('disco.pages', [
         Sounds.resolve(input, function(track) {
 
           if (track && track.kind == 'track') {
-            var trk = cp(track, ['artwork_url', 'permalink_url', 'title', 'duration']);
-            trk.user = cp(track.user, ['username', 'permalink_url']);
+            var trk = cp(track, [ 'id', 'artwork_url', 'permalink_url', 'title', 'duration']);
+            trk.user = cp(track.user, [ 'username', 'permalink_url' ]);
 
             $scope.room.emit('addTrack', { track: trk });
           }

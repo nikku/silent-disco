@@ -48,7 +48,7 @@ public class Disco {
 
     Room room = getRoomByNameQuery(track.getRoomName()).get();
 
-    room.setPosition(new PlaylistPosition(track.getId(), new Date(), 0));
+    room.setPosition(new PlaylistPosition(track.getTrackId(), new Date(), 0));
 
     getDatastore().merge(room);
   }
