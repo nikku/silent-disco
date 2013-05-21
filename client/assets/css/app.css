@@ -92,6 +92,10 @@ html, body {
   width: 100%;
 }
 
+.tracks {
+    height: 400px;
+}
+
 .track {
   margin: 10px;
   padding: 5px;
