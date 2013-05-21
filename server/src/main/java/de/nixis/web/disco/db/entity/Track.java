@@ -19,7 +19,7 @@ public class Track {
 
   private String artwork_url;
 
-  private Date created_at;
+  private Date addedDate;
 
   private String permalink_url;
 
@@ -38,9 +38,8 @@ public class Track {
 
   }
 
-  public Track(String artwork_url, Date created_at, String permalink_url, String title, User user, long duration, String roomName) {
+  public Track(String artwork_url, String permalink_url, String title, User user, long duration, String roomName) {
     this.artwork_url = artwork_url;
-    this.created_at = created_at;
     this.permalink_url = permalink_url;
     this.title = title;
     this.user = user;
@@ -52,27 +51,27 @@ public class Track {
     return id.toString();
   }
 
-  public String getArtworkUrl() {
+  public String getArtwork_url() {
     return artwork_url;
   }
 
-  public void setArtworkUrl(String artwork_url) {
+  public void setArtwork_url(String artwork_url) {
     this.artwork_url = artwork_url;
   }
 
-  public Date getCreatedAt() {
-    return created_at;
+  public Date getAddedDate() {
+    return addedDate;
   }
 
-  public void setCreatedAt(Date created_at) {
-    this.created_at = created_at;
+  public void setAddedDate(Date addedDate) {
+    this.addedDate = addedDate;
   }
 
-  public String getPermalinkUrl() {
+  public String getPermalink_url() {
     return permalink_url;
   }
 
-  public void setPermalinkUrl(String permalink_url) {
+  public void setPermalink_url(String permalink_url) {
     this.permalink_url = permalink_url;
   }
 

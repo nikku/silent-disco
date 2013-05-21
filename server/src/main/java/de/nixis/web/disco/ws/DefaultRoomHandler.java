@@ -5,6 +5,7 @@ import de.nixis.web.disco.room.AbstractRoomHandler;
 import de.nixis.web.disco.dto.ChannelJoined;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import de.nixis.web.disco.db.Disco;
@@ -17,6 +18,7 @@ import de.nixis.web.disco.dto.ChannelLeave;
 import de.nixis.web.disco.dto.ParticipantJoined;
 import de.nixis.web.disco.dto.ParticipantLeft;
 import de.nixis.web.disco.dto.Text;
+import de.nixis.web.disco.dto.TrackAdded;
 import de.nixis.web.disco.room.RoomContext;
 import io.netty.channel.Channel;
 
@@ -46,7 +48,7 @@ public class DefaultRoomHandler extends AbstractRoomHandler<Base> {
 
       ctx.channelMap().put(ctx.channel(), participant);
 
-      sendAll(ctx, new ParticipantJoined(participant));
+      sendAll(ctx, ctx.channel(), new ParticipantJoined(participant));
 
       send(ctx, new ChannelJoined(participant, participants, tracks, room));
     } else
@@ -64,9 +66,11 @@ public class DefaultRoomHandler extends AbstractRoomHandler<Base> {
       AddTrack addTrack = (AddTrack) message;
 
       Track track = addTrack.getTrack();
+      track.setAddedDate(new Date());
 
-      // TODO: FAILS
-      Disco.addTrack(track, participant);
+      Disco.addTrack(track, ctx.getRoomName());
+
+      sendAll(ctx, new TrackAdded(track));
     }
   }
 }
