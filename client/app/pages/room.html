@@ -22,7 +22,7 @@
       </div>
     </form>
 
-    <div class="tracks scrollable">
+    <div class="tracks scrollable" data-scroll-watch="tracks.length">
       <div data-ng-repeat="track in tracks">
         <div class="track" ng-class="{ playing: isPlaying(track), queued: isQueued(track) }">
 
