@@ -43,6 +43,10 @@
         </div>
 
         <div class="ctn-side">
+          <div class="participant span4" data-ng-repeat="p in participants">
+            <img data-ng-src="{{p.avatar_url}}"/><a target="_blank" data-ng-href="{{p.permalink_url}}">{{p.username}}</a>
+            <div class="btn" data-ng-click="addFavorites(p)">Add Favorites</div>
+          </div>
         </div>
       </div>
     </div>

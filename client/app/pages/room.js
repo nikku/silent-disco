@@ -30,11 +30,15 @@ ngDefine('disco.pages', [
 
       $scope.room.emit('text', msg);
     };
+
+    $scope.$on("addTrack", function (event, data) {
+      $scope.send(data);
+    });
   };
 
   ChatController.$inject = [ '$scope', 'Sounds' ];
 
-  var RoomController = function (params, $scope, socket, Sounds) {
+  var RoomController = function (params, $scope, $rootScope, socket, Sounds) {
 
     $scope.connected = false;
     $scope.roomId = params['id'];
@@ -60,6 +64,7 @@ ngDefine('disco.pages', [
       if (data.name == $scope.name) {
         $scope.connected = true;
         $scope.messages.push({ message: 'You joined the channel '});
+        $rootScope.$broadcast('channelJoined', data);
       }
     });
 
@@ -85,7 +90,7 @@ ngDefine('disco.pages', [
     }
   };
 
-  RoomController.$inject = [ '$routeParams', '$scope', 'socket', 'Sounds'];
+  RoomController.$inject = [ '$routeParams', '$scope', '$rootScope', 'socket', 'Sounds'];
 
   var RouteConfig = function($routeProvider) {
     $routeProvider.when('/room/:id', {
