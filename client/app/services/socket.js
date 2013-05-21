@@ -104,6 +104,6 @@ ngDefine('disco.services', [
       });
     })();
 
-    return new Socket('ws://localhost:8080/asdf/websocket');
+    return new Socket('ws://192.168.178.120:8080/asdf/websocket');
   });
 });

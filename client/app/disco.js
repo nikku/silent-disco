@@ -4,19 +4,27 @@ ngDefine('disco', [
   'module:ngResource',
   'module:disco.pages:./pages/main',
   'module:disco.services:./services/main',
+  'module:disco.services:./services/sounds',
   'module:common.web.uri:web-common/services/uri',
   'module:common.web.if:web-common/directives/if',
   'module:common.web.scrollable:web-common/directives/scrollable'
 ], function(module, $) {
 
-  var Controller = function ($scope) {
+  var Controller = function ($scope, Sounds) {
+    $scope.mute = function () {
+      Sounds.toggleMute();
+    };
+
+    $scope.pause = function () {
+      Sounds.togglePause();
+    };
 
   };
 
-  Controller.$inject = [ '$scope' ];
+  Controller.$inject = [ '$scope', 'Sounds'];
 
   var ModuleConfig = function($routeProvider, UriProvider) {
-    $routeProvider.otherwise({ redirectTo: '/dashboard' });
+    $routeProvider.otherwise({ redirectTo: '/room/lobby' });
 
     function getUri(id) {
       var uri = $("base").attr(id);

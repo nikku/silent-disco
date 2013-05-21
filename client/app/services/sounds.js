@@ -59,12 +59,31 @@ ngDefine('disco.services', [
           if (callback) {
             callback.apply(self, [ sound ]);
           }
+          $rootScope.$apply();
         });
       },
 
-      mute: function() {
+      toggleMute: function() {
         if (this.playing) {
-          this.playing.sound.mute();
+          if (this.playing.muted == true) {
+            this.playing.sound.unmute();
+            this.playing.muted = false;
+          } else {
+            this.playing.sound.mute();
+            this.playing.muted = true;
+          }
+        }
+      },
+
+      togglePause: function() {
+        if (this.playing) {
+          if (this.playing.paused == true) {
+            this.playing.sound.play();
+            this.playing.paused = false;
+          } else {
+            this.playing.sound.pause();
+            this.playing.paused = true;
+          }
         }
       },
 
@@ -82,6 +101,6 @@ ngDefine('disco.services', [
       }
     });
 
-    return service;
+    return new service();
   });
 });
