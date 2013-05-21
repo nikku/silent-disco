@@ -35,6 +35,10 @@ ngDefine('disco', [
       $scope.getParticipantInfo([data.name].concat(data.participants));
     });
 
+    $scope.$on("participantJoined", function (event, data) {
+      $scope.getParticipantInfo([data.name]);
+    });
+
     $scope.addFavorites = function (participant) {
       SC.get("/users/"+participant.id+"/favorites", function (favorites) {
         $scope.$apply(function () {

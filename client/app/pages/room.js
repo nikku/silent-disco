@@ -84,12 +84,18 @@ ngDefine('disco.pages', [
       if (data.name == $scope.name) {
         $scope.connected = true;
         $scope.messages.push({ message: 'You joined the channel '});
+
+        angular.forEach(data.tracks, function(track) {
+          $scope.tracks.push(track);
+        });
+
         $rootScope.$broadcast('channelJoined', data);
       }
     });
 
     room.on('participantJoined', function(data) {
       $scope.messages.push({ message: 'Participant ' + data.name + ' joined the channel'});
+      $rootScope.$broadcast('participantJoined', data);
     });
 
     room.on('participantLeft', function(data) {
