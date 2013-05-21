@@ -137,3 +137,12 @@ html, body {
   margin-bottom: 15px;
   padding: 7px 9px;
 }
+
+.participant {
+ margin: 10px;
+ padding: 10px;
+}
+
+.participant img {
+    margin-right: 10px;
+}

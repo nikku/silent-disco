@@ -10,7 +10,9 @@ ngDefine('disco', [
   'module:common.web.scrollable:web-common/directives/scrollable'
 ], function(module, $) {
 
-  var Controller = function ($scope, Sounds) {
+  var Controller = function ($scope, $rootScope, Sounds) {
+    $scope.participants = [];
+
     $scope.mute = function () {
       Sounds.toggleMute();
     };
@@ -19,9 +21,33 @@ ngDefine('disco', [
       Sounds.togglePause();
     };
 
+    $scope.getParticipantInfo = function (participants) {
+      angular.forEach(participants, function (name){
+        SC.get("/users/"+name, function (user) {
+          $scope.$apply(function () {
+            $scope.participants.push(user);
+          });
+        });
+      });
+    };
+
+    $scope.$on("channelJoined", function (event, data) {
+      $scope.getParticipantInfo([data.name].concat(data.participants));
+    });
+
+    $scope.addFavorites = function (participant) {
+      SC.get("/users/"+participant.id+"/favorites", function (favorites) {
+        $scope.$apply(function () {
+          angular.forEach(favorites, function (fav) {
+            $rootScope.$broadcast("addTrack", fav.permalink_url);
+          });
+        });
+      });
+    };
+
   };
 
-  Controller.$inject = [ '$scope', 'Sounds'];
+  Controller.$inject = [ '$scope', '$rootScope', 'Sounds'];
 
   var ModuleConfig = function($routeProvider, UriProvider) {
     $routeProvider.otherwise({ redirectTo: '/room/lobby' });
