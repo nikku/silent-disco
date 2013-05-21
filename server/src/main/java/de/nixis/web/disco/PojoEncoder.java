@@ -17,13 +17,18 @@ class PojoEncoder extends MessageToMessageEncoder<Base> {
   @Override
   protected void encode(ChannelHandlerContext ctx, Base msg, MessageBuf<Object> out) throws Exception {
 
-    System.out.println("Encoding " + msg);
-    
     StringWriter writer = new StringWriter();
+
+    String msgName = msg.getClass().getSimpleName();
+    msgName = msgName.substring(0, 1).toLowerCase() + msgName.substring(1);
+
+    writer.append("{ \"").append(msgName).append("\": ");
 
     ObjectMapper mapper = new ObjectMapper();
     mapper.writeValue(writer, msg);
 
+    writer.append("}");
+    
     out.add(new TextWebSocketFrame(writer.toString()));
   }
 }

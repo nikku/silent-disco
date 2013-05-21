@@ -5,7 +5,6 @@ import de.nixis.web.disco.dto.Base;
 import de.nixis.web.disco.json.DecodeHelper;
 import io.netty.buffer.MessageBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundMessageHandlerAdapter;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 

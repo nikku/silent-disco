@@ -1,0 +1,139 @@
+/**
+ * loaded to remove angular template flicker on site load
+ * @see http://docs.angularjs.org/api/ng.directive:ngCloak
+ */
+[ng\:cloak], [ng-cloak], .ng-cloak {
+    display: none;
+}
+
+/** loading icon integration */
+.icon-loading {
+  background-image: url(../img/ajax-loader.gif);
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+  background-position: 0 0;
+  opacity: 1.0;
+}
+
+/** utilities */
+/** for image replacement */
+.ir {
+  display: block;
+  text-indent: -999em;
+  overflow: hidden;
+  background-repeat: no-repeat;
+  text-align: left;
+  direction: ltr;
+}
+/** end utilities */
+
+/**
+ * shared style declarations
+ */
+html, body {
+  height:100%;
+  min-height: 100%;
+}
+
+.ctn-fixed {
+  position: fixed;
+  top: 41px;
+  left: 0;
+  /* right: 0; */
+  bottom: 0;
+  width: 979px;
+  height: 100%;
+}
+
+@media (max-width: 979px) {
+  .ctn-fixed {
+    top: 51px;
+  }
+}
+
+@media (max-width: 767px) {
+  .ctn-fixed .ctn-side {
+    display: none;
+  }
+
+  .ctn-fixed .ctn-main {
+    right: 0;
+  }
+}
+
+.ctn-fixed .ctn-main {
+  width: 650px;
+  float: left;
+}
+
+.ctn-fixed .ctn-side {
+  float: left;
+  border-left: solid 1px #DDD;
+  width: 300px;
+  height: 100%;
+}
+
+.ctn-fixed .ctn-main > div {
+  margin: 10px;
+}
+
+.messages {
+  height: 300px;
+}
+
+.message-submit {
+  width: 100%;
+  position: relative;
+}
+
+.message-submit input[type=text] {
+  display: inline-block;
+  width: 100%;
+}
+
+.track {
+  margin: 10px;
+  padding: 5px;
+  line-height: 40px;
+  border: solid 1px #CCC;
+}
+
+.track img {
+  height: 40px;
+  margin-right: 10px;
+  float: left;
+}
+
+.track .position {
+  float: right;
+  line-height: 40px;
+}
+
+/**
+ * Start room
+ */
+.form-signin {
+  max-width: 300px;
+  padding: 19px 29px 29px;
+  margin: 60px auto 20px;
+  background-color: #fff;
+  border: 1px solid #e5e5e5;
+  -webkit-border-radius: 5px;
+     -moz-border-radius: 5px;
+          border-radius: 5px;
+  -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+     -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+          box-shadow: 0 1px 2px rgba(0,0,0,.05);
+}
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+  margin-bottom: 10px;
+}
+.form-signin input[type="text"],
+.form-signin input[type="password"] {
+  font-size: 16px;
+  height: auto;
+  margin-bottom: 15px;
+  padding: 7px 9px;
+}

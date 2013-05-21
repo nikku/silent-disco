@@ -15,20 +15,25 @@
  */
 package de.nixis.web.disco;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundMessageHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
+import io.netty.util.AttributeKey;
 
 /**
  * A WebSocket Server that respondes to requests at:
@@ -71,6 +76,7 @@ public class WebSocketServer {
               new HttpRequestDecoder(),
               new HttpObjectAggregator(65536),
               new HttpResponseEncoder(),
+              new SocketAttributeStuff(),
               new CustomWebSocketServerProtocolHandler("/websocket"),
               new PojoDecoder(),
               new PojoEncoder(),
@@ -105,11 +111,6 @@ public class WebSocketServer {
     }
 
     @Override
-    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-      super.channelRegistered(ctx);
-    }
-
-    @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
       ctx.fireUserEventTriggered(RoomHandler.ChannelEvent.CLOSE);
 
@@ -129,11 +130,28 @@ public class WebSocketServer {
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, WebSocketFrame frame) throws Exception {
+
       super.messageReceived(ctx, frame);
 
       if (frame instanceof CloseWebSocketFrame) {
         ctx.fireUserEventTriggered(RoomHandler.ChannelEvent.CLOSE);
       }
+    }
+  }
+
+  public static class SocketAttributeStuff extends ChannelInboundMessageHandlerAdapter<FullHttpRequest> {
+
+    public void messageReceived(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
+      String uri = msg.getUri();
+
+      Matcher matcher = Pattern.compile("/([^/]+)/websocket").matcher(uri);
+
+      if (matcher.matches()) {
+        ctx.channel().attr(RoomHandler.ROOM_ID).set(matcher.group(1));
+      }
+
+      msg.retain();
+      ctx.nextInboundMessageBuffer().add(msg);
     }
   }
 }

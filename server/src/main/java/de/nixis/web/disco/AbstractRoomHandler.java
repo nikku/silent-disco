@@ -1,5 +1,7 @@
 package de.nixis.web.disco;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
@@ -9,7 +11,6 @@ import de.nixis.web.disco.dto.ChannelOpen;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundMessageHandlerAdapter;
-import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
 /**
  *
@@ -21,7 +22,9 @@ public abstract class AbstractRoomHandler extends ChannelInboundMessageHandlerAd
     OPEN, CLOSE
   }
 
-  public static Set<Channel> channels = new ConcurrentSkipListSet<Channel>();
+  protected static final Map<Channel, String> channelMap = new HashMap<Channel, String>();
+
+  protected static Set<Channel> channels = new ConcurrentSkipListSet<Channel>();
 
   @Override
   public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
@@ -39,9 +42,20 @@ public abstract class AbstractRoomHandler extends ChannelInboundMessageHandlerAd
     handleMessage(ctx, msg);
   }
 
-
   protected void sendAll(ChannelHandlerContext ctx, Base msg) {
     sendAll(ctx, null, msg);
+  }
+
+  protected void send(ChannelHandlerContext ctx, final Channel channel, final Base msg) {
+    ctx.executor().execute(new Runnable() {
+      public void run() {
+        channel.write(msg);
+      }
+    });
+  }
+
+  protected void send(ChannelHandlerContext ctx, Base msg) {
+    send(ctx, ctx.channel(), msg);
   }
 
   protected void sendAll(ChannelHandlerContext ctx, Channel exclude, final Base msg) {
@@ -55,7 +69,6 @@ public abstract class AbstractRoomHandler extends ChannelInboundMessageHandlerAd
         public void run() {
 
           channel.write(msg);
-          channel.write(new TextWebSocketFrame("FOO"));
         }
       });
     }

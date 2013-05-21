@@ -1,0 +1,42 @@
+<div>
+
+  <div data-ng-show="!connected">
+    <form data-ng-submit="join(name)">
+      <input type="text" placeholder="Your nickname" data-ng-model="name" style="margin-top: 10px" />
+      <input class="btn" type="submit" value="join channel" />
+    </form>
+  </div>
+
+  <div data-ng-show="connected" data-ng-controller="ChatController">
+    <div class="messages scrollable" data-scroll-watch="messages.length">
+      <div data-ng-repeat="message in messages">
+        <strong data-ng-show="message.author" data-ng-bind="message.author"></strong>
+        <span data-ng-bind="message.message"></span>
+      </div>
+    </div>
+
+    <form ng-submit="send(input); input = ''">
+      <div class="input-append">
+        <input class="span6" data-ng-model="input" type="text">
+        <button class="btn" type="submit">Send</button>
+      </div>
+    </form>
+
+    <div class="tracks">
+      <div data-ng-repeat="track in tracks">
+        <div class="track" ng-class="{ playing: isPlaying(track), queued: isQueued(track) }">
+
+          <img data-ng-src="{{ track.artwork_url }}" />
+
+          <a data-ng-href="{{ track.user.permalink_url }}" class="track-user">{{ track.user.username }}</a>
+          - 
+          <a data-ng-href="{{ track.permalink_url }}" class="track-title">{{ track.title }}</a>
+
+          <div ngm-if="isPlaying(track)" class="position">
+            {{ fmtTime(track.position) }} / {{ fmtTime(track.duration) }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
