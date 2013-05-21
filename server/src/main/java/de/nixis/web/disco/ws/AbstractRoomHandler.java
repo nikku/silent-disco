@@ -1,4 +1,4 @@
-package de.nixis.web.disco;
+package de.nixis.web.disco.ws;
 
 import java.util.HashMap;
 import java.util.Map;

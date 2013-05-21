@@ -1,13 +1,15 @@
-package de.nixis.web.disco;
+package de.nixis.web.disco.ws;
 
 
-import static de.nixis.web.disco.AbstractRoomHandler.channelMap;
+import static de.nixis.web.disco.ws.AbstractRoomHandler.channelMap;
+
 import de.nixis.web.disco.dto.ChannelJoined;
-import static de.nixis.web.disco.AbstractRoomHandler.channels;
+import static de.nixis.web.disco.ws.AbstractRoomHandler.channels;
 
 import de.nixis.web.disco.dto.Base;
 import de.nixis.web.disco.dto.ChannelJoin;
 import de.nixis.web.disco.dto.ChannelLeave;
+import de.nixis.web.disco.dto.ParticipantJoined;
 import de.nixis.web.disco.dto.Text;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
@@ -28,9 +30,11 @@ public class RoomHandler extends AbstractRoomHandler {
     if (message instanceof ChannelJoin) {
       ChannelJoin join = (ChannelJoin) message;
 
-      sendAll(ctx, new Text("Participant " + join.getName() + " entered (" + (channels.size() + 1) + " in room)", null));
+      String participantName = join.getName();
 
-      channelMap.put(ctx.channel(), join.getName());
+      sendAll(ctx, new ParticipantJoined(participantName));
+
+      channelMap.put(ctx.channel(), participantName);
       channels.add(ctx.channel());
 
       send(ctx, new ChannelJoined(join.getName()));

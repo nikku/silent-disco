@@ -1,4 +1,4 @@
-package de.nixis.web.disco;
+package de.nixis.web.disco.ws;
 
 import java.io.StringWriter;
 import org.codehaus.jackson.map.ObjectMapper;

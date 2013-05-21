@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package de.nixis.web.disco;
+package de.nixis.web.disco.ws;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
