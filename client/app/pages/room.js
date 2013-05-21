@@ -2,12 +2,12 @@ ngDefine('disco.pages', [
   'angular'
 ], function(module, angular) {
 
-  var ChatController = function($scope, socket, Sounds) {
+  var ChatController = function($scope, Sounds) {
 
     var messages = $scope.messages;
     var tracks = $scope.tracks;
 
-    socket.on('text', function(text) {
+    $scope.room.on('text', function(text) {
       $scope.messages.push(text);
     });
 
@@ -16,7 +16,7 @@ ngDefine('disco.pages', [
         return;
       }
 
-      if (/^\s*https:\/\/soundcloud.com\//.test(input)) {
+      if (/^\s*http(s)*:\/\/soundcloud.com\//.test(input)) {
         Sounds.resolve(input, function(track) {
           Sounds.play(track);
 
@@ -28,28 +28,35 @@ ngDefine('disco.pages', [
 
       $scope.messages.push(msg);
 
-      socket.emit('text', msg);
+      $scope.room.emit('text', msg);
     };
   };
 
-  ChatController.$inject = [ '$scope', 'socket', 'Sounds' ];
+  ChatController.$inject = [ '$scope', 'Sounds' ];
 
-  var RoomController = function ($scope, socket, Sounds) {
+  var RoomController = function (params, $scope, socket, Sounds) {
 
     $scope.connected = false;
+    $scope.roomId = params['id'];
 
     var messages = $scope.messages = [];
     var tracks = $scope.tracks = [];
+
+    var room = $scope.room = socket.getSocket($scope.roomId);
+
+    $scope.$on("$destroy", function (event, next) {
+      socket.closeSocket($scope.roomId);
+    });
 
     $scope.join = function(name) {
       if (!name) {
         return;
       }
 
-      socket.emit('channelJoin', { name: name });
+      room.emit('channelJoin', { name: name });
     };
 
-    socket.on('channelJoined', function(data) {
+    room.on('channelJoined', function(data) {
       if (data.name == $scope.name) {
         $scope.connected = true;
         $scope.messages.push({ message: 'You joined the channel '});
@@ -78,7 +85,7 @@ ngDefine('disco.pages', [
     }
   };
 
-  RoomController.$inject = [ '$scope', 'socket', 'Sounds'];
+  RoomController.$inject = [ '$routeParams', '$scope', 'socket', 'Sounds'];
 
   var RouteConfig = function($routeProvider) {
     $routeProvider.when('/room/:id', {

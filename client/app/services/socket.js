@@ -2,7 +2,7 @@ ngDefine('disco.services', [
   'angular'
 ], function(module, angular) {
 
-  module.factory('socket', function($rootScope) {
+  module.factory('socket', function($rootScope, Uri) {
 
     var Socket;
 
@@ -100,10 +100,28 @@ ngDefine('disco.services', [
 
         on: function(type, callback) {
           getCallbacks(type).push(callback);
+        },
+
+        close: function () {
+          connection.close();
         }
       });
     })();
 
-    return new Socket('ws://192.168.178.120:8080/asdf/websocket');
+    return {
+      sockets : {},
+
+      getSocket : function (prefix) {
+        if (!this.sockets[prefix]) {
+          this.sockets[prefix] = new Socket(Uri.appUri('ws://'+prefix+'/websocket'));
+        }
+        return this.sockets[prefix];
+      },
+
+      closeSocket : function (socketId) {
+        this.sockets[socketId].close();
+        delete this.sockets[socketId];
+      }
+    };
   });
 });
