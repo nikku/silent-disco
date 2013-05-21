@@ -7,8 +7,6 @@ ngDefine('disco.pages', [
     var messages = $scope.messages;
     var tracks = $scope.tracks;
 
-    var sounds = new Sounds();
-
     socket.on('text', function(text) {
       $scope.messages.push(text);
     });
@@ -19,8 +17,8 @@ ngDefine('disco.pages', [
       }
 
       if (/^\s*https:\/\/soundcloud.com\//.test(input)) {
-        sounds.resolve(input, function(track) {
-          sounds.play(track);
+        Sounds.resolve(input, function(track) {
+          Sounds.play(track);
 
           tracks.push(track);
         });
@@ -36,7 +34,7 @@ ngDefine('disco.pages', [
 
   ChatController.$inject = [ '$scope', 'socket', 'Sounds' ];
 
-  var Controller = function ($scope, socket) {
+  var RoomController = function ($scope, socket, Sounds) {
 
     $scope.connected = false;
 
@@ -59,25 +57,33 @@ ngDefine('disco.pages', [
     });
 
     $scope.isPlaying = function(track) {
-      return track.position;
+      return Sounds.playing && Sounds.playing.track.id == track.id;
+    };
+
+    $scope.startTrack = function (track) {
+      Sounds.play(track);
     };
 
     $scope.fmtTime = function(time) {
 
       var h = Math.floor(time / 1000 / 60 / 60) % 24;
-      var min =  Math.floor(time / 1000 / 60) % 60;
-      var s = Math.floor(time / 1000) % 60;
+      var min =  $scope.leadingZero(Math.floor(time / 1000 / 60) % 60);
+      var s = $scope.leadingZero(Math.floor(time / 1000) % 60);
 
       return (h ? (h + ":") : "") + min + ":" + s;
     };
+
+    $scope.leadingZero = function(number) {
+      return number < 10 ? "0" + number :  number;
+    }
   };
 
-  Controller.$inject = [ '$scope', 'socket' ];
+  RoomController.$inject = [ '$scope', 'socket', 'Sounds'];
 
   var RouteConfig = function($routeProvider) {
     $routeProvider.when('/room/:id', {
       templateUrl: 'pages/room.html',
-      controller: Controller
+      controller: RoomController
     });
   };
 

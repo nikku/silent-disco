@@ -18,11 +18,11 @@
     <form ng-submit="send(input); input = ''">
       <div class="input-append">
         <input class="span6" data-ng-model="input" type="text">
-        <button class="btn" type="submit">Send</button>
+        <button class="btn" type="submit">Send</button><br/>
       </div>
     </form>
 
-    <div class="tracks">
+    <div class="tracks scrollable">
       <div data-ng-repeat="track in tracks">
         <div class="track" ng-class="{ playing: isPlaying(track), queued: isQueued(track) }">
 
@@ -32,8 +32,11 @@
           - 
           <a data-ng-href="{{ track.permalink_url }}" class="track-title">{{ track.title }}</a>
 
+
+          <div ngm-if="!isPlaying(track)" class="position"><div class="btn" data-ng-click="startTrack(track)"><i class="icon-play"></i></div></div>
+
           <div ngm-if="isPlaying(track)" class="position">
-            {{ fmtTime(track.position) }} / {{ fmtTime(track.duration) }}
+            <span>{{ fmtTime(track.position) }} / {{ fmtTime(track.duration) }}</span>
           </div>
         </div>
       </div>
