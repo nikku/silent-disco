@@ -10,8 +10,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.code.morphia.Datastore;
-import com.google.code.morphia.Key;
+import com.github.jmkgreen.morphia.Datastore;
+import com.github.jmkgreen.morphia.Key;
 import de.nixis.web.disco.db.entity.PlaylistPosition;
 import de.nixis.web.disco.db.entity.Room;
 import de.nixis.web.disco.db.entity.Track;

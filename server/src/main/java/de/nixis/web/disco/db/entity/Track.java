@@ -3,9 +3,9 @@ package de.nixis.web.disco.db.entity;
 import java.util.Date;
 
 import org.bson.types.ObjectId;
-import com.google.code.morphia.annotations.Embedded;
-import com.google.code.morphia.annotations.Entity;
-import com.google.code.morphia.annotations.Id;
+import com.github.jmkgreen.morphia.annotations.Embedded;
+import com.github.jmkgreen.morphia.annotations.Entity;
+import com.github.jmkgreen.morphia.annotations.Id;
 
 /**
  *

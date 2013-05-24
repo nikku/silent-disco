@@ -5,10 +5,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
-import com.google.code.morphia.Datastore;
-import com.google.code.morphia.Morphia;
-import com.google.code.morphia.query.Query;
-import com.mongodb.Mongo;
+import com.github.jmkgreen.morphia.Datastore;
+import com.github.jmkgreen.morphia.Morphia;
+import com.github.jmkgreen.morphia.query.Query;
+import com.mongodb.MongoClient;
 import de.nixis.web.disco.db.entity.PlaylistPosition;
 import de.nixis.web.disco.db.entity.Room;
 import de.nixis.web.disco.db.entity.Track;
@@ -74,12 +74,12 @@ public class Disco {
   }
 
   public static Datastore createDatastore(String host, String name) throws UnknownHostException {
-    Mongo mongo = new Mongo(host);
+    MongoClient mongoClient = new MongoClient(host);
 
     Morphia morphia = new Morphia();
     morphia.map(Track.class).map(Room.class);
 
-    Datastore ds = morphia.createDatastore(mongo, name);
+    Datastore ds = morphia.createDatastore(mongoClient, name);
 
     ds.ensureIndexes();
     ds.ensureCaps();
