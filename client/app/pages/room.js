@@ -49,6 +49,11 @@ ngDefine('disco.pages', [
       }
 
       $scope.room.emit('text', msg);
+      $scope.input = input = '';
+    };
+
+    $scope.isEnter = function(e) {
+      return e.keyCode == '13' && !e.shiftKey;
     };
 
     $scope.$on("addTrack", function (event, data) {

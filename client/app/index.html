@@ -35,19 +35,9 @@
         </div>
       </div>
 
-      <div class="ctn-fixed">
-        <div class="ctn-main">
-          <!-- ngView integration -->
-          <div ng-view>
-          </div>
-        </div>
-
-        <div class="ctn-side">
-          <div class="participant span4" data-ng-repeat="p in participants">
-            <img data-ng-src="{{p.avatar_url}}"/><a target="_blank" data-ng-href="{{p.permalink_url}}">{{p.username}}</a>
-            <div class="btn" data-ng-click="addFavorites(p)">Add Favorites</div>
-          </div>
-        </div>
+      <!-- content view -->
+      <div data-ng-view>
+        
       </div>
     </div>
   </body>

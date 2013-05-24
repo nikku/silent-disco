@@ -32,18 +32,27 @@
  * shared style declarations
  */
 html, body {
-  height:100%;
+  height: 100%;
   min-height: 100%;
+}
+
+.ctn::-webkit-scrollbar{width:8px;height:8px;}
+.ctn::-webkit-scrollbar-button:start:decrement,
+.ctn::-webkit-scrollbar-button:end:increment{display:block;height:0;background-color:transparent;}
+.ctn::-webkit-scrollbar-track-piece{background-color:#FAFAFA;-webkit-border-radius:0;-webkit-border-bottom-right-radius:8px;-webkit-border-bottom-left-radius:8px;}
+.ctn::-webkit-scrollbar-thumb:vertical{height:50px;background-color:#999;-webkit-border-radius:8px;}
+.ctn::-webkit-scrollbar-thumb:horizontal{width:50px;background-color:#999;-webkit-border-radius:8px;}
+
+.ctn {
+  overflow: auto;
 }
 
 .ctn-fixed {
   position: fixed;
   top: 41px;
   left: 0;
-  /* right: 0; */
   bottom: 0;
-  width: 979px;
-  height: 100%;
+  right: 0;
 }
 
 @media (max-width: 979px) {
@@ -62,45 +71,63 @@ html, body {
   }
 }
 
-.ctn-fixed .ctn-main {
-  width: 650px;
+.ctn {
   float: left;
-}
-
-.ctn-fixed .ctn-side {
-  float: left;
-  border-left: solid 1px #DDD;
-  width: 300px;
   height: 100%;
+
+  border-left: solid 1px #DDD;
+  overflow: auto;
 }
 
-.ctn-fixed .ctn-main > div {
+.ctn-main {
+  width: 50%;
+}
+
+.ctn-main > div {
   margin: 10px;
+}
+
+.ctn-side {
+  width: 15%;
+}
+
+.ctn-playlist {
+  width: 34%;
+  float: right;
+}
+
+.chat form {
+  margin-left: 5px;
+  margin-right: 15px;
+  padding-right: 10px;
+}
+
+.chat textarea {
+  width: 100%;
 }
 
 .messages {
   height: 300px;
 }
 
-.message-submit {
-  width: 100%;
-  position: relative;
-}
-
-.message-submit input[type=text] {
-  display: inline-block;
-  width: 100%;
-}
-
-.tracks {
-    height: 400px;
-}
-
 .track {
-  margin: 10px;
-  padding: 5px;
+  margin: 0;
+  padding: 0;
   line-height: 40px;
-  border: solid 1px #CCC;
+  border-bottom: solid 1px #CCC;
+
+  background-color: #FCFCFC;
+}
+
+.track.active {
+  background-color: #F0F0F0;
+  border-top: solid 1px #CCC;
+  border-bottom: solid 2px #CCC;
+}
+
+.track .title {
+  margin: 0 5px 0 5px;
+  overflow: hidden;
 }
 
 .track img {

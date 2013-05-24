@@ -1,37 +1,45 @@
-<div>
+<div class="ctn-fixed">
+  <div class="ctn ctn-main">
 
-  <div data-ng-show="!connected">
-    <form data-ng-submit="join(name)">
-      <input type="text" placeholder="Your nickname" data-ng-model="name" style="margin-top: 10px" />
-      <input class="btn" type="submit" value="join channel" />
-    </form>
-  </div>
-
-  <div data-ng-show="connected" data-ng-controller="ChatController">
-    <div class="messages scrollable" data-scroll-watch="messages.length">
-      <div data-ng-repeat="message in messages">
-        <strong data-ng-show="message.author" data-ng-bind="message.author"></strong>
-        <span data-ng-bind="message.message"></span>
-      </div>
+    <!-- connect option -->
+    <div data-ng-show="!connected">
+      <form data-ng-submit="join(name)">
+        <input type="text" placeholder="Your nickname" data-ng-model="name" style="margin-top: 10px" />
+        <input class="btn" type="submit" value="join channel" />
+      </form>
     </div>
 
-    <form ng-submit="send(input); input = ''">
-      <div class="input-append">
-        <input class="span6" data-ng-model="input" type="text">
-        <button class="btn" type="submit">Send</button><br/>
+    <!-- chat window -->
+    <div data-ng-show="connected" data-ng-controller="ChatController" class="chat">
+      <div class="messages scrollable" data-scroll-watch="messages.length">
+        <div data-ng-repeat="message in messages">
+          <strong data-ng-show="message.author" data-ng-bind="message.author"></strong>
+          <span data-ng-bind="message.message"></span>
+        </div>
       </div>
-    </form>
 
-    <div class="tracks scrollable" data-scroll-watch="tracks.length">
-      <div data-ng-repeat="track in tracks">
-        <div class="track" ng-class="{ playing: isPlaying(track), queued: isQueued(track) }">
+      <form ng-submit="send(input)">
+        <textarea data-ng-model="input" placeholder="Type a message" data-ng-keyup="isEnter($event) && send(input)"></textarea>
+      </form>
+    </div>
+  </div>
+  <div class="ctn ctn-side">
+    <div class="participant span4" data-ng-repeat="p in participants">
+      <img data-ng-src="{{p.avatar_url}}"/><a target="_blank" data-ng-href="{{p.permalink_url}}">{{p.username}}</a>
+      <div class="btn" data-ng-click="addFavorites(p)">Add Favorites</div>
+    </div>
+  </div>
+  <div class="ctn ctn-playlist">
+    <div class="tracks">
+      <div class="track"
+           data-ng-repeat="track in tracks"
+           data-ng-class="{ playing: isPlaying(track), queued: isQueued(track) }">
 
-          <img data-ng-src="{{ track.artwork_url }}" />
-
-          <a data-ng-href="{{ track.user.permalink_url }}" class="track-user">{{ track.user.username }}</a>
-          - 
-          <a data-ng-href="{{ track.permalink_url }}" class="track-title">{{ track.title }}</a>
-
+        <img data-ng-src="{{ track.artwork_url }}" />
+        <div class="title">
+          <a data-ng-href="{{ track.user.permalink_url }}" class="author">{{ track.user.username }}</a>
+          -
+          <a data-ng-href="{{ track.permalink_url }}" class="title">{{ track.title }}</a>
 
           <div ngm-if="!isPlaying(track)" class="position"><div class="btn" data-ng-click="startTrack(track)"><i class="icon-play"></i></div></div>
 
