@@ -1,9 +1,11 @@
 package de.nixis.web.disco.json;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.SerializationConfig;
 
 import de.nixis.web.disco.dto.Base;
 
@@ -19,6 +21,9 @@ public class DecodeHelper {
       Message message = parse(text);
 
       ObjectMapper mapper = new ObjectMapper();
+
+      mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"));
+      mapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
 
       return (T) mapper.readValue(message.content, message.cls);
     } catch (IOException e) {

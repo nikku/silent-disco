@@ -48,11 +48,14 @@ public class DefaultRoomHandler extends AbstractRoomHandler<Base> {
 
       ctx.channelMap().put(ctx.channel(), participant);
 
+      System.out.println("JOIN: " + participant);
+
       sendAll(ctx, ctx.channel(), new ParticipantJoined(participant));
 
       send(ctx, new ChannelJoined(participant, participants, tracks, room));
     } else
     if (message instanceof ChannelLeave) {
+      System.out.println("LEAVE: " + participant);
       channels.remove(ctx.channel());
       sendAll(ctx, new ParticipantLeft(participant));
     } else
