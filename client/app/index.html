@@ -11,8 +11,6 @@
     <link href="../assets/css/app.css" rel="stylesheet" />
     <link href="../assets/vendor/bootstrap/css/bootstrap.css" rel="stylesheet" />
 
-    <link href="../assets/vendor/jquery/custom-scrollbar/css/jquery.mCustomScrollbar.css" rel="stylesheet" />
-
     <link rel="shortcut icon" type="image/x-icon" href="../assets/img/favicon.ico" />
 
     <script src="../assets/vendor/require/require.js"></script>
@@ -24,13 +22,14 @@
 
     <div>
       <div class="navbar navbar-fixed-top content-container">
-        <div class="navbar-inner">
+        <div class="navbar-inner" data-ng-controller="NavigationController">
           <div class="container-fluid">
             <a class="brand" href="#/">
               <span>silent disco</span>
             </a>
-            <span class="btn" data-ng-click="mute()"><i class="icon-volume-off"></i></span>
-            <span class="btn" data-ng-click="pause()"><i class="icon-pause"></i></span>
+            <span class="btn btn-small" ng-cloak>
+              <i data-ng-click="toggleMute()" data-ng-class="{ 'icon-volume-up': isMuted(), 'icon-volume-off': !isMuted() }"></i>
+            </span>
           </div>
         </div>
       </div>

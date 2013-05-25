@@ -36,14 +36,14 @@ html, body {
   min-height: 100%;
 }
 
-.ctn::-webkit-scrollbar{width:8px;height:8px;}
-.ctn::-webkit-scrollbar-button:start:decrement,
-.ctn::-webkit-scrollbar-button:end:increment{display:block;height:0;background-color:transparent;}
-.ctn::-webkit-scrollbar-track-piece{background-color:#FAFAFA;-webkit-border-radius:0;-webkit-border-bottom-right-radius:8px;-webkit-border-bottom-left-radius:8px;}
-.ctn::-webkit-scrollbar-thumb:vertical{height:50px;background-color:#999;-webkit-border-radius:8px;}
-.ctn::-webkit-scrollbar-thumb:horizontal{width:50px;background-color:#999;-webkit-border-radius:8px;}
+.ctn-scroll::-webkit-scrollbar{width:8px;height:8px;}
+.ctn-scroll::-webkit-scrollbar-button:start:decrement,
+.ctn-scroll::-webkit-scrollbar-button:end:increment{display:block;height:0;background-color:transparent;}
+.ctn-scroll::-webkit-scrollbar-track-piece{background-color:#FAFAFA;-webkit-border-radius:0;-webkit-border-bottom-right-radius:8px;-webkit-border-bottom-left-radius:8px;}
+.ctn-scroll::-webkit-scrollbar-thumb:vertical{height:50px;background-color:#999;-webkit-border-radius:8px;}
+.ctn-scroll::-webkit-scrollbar-thumb:horizontal{width:50px;background-color:#999;-webkit-border-radius:8px;}
 
-.ctn {
+.ctn-scroll {
   overflow: auto;
 }
 
@@ -84,11 +84,14 @@ html, body {
 }
 
 .ctn-main > div {
-  margin: 10px;
+  height: 100%;
+  position: relative;
 }
 
 .ctn-side {
   width: 15%;
+  z-index: 5;
+  overflow: visible;
 }
 
 .ctn-playlist {
@@ -97,17 +100,29 @@ html, body {
 }
 
 .chat form {
-  margin-left: 5px;
-  margin-right: 15px;
-  padding-right: 10px;
+  position: absolute;
+  left: 10px;
+  right: 24px;
+  bottom: 0;
+  margin: 0;
 }
 
 .chat textarea {
   width: 100%;
+  max-width: 100%;
+  min-width: 100%;
 }
 
 .messages {
-  height: 300px;
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 10px;
+  bottom: 70px;
+}
+
+.tracks {
+  height: 100%;
 }
 
 .track {
@@ -141,6 +156,14 @@ html, body {
   line-height: 40px;
 }
 
+.track-dropable {
+  margin: 0;
+  padding: 0;
+  height: 4px;
+  background-color: #CCA300;
+  border-bottom: solid 1px #CCC;
+}
+
 /**
  * Start room
  */
@@ -150,12 +173,8 @@ html, body {
   margin: 60px auto 20px;
   background-color: #fff;
   border: 1px solid #e5e5e5;
-  -webkit-border-radius: 5px;
-     -moz-border-radius: 5px;
-          border-radius: 5px;
-  -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
-     -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
-          box-shadow: 0 1px 2px rgba(0,0,0,.05);
+  border-radius: 5px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.05);
 }
 .form-signin .form-signin-heading,
 .form-signin .checkbox {
@@ -170,10 +189,43 @@ html, body {
 }
 
 .participant {
- margin: 10px;
- padding: 10px;
+  position: relative;
+  margin: 10px;
+  border: solid 1px;
+  border-color: #CCC;
+  border-radius: 4px;
+  padding: 0;
+}
+
+.participant .options {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 20px;
+  cursor: pointer;
+  border: 1px #CCC;
+}
+
+.participant .options:hover {
+  border-left-style: solid;
+}
+
+.participant img, .participant .options {
+  padding: 1px;
+  height: 36px;
+}
+
+.participant .options {
+  padding-left: 8px;
+  border-radius: 0 3px 3px 0;
 }
 
 .participant img {
-    margin-right: 10px;
+  border-radius: 3px 0 0 3px;
+  border-right: solid 1px #CCC;
+}
+
+.sc-user, .sc-user img, .sc-user .options:hover {
+  border-color: #f60;
 }

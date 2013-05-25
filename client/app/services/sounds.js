@@ -13,90 +13,93 @@ ngDefine('disco.services', [
         SC.get('/resolve', { url: url }, callback);
       },
 
-      play: function(track, callback) {
+      play: function(sound, callback) {
+
+        var stream = sound.stream;
+        var track = sound.track;
+
+        if (this.current) {
+          this.stop();
+        }
+
+        stream.play();
+        if (this.__muted) {
+          stream.mute();
+        }
+
+        if (callback) {
+          callback.apply(this, [ stream ]);
+        }
+
+        this.current = sound;
+      },
+
+      playTrack: function(track, callback) {
         var self = this;
 
         var options = {
 
           onloaded: function() {
-            var sound = this;
-
-            $rootScope.$apply(function() {
-              track.duration = sound.duration;
-            });
+            var stream = this;
+            track.duration = stream.duration;
           },
 
           whileplaying: function() {
-            var sound = this;
+            var stream = this;
 
             $rootScope.$apply(function() {
-              track.position = sound.position;
+              track.position = stream.position;
             });
           },
+
           onfinish: function() {
-            console.log("finished playing ", this);
             $rootScope.$apply(function() {
               track.position = 0;
               track.status = null;
             });
           },
+
           onstop: function() {
-            console.log("stopped playing ", this);
-            $rootScope.$apply(function() {
-              track.position = 0;
-              track.status = null;
-            });
+            track.position = 0;
+            track.status = null;
           }
         };
 
-        SC.stream("/tracks/" + track.id, options, function(sound) {
-          self.stop();
-
-          sound.play();
-
-          self.playing = { track: track, sound: sound };
-
-          if (callback) {
-            callback.apply(self, [ sound ]);
-          }
-          $rootScope.$apply();
+        SC.stream("/tracks/" + track.id, options, function(stream) {
+          self.play({ track: track, stream: stream }, callback);
         });
       },
 
       toggleMute: function() {
-        if (this.playing) {
-          if (this.playing.muted == true) {
-            this.playing.sound.unmute();
-            this.playing.muted = false;
+        this.__muted = !this.__muted;
+
+        if (this.current) {
+          if (this.__muted) {
+            this.current.stream.mute();
           } else {
-            this.playing.sound.mute();
-            this.playing.muted = true;
+            this.current.stream.unmute();
           }
         }
       },
 
-      togglePause: function() {
-        if (this.playing) {
-          if (this.playing.paused == true) {
-            this.playing.sound.play();
-            this.playing.paused = false;
-          } else {
-            this.playing.sound.pause();
-            this.playing.paused = true;
-          }
-        }
+      muted: function() {
+        return this.__muted;
+      },
+
+      isPlaying: function(track) {
+        return this.current && this.current.track.id == track.id;
       },
 
       stop: function() {
-        var playing = this.playing;
+        var current = this.current;
 
-        if (playing) {
-          var sound = playing.sound;
+        if (current) {
+          var stream = current.stream;
 
-          sound.stop();
-          sound.destruct();
+          stream.stop();
+          stream.destruct();
 
-          this.playing = null;
+          this.current = null;
         }
       }
     });

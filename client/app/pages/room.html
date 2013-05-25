@@ -1,17 +1,24 @@
-<div class="ctn-fixed">
-  <div class="ctn ctn-main">
+<div class="ctn-fixed" data-ng-switch="room.connected">
 
+  <!-- pre join ui -->
+  <div class="ctn ctn-main" ng-switch-when="false">
     <!-- connect option -->
-    <div data-ng-show="!connected">
-      <form data-ng-submit="join(name)">
+    <div data-ng-controller="JoinRoomController">
+      <form data-ng-submit="join()">
         <input type="text" placeholder="Your nickname" data-ng-model="name" style="margin-top: 10px" />
-        <input class="btn" type="submit" value="join channel" />
+        <input class="btn" type="submit" value="join room" />
       </form>
     </div>
+  </div>
+  <!-- pre join ui end -->
+
+
+  <!-- room ui -->
+  <div class="ctn ctn-main" ng-switch-when="true">
 
     <!-- chat window -->
-    <div data-ng-show="connected" data-ng-controller="ChatController" class="chat">
-      <div class="messages scrollable" data-scroll-watch="messages.length">
+    <div data-ng-controller="ChatController" class="chat">
+      <div class="messages ctn-scroll">
         <div data-ng-repeat="message in messages">
           <strong data-ng-show="message.author" data-ng-bind="message.author"></strong>
           <span data-ng-bind="message.message"></span>
@@ -23,17 +30,16 @@
       </form>
     </div>
   </div>
-  <div class="ctn ctn-side">
-    <div class="participant span4" data-ng-repeat="p in participants">
-      <img data-ng-src="{{p.avatar_url}}"/><a target="_blank" data-ng-href="{{p.permalink_url}}">{{p.username}}</a>
-      <div class="btn" data-ng-click="addFavorites(p)">Add Favorites</div>
-    </div>
-  </div>
-  <div class="ctn ctn-playlist">
-    <div class="tracks">
+
+  <div class="ctn ctn-playlist" ng-switch-when="true">
+    <!-- track list -->
+    <div class="tracks ctn-scroll" 
+         data-ng-controller="TrackListController" 
+         data-ui-sortable="{ placeholder: 'track-dropable', opacity: '0.8', axis: 'y' }"
+         data-ng-model="tracks">
       <div class="track"
            data-ng-repeat="track in tracks"
-           data-ng-class="{ playing: isPlaying(track), queued: isQueued(track) }">
+           data-ng-class="{ active: isPlaying(track) }">
 
         <img data-ng-src="{{ track.artwork_url }}" />
         <div class="title">
@@ -50,4 +56,32 @@
       </div>
     </div>
   </div>
+
+  <div class="ctn ctn-side" ng-switch-when="true">
+    <!-- participants list -->
+    <div class="participants" data-ng-controller="ParticipantListController">
+      <div class="participant" data-ng-class="{ 'sc-user': user.sc }" data-ng-repeat="user in participants">
+        <div data-ng-switch="user.sc">
+          <div data-ng-switch-when="true">
+            <img data-ng-src="{{ user.avatar_url }}"/>
+            <a target="_blank" data-ng-href="{{ user.permalink_url }}">{{ user.username }}</a>
+
+            <div class="btn-group options">
+              <a class="dropdown-toggle" data-toggle="dropdown">
+                <i class="icon-user"></i>
+              </a>
+              <ul class="dropdown-menu pull-right">
+                <li><a href data-ng-click="addFavourites(user)">Add Favourites</a></li>
+              </ul>
+            </div>
+          </div>
+          <div data-ng-switch-default>
+            <img src="../assets/img/app/no_avatar.png" />
+            {{ user.username }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- room ui end -->
 </div>
