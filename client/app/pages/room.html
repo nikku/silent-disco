@@ -44,19 +44,19 @@
         <img data-ng-src="{{ track.artwork_url }}" />
 
         <div class="title">
-          <a data-ng-href="{{ track.user.permalink_url }}" class="author">{{ track.user.username }}</a>
+          <a target="_blank" data-ng-href="{{ track.user.permalink_url }}" class="author">{{ track.user.username }}</a>
           -
-          <a data-ng-href="{{ track.permalink_url }}" class="title">{{ track.title }}</a>
+          <a target="_blank" data-ng-href="{{ track.permalink_url }}" class="title">{{ track.title }}</a>
 
           <div class="position" data-ng-switch="isPlaying(track)">
             <span data-ng-switch-when="false">
               <span>{{ track.duration | time }}</span>
-              <a class="btn btn-small" data-ng-click="start(track)"><i class="icon-play"></i></a>
+              <button class="btn btn-small" data-ng-click="start(track)"><i class="icon-play"></i></button>
             </span>
 
             <span data-ng-switch-when="true">
               <span>{{ track.position | time }} / {{ track.duration | time }}</span>
-              <a class="btn btn-small" data-ng-click="stop(track)"><i class="icon-stop"></i></a>
+              <button class="btn btn-small" data-ng-click="stop(track)"><i class="icon-stop"></i></button>
             </span>
           </div>
         </div>
