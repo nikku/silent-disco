@@ -53,14 +53,11 @@ public class DefaultRoomHandler extends AbstractRoomHandler<Base> {
 
       ctx.channelMap().put(ctx.channel(), participant);
 
-      System.out.println("JOIN: " + participant);
-
       sendAll(ctx, ctx.channel(), new ParticipantJoined(participant));
 
       send(ctx, new ChannelJoined(participant, participants, tracks, room));
     } else
     if (message instanceof ChannelLeave) {
-      System.out.println("LEAVE: " + participant);
       channels.remove(ctx.channel());
       sendAll(ctx, new ParticipantLeft(participant));
     } else
@@ -88,7 +85,7 @@ public class DefaultRoomHandler extends AbstractRoomHandler<Base> {
       String trackId = startTrack.getTrackId();
       Disco.startPlay(trackId);
 
-      sendAll(ctx, ctx.channel(), new TrackStarted(trackId));
+      sendAll(ctx, ctx.channel(), new TrackStarted(trackId, participant));
     } else
     if (message instanceof StopTrack) {
       StopTrack stopTrack = (StopTrack) message;
@@ -96,7 +93,7 @@ public class DefaultRoomHandler extends AbstractRoomHandler<Base> {
       String trackId = stopTrack.getTrackId();
       Disco.stopPlay(trackId);
 
-      sendAll(ctx, ctx.channel(), new TrackStopped(trackId));
+      sendAll(ctx, ctx.channel(), new TrackStopped(trackId, participant));
     }
   }
 }
