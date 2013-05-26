@@ -24,7 +24,7 @@ public class Track {
 
   private String artwork_url;
 
-  private Date addedDate;
+  private Date added;
 
   private String permalink_url;
 
@@ -39,6 +39,8 @@ public class Track {
 
   private boolean deleted = false;
 
+  private String position;
+
   public Track() {
 
   }
@@ -50,6 +52,8 @@ public class Track {
     this.user = user;
     this.duration = duration;
     this.roomName = roomName;
+
+    this.added = new Date();
 
     this.id = id;
   }
@@ -70,12 +74,12 @@ public class Track {
     this.artwork_url = artwork_url;
   }
 
-  public Date getAddedDate() {
-    return addedDate;
+  public Date getAdded() {
+    return added;
   }
 
-  public void setAddedDate(Date addedDate) {
-    this.addedDate = addedDate;
+  public void setAdded(Date added) {
+    this.added = added;
   }
 
   public String getPermalink_url() {

@@ -9,9 +9,11 @@ import com.github.jmkgreen.morphia.Datastore;
 import com.github.jmkgreen.morphia.Morphia;
 import com.github.jmkgreen.morphia.query.Query;
 import com.mongodb.MongoClient;
-import de.nixis.web.disco.db.entity.PlaylistPosition;
+import de.nixis.web.disco.db.entity.Position;
+import de.nixis.web.disco.db.entity.Position.Status;
 import de.nixis.web.disco.db.entity.Room;
 import de.nixis.web.disco.db.entity.Track;
+import de.nixis.web.disco.dto.TrackPosition;
 
 /**
  *
@@ -39,6 +41,19 @@ public class Disco {
     return room;
   }
 
+  public static void stopPlay(String trackId) {
+    Track track = getTrack(trackId);
+    if (track == null) {
+      throw new RuntimeException("#stopPlay(): track not found with id " + trackId);
+    }
+
+    Room room = getRoomByNameQuery(track.getRoomName()).get();
+
+    room.setPosition(new Position(track.getTrackId(), Status.STOPPED, new Date()));
+
+    getDatastore().merge(room);
+  }
+
   public static void startPlay(String trackId) {
 
     Track track = getTrack(trackId);
@@ -48,7 +63,7 @@ public class Disco {
 
     Room room = getRoomByNameQuery(track.getRoomName()).get();
 
-    room.setPosition(new PlaylistPosition(track.getTrackId(), new Date(), 0));
+    room.setPosition(new Position(track.getTrackId(), Status.PLAYING, new Date()));
 
     getDatastore().merge(room);
   }
@@ -58,15 +73,29 @@ public class Disco {
   }
 
   private static Query<Track> getTracksByRoomQuery(String roomName) {
-    return getDatastore().find(Track.class).filter("roomName =", roomName);
+    return getDatastore().find(Track.class).order("position").order("position").order("added").filter("deleted", false).filter("roomName =", roomName);
   }
 
-  public static Track addTrack(Track track, String roomName) {
+  public static void moveTrack(String trackId, TrackPosition position) {
+
+    Track track = getTrack(trackId);
+
+    updateTrackPosition(track, position);
+
+    getDatastore().merge(track);
+
+  }
+
+  public static Track addTrack(Track track, String roomName, TrackPosition position) {
 
     // make sure room exists
     getRoom(roomName);
 
     track.setRoomName(roomName);
+
+    if (position != null) {
+      updateTrackPosition(track, position);
+    }
 
     getDatastore().save(track);
 
@@ -101,5 +130,9 @@ public class Disco {
 
   private static Query<Room> getRoomByNameQuery(String name) {
     return getDatastore().find(Room.class, "name =", name);
+  }
+
+  private static void updateTrackPosition(Track track, TrackPosition position) {
+    System.out.println("#notImplemented(updateTrackPosition)");
   }
 }

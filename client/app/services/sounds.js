@@ -18,7 +18,9 @@ ngDefine('disco.services', [
         var stream = sound.stream;
         var track = sound.track;
 
-        if (this.current) {
+        var current = this.current;
+
+        if (current) {
           this.stop();
         }
 
@@ -39,29 +41,32 @@ ngDefine('disco.services', [
 
         var options = {
 
-          onloaded: function() {
-            var stream = this;
-            track.duration = stream.duration;
-          },
+          onloaded: function() { },
 
           whileplaying: function() {
             var stream = this;
 
-            $rootScope.$apply(function() {
-              track.position = stream.position;
-            });
+            track.position = stream.position;
+
+            try {
+              $rootScope.$digest();
+            } catch (e) { /* YEA */ }
           },
 
           onfinish: function() {
             $rootScope.$apply(function() {
               track.position = 0;
               track.status = null;
+
+              $rootScope.$broadcast('sounds.finished', track);
             });
           },
 
           onstop: function() {
             track.position = 0;
             track.status = null;
+
+            $rootScope.$broadcast('sounds.stopped', track);
           }
         };
 
@@ -87,7 +92,7 @@ ngDefine('disco.services', [
       },
 
       isPlaying: function(track) {
-        return this.current && this.current.track.id == track.id;
+        return !!(this.current && this.current.track.id == track.id);
       },
 
       stop: function() {
@@ -96,8 +101,10 @@ ngDefine('disco.services', [
         if (current) {
           var stream = current.stream;
 
-          stream.stop();
-          stream.destruct();
+          if (stream) {
+            stream.stop();
+            stream.destruct();
+          }
 
           this.current = null;
         }

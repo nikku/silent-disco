@@ -10,8 +10,11 @@ public class TrackAdded extends Base {
 
   private Track track;
 
-  public TrackAdded(Track track) {
+  private TrackPosition position;
+
+  public TrackAdded(Track track, TrackPosition position) {
     this.track = track;
+    this.position = position;
   }
 
   public void setTrack(Track track) {
@@ -20,5 +23,13 @@ public class TrackAdded extends Base {
 
   public Track getTrack() {
     return track;
+  }
+
+  public TrackPosition getPosition() {
+    return position;
+  }
+
+  public void setPosition(TrackPosition position) {
+    this.position = position;
   }
 }

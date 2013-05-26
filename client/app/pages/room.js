@@ -32,19 +32,6 @@ ngDefine('disco.pages', [
       room.socket = null;
     });
 
-    $scope.fmtTime = function(time) {
-
-      var h = Math.floor(time / 1000 / 60 / 60) % 24;
-      var min =  $scope.leadingZero(Math.floor(time / 1000 / 60) % 60);
-      var s = $scope.leadingZero(Math.floor(time / 1000) % 60);
-
-      return (h ? (h + ":") : "") + min + ":" + s;
-    };
-
-    $scope.leadingZero = function(number) {
-      return number < 10 ? "0" + number :  number;
-    };
-
     $scope.addTrack = function(track) {
       var trk = cp(track, [ 'id', 'artwork_url', 'permalink_url', 'title', 'duration']);
       trk.user = cp(track.user, [ 'username', 'permalink_url' ]);
@@ -87,7 +74,7 @@ ngDefine('disco.pages', [
       room.messages.push({ message: 'You joined the room as <' + data.name + '>'});
 
       angular.forEach(data.tracks, function(track) {
-        room.tracks.unshift(track);
+        room.tracks.push(track);
       });
 
       angular.forEach(data.participants, function(participant) {
@@ -156,27 +143,106 @@ ngDefine('disco.pages', [
   /**
    * Controller that handles the track list
    */
-  var TrackListController = function TrackListController($scope, Sounds) {
+  var TrackListController = function TrackListController($scope, $filter, Sounds) {
 
     var room = $scope.room;
     var tracks = $scope.tracks = $scope.room.tracks;
 
+    function findTrack(pattern) {
+      return $filter('filter')(tracks, pattern)[0];
+    }
+
+    function insertTrack(track, position) {
+
+      var oldTrackIdx = tracks.indexOf(track);
+
+      var before = position.before ? findTrack({ trackId: position.before }) : null;
+      var after = position.after ? findTrack({ trackId: position.after }) : null;
+
+      if (before || after) {
+        // remove track
+        if (oldTrackIdx != -1) {
+          room.tracks.splice(trackIdx, 1);
+        }
+
+        var newPos = tracks.indexOf(after) || tracks.indexOf(before) + 1;
+        room.tracks.splice(newPos, 0, track);
+      } else
+      // make sure track is added even if before or 
+      // after tracks have not been found
+      if (oldTrackIdx == -1) {
+        room.tracks.push(track);
+      }
+    }
+
     room.socket.on('trackAdded', function(trackAdded) {
       var track = trackAdded.track;
+      var position = trackAdded.position;
 
-      room.tracks.unshift(track);
+      if (!position) {
+        room.tracks.push(track);
+      } else {
+        insertTrack(track, position);
+      }
     });
 
-    $scope.startTrack = function(track) {
+    room.socket.on('trackStarted', function(message) {
+      var trackId = message.trackId;
+
+      var track = findTrack({ trackId: trackId });
+      if (track) {
+        Sounds.playTrack(track);
+      }
+    });
+
+    room.socket.on('trackStopped', function(message) {
+      var trackId = message.trackId;
+
+      var track = findTrack({ trackId: trackId });
+      if (Sounds.isPlaying(track)) {
+        Sounds.stop();
+      }
+    });
+
+    room.socket.on('trackMoved', function(message) {
+      var trackId = message.trackId;
+      var position = message.position;
+
+      var track = findTrack({ trackId: trackId });
+      if (track) {
+        insertTrack(track, position);
+      }
+    });
+
+    $scope.start = function(track) {
       Sounds.playTrack(track);
+      room.socket.emit('startTrack', { trackId: track.trackId });
+    };
+
+    $scope.stop = function(track) {
+      Sounds.stop(track);
+      room.socket.emit('stopTrack', { trackId: track.trackId });
     };
 
     $scope.isPlaying = function(track) {
-      return track.duration && Sounds.isPlaying(track);
+      return Sounds.isPlaying(track);
     };
+
+    $scope.$on('sounds.finished', function(e, track) {
+      var idx = tracks.indexOf(track);
+      if (idx == -1) {
+        return;
+      }
+
+      var nextTrack = tracks[idx + 1];
+
+      if (nextTrack) {
+        Sounds.playTrack(nextTrack);
+      }
+    });
   };
 
-  TrackListController.$inject = [ '$scope', 'Sounds' ];
+  TrackListController.$inject = [ '$scope', '$filter', 'Sounds' ];
 
 
   /**
@@ -236,10 +302,33 @@ ngDefine('disco.pages', [
     });
   };
 
+  var timeFilter = function() {
+
+    function leadingZero(number) {
+      return number < 10 ? "0" + number : number;
+    }
+
+    function fmtTime(time) {
+      time = time || 0;
+
+      var h = Math.floor(time / 1000 / 60 / 60);
+      var min =  Math.floor(time / 1000 / 60) % 60;
+      var s = Math.floor(time / 1000) % 60;
+
+      return (h ? (h + ":") : "") + leadingZero(min) + ":" + leadingZero(s);
+    }
+
+    return function(input, uppercase) {
+      var out = fmtTime(input);
+      return out;
+    };
+  };
+
   RouteConfig.$inject = [ '$routeProvider' ];
 
   module
     .config(RouteConfig)
+    .filter('time', timeFilter)
     .controller('ChatController', ChatController)
     .controller('JoinRoomController', JoinRoomController)
     .controller('TrackListController', TrackListController)

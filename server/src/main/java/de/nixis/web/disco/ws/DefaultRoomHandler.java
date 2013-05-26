@@ -17,8 +17,13 @@ import de.nixis.web.disco.dto.ChannelJoin;
 import de.nixis.web.disco.dto.ChannelLeave;
 import de.nixis.web.disco.dto.ParticipantJoined;
 import de.nixis.web.disco.dto.ParticipantLeft;
+import de.nixis.web.disco.dto.StartTrack;
+import de.nixis.web.disco.dto.StopTrack;
 import de.nixis.web.disco.dto.Text;
 import de.nixis.web.disco.dto.TrackAdded;
+import de.nixis.web.disco.dto.TrackPosition;
+import de.nixis.web.disco.dto.TrackStarted;
+import de.nixis.web.disco.dto.TrackStopped;
 import de.nixis.web.disco.room.RoomContext;
 import io.netty.channel.Channel;
 
@@ -69,11 +74,29 @@ public class DefaultRoomHandler extends AbstractRoomHandler<Base> {
       AddTrack addTrack = (AddTrack) message;
 
       Track track = addTrack.getTrack();
-      track.setAddedDate(new Date());
+      TrackPosition position = addTrack.getPosition();
 
-      Disco.addTrack(track, ctx.getRoomName());
+      track.setAdded(new Date());
 
-      sendAll(ctx, new TrackAdded(track));
+      Disco.addTrack(track, ctx.getRoomName(), position);
+
+      sendAll(ctx, new TrackAdded(track, position));
+    } else
+    if (message instanceof StartTrack) {
+      StartTrack startTrack = (StartTrack) message;
+
+      String trackId = startTrack.getTrackId();
+      Disco.startPlay(trackId);
+
+      sendAll(ctx, ctx.channel(), new TrackStarted(trackId));
+    } else
+    if (message instanceof StopTrack) {
+      StopTrack stopTrack = (StopTrack) message;
+
+      String trackId = stopTrack.getTrackId();
+      Disco.stopPlay(trackId);
+
+      sendAll(ctx, ctx.channel(), new TrackStopped(trackId));
     }
   }
 }

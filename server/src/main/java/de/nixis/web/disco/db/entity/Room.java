@@ -18,7 +18,7 @@ public class Room {
   private String name;
 
   @Embedded
-  private PlaylistPosition position;
+  private Position position;
 
   public Room() {
   }
@@ -31,11 +31,11 @@ public class Room {
     return name;
   }
 
-  public void setPosition(PlaylistPosition position) {
+  public void setPosition(Position position) {
     this.position = position;
   }
 
-  public PlaylistPosition getPosition() {
+  public Position getPosition() {
     return position;
   }
 

@@ -1,7 +1,10 @@
-package de.nixis.web.disco.ws;
+package de.nixis.web.disco;
 
 import de.nixis.web.disco.json.PojoDecoder;
 import de.nixis.web.disco.json.PojoEncoder;
+import de.nixis.web.disco.ws.DefaultRoomHandler;
+import de.nixis.web.disco.ws.RoomAwareHandler;
+import de.nixis.web.disco.ws.RoomAwareWebSocketHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -19,16 +22,18 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
  *
  * <p>
  *
- * Accepts websockets on the url <code>http://localhost:8080/{ROOM_ID}/websocket</code>, whereas the room id
+ * Accepts websockets on the url <code>http://{HOST}:{PORT}/{ROOM_ID}/websocket</code>, whereas the room id
  * is the disco room a web socket connected to.
  *
  * @author nico.rehwaldt
  */
-public class WebSocketServer {
+public class DiscoServer {
 
   private final int port;
+  private final String host;
 
-  public WebSocketServer(int port) {
+  public DiscoServer(String host, int port) {
+    this.host = host;
     this.port = port;
   }
 
@@ -54,23 +59,13 @@ public class WebSocketServer {
         }
       });
 
-      final Channel ch = sb.bind(port).sync().channel();
-      System.out.println("silent disco backend started at http://localhost:" + port);
+      final Channel ch = sb.bind(host, port).sync().channel();
+      System.out.println("silent disco backend started at http://" + host + ":" + port);
 
       ch.closeFuture().sync();
     } finally {
       bossGroup.shutdownGracefully();
       workerGroup.shutdownGracefully();
     }
-  }
-
-  public static void main(String[] args) throws Exception {
-    int port;
-    if (args.length > 0) {
-      port = Integer.parseInt(args[0]);
-    } else {
-      port = 8080;
-    }
-    new WebSocketServer(port).run();
   }
 }

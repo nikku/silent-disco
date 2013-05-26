@@ -12,7 +12,8 @@ import org.junit.Test;
 
 import com.github.jmkgreen.morphia.Datastore;
 import com.github.jmkgreen.morphia.Key;
-import de.nixis.web.disco.db.entity.PlaylistPosition;
+import de.nixis.web.disco.db.entity.Position;
+import de.nixis.web.disco.db.entity.Position.Status;
 import de.nixis.web.disco.db.entity.Room;
 import de.nixis.web.disco.db.entity.Track;
 import de.nixis.web.disco.db.entity.User;
@@ -79,7 +80,7 @@ public class DatabaseTest {
 
     assertThat(roomAgain.getName()).isEqualTo(room.getName());
 
-    Track track = Disco.addTrack(new Track(), room.getName());
+    Track track = Disco.addTrack(new Track(), room.getName(), null);
 
     assertThat(track.getRoomName()).isEqualTo(room.getName());
 
@@ -95,9 +96,24 @@ public class DatabaseTest {
 
     Room roomPlaying = Disco.getRoom(room.getName());
 
-    PlaylistPosition position = roomPlaying.getPosition();
+    Position positionPlaying = roomPlaying.getPosition();
 
-    assertThat(position).isNotNull();
-    assertThat(position.getTrackId()).isEqualTo(firstTrack.getTrackId());
+    assertThat(positionPlaying).isNotNull();
+    assertThat(positionPlaying.getTrackId()).isEqualTo(firstTrack.getTrackId());
+    assertThat(positionPlaying.getStatus()).isEqualTo(Status.PLAYING);
+
+    Disco.stopPlay(firstTrack.getTrackId());
+
+    Disco.addTrack(new Track(), room.getName(), null);
+    
+    Room roomAfterStop = Disco.getRoom(room.getName());
+
+    Position positionAfterStop = roomAfterStop.getPosition();
+
+    assertThat(positionAfterStop).isNotNull();
+    assertThat(positionAfterStop.getTrackId()).isEqualTo(firstTrack.getTrackId());
+    assertThat(positionAfterStop.getStatus()).isEqualTo(Status.STOPPED);
+
+    assertThat(Disco.getTracks(room.getName())).hasSize(2);
   }
 }
