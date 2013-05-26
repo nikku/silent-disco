@@ -18,24 +18,23 @@
 
     <base href="." ws-base="ws://localhost:8080/" />
   </head>
-  <body ng-controller="DefaultController">
-
+  <body ng-controller="DefaultController" ng-cloak>
     <div>
       <div class="navbar navbar-fixed-top content-container">
-        <div class="navbar-inner" data-ng-controller="NavigationController">
+        <div class="navbar-inner" ng-controller="NavigationController">
           <div class="container-fluid">
             <a class="brand" href="#/">
               <span>silent disco</span>
             </a>
-            <span class="btn btn-small" ng-cloak>
-              <i data-ng-click="toggleMute()" data-ng-class="{ 'icon-volume-up': isMuted(), 'icon-volume-off': !isMuted() }"></i>
+            <span class="btn btn-small" ng-click="toggleMute()">
+              <i ng-class="{ 'icon-volume-up': isMuted(), 'icon-volume-off': !isMuted() }"></i>
             </span>
           </div>
         </div>
       </div>
 
       <!-- content view -->
-      <div data-ng-view>
+      <div ng-view>
         
       </div>
     </div>

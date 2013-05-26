@@ -1,11 +1,11 @@
-<div class="ctn-fixed" data-ng-switch="room.connected">
+<div class="ctn-fixed" ng-switch="room.connected">
 
   <!-- pre join ui -->
   <div class="ctn ctn-main" ng-switch-when="false">
     <!-- connect option -->
-    <div data-ng-controller="JoinRoomController">
-      <form data-ng-submit="join()">
-        <input type="text" placeholder="Your nickname" data-ng-model="name" style="margin-top: 10px" />
+    <div ng-controller="JoinRoomController">
+      <form ng-submit="join()">
+        <input type="text" placeholder="Your nickname" ng-model="name" style="margin-top: 10px" />
         <input class="btn" type="submit" value="join room" />
       </form>
     </div>
@@ -17,16 +17,16 @@
   <div class="ctn ctn-main" ng-switch-when="true">
 
     <!-- chat window -->
-    <div data-ng-controller="ChatController" class="chat">
+    <div ng-controller="ChatController" class="chat">
       <div class="messages ctn-scroll">
-        <div data-ng-repeat="message in messages">
-          <strong data-ng-show="message.author" data-ng-bind="message.author"></strong>
-          <span data-ng-bind="message.message"></span>
+        <div ng-repeat="message in messages">
+          <strong ng-show="message.author" ng-bind="message.author"></strong>
+          <span ng-bind="message.message"></span>
         </div>
       </div>
 
       <form ng-submit="send(input)">
-        <textarea data-ng-model="input" placeholder="Type a message" data-ng-keyup="isEnter($event) && send(input)"></textarea>
+        <textarea ng-model="input" placeholder="Type a message" ng-keyup="isEnter($event) && send(input)"></textarea>
       </form>
     </div>
   </div>
@@ -34,29 +34,29 @@
   <div class="ctn ctn-playlist" ng-switch-when="true">
     <!-- track list -->
     <div class="tracks ctn-scroll" 
-         data-ng-controller="TrackListController" 
-         data-ui-sortable="{ placeholder: 'track-dropable', opacity: '0.8', axis: 'y' }"
-         data-ng-model="tracks">
+         ng-controller="TrackListController" 
+         ui-sortable="{ placeholder: 'track-dropable', opacity: '0.8', axis: 'y' }"
+         ng-model="tracks">
       <div class="track"
-           data-ng-repeat="track in tracks"
-           data-ng-class="{ active: isPlaying(track) }">
+           ng-repeat="track in tracks"
+           ng-class="{ active: isPlaying(track) }">
 
-        <img data-ng-src="{{ track.artwork_url }}" />
+        <img ng-src="{{ track.artwork_url }}" />
 
         <div class="title">
-          <a target="_blank" data-ng-href="{{ track.user.permalink_url }}" class="author">{{ track.user.username }}</a>
+          <a target="_blank" ng-href="{{ track.user.permalink_url }}" class="author">{{ track.user.username }}</a>
           -
-          <a target="_blank" data-ng-href="{{ track.permalink_url }}" class="title">{{ track.title }}</a>
+          <a target="_blank" ng-href="{{ track.permalink_url }}" class="title">{{ track.title }}</a>
 
-          <div class="position" data-ng-switch="isPlaying(track)">
-            <span data-ng-switch-when="false">
+          <div class="position" ng-switch="isPlaying(track)">
+            <span ng-switch-when="false">
               <span>{{ track.duration | time }}</span>
-              <button class="btn btn-small" data-ng-click="start(track)"><i class="icon-play"></i></button>
+              <button class="btn btn-small" ng-click="start(track)"><i class="icon-play"></i></button>
             </span>
 
-            <span data-ng-switch-when="true">
+            <span ng-switch-when="true">
               <span>{{ track.position | time }} / {{ track.duration | time }}</span>
-              <button class="btn btn-small" data-ng-click="stop(track)"><i class="icon-stop"></i></button>
+              <button class="btn btn-small" ng-click="stop(track)"><i class="icon-stop"></i></button>
             </span>
           </div>
         </div>
@@ -66,23 +66,23 @@
 
   <div class="ctn ctn-side" ng-switch-when="true">
     <!-- participants list -->
-    <div class="participants" data-ng-controller="ParticipantListController">
-      <div class="participant" data-ng-class="{ 'sc-user': user.sc }" data-ng-repeat="user in participants">
-        <div data-ng-switch="user.sc">
-          <div data-ng-switch-when="true">
-            <img data-ng-src="{{ user.avatar_url }}"/>
-            <a target="_blank" data-ng-href="{{ user.permalink_url }}">{{ user.username }}</a>
+    <div class="participants" ng-controller="ParticipantListController">
+      <div class="participant" ng-class="{ 'sc-user': user.sc }" ng-repeat="user in participants">
+        <div ng-switch="user.sc">
+          <div ng-switch-when="true">
+            <img ng-src="{{ user.avatar_url }}"/>
+            <a target="_blank" ng-href="{{ user.permalink_url }}">{{ user.username }}</a>
 
             <div class="btn-group options">
-              <a class="dropdown-toggle" data-toggle="dropdown">
+              <a class="dropdown-toggle" toggle="dropdown">
                 <i class="icon-user"></i>
               </a>
               <ul class="dropdown-menu pull-right">
-                <li><a href data-ng-click="addFavourites(user)">Add Favourites</a></li>
+                <li><a href ng-click="addFavourites(user)">Add Favourites</a></li>
               </ul>
             </div>
           </div>
-          <div data-ng-switch-default>
+          <div ng-switch-default>
             <img src="../assets/img/app/no_avatar.png" />
             {{ user.username }}
           </div>
