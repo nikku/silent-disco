@@ -47,6 +47,8 @@ ngDefine('disco.pages', [
           user.sc = true;
         }
 
+        user.name = name;
+
         $scope.$apply(function () {
           room.participants.push(user);
         });
@@ -58,7 +60,7 @@ ngDefine('disco.pages', [
       var idx = -1;
 
       for (var i = 0, p; !!(p = participants[i]); i++) {
-        if (p.username == name) {
+        if (p.name == name) {
           idx = i;
           break;
         }
@@ -68,6 +70,23 @@ ngDefine('disco.pages', [
         participants.splice(idx, 1);
       }
     }
+
+    room.socket.on('__open', function() {
+
+      console.log("SOCKET OPENED");
+    });
+
+    room.socket.on('__openTimeout', function() {
+      console.log("OPEN TIMED OUT");
+    });
+
+    room.socket.on('__close', function() {
+      console.log("SOCKET CLOSED");
+    });
+
+    room.socket.on('__error', function(e) {
+      console.log("SOCKET ERROR", e);
+    });
 
     room.socket.on('channelJoined', function(data) {
       room.connected = true;
@@ -102,16 +121,18 @@ ngDefine('disco.pages', [
    * Controller that handles the input field and 
    * chat area.
    */
-  var ChatController = function($scope, Sounds) {
+  var ChatController = function($scope, Sounds, Notifications) {
 
     var room = $scope.room;
     var messages = $scope.messages = room.messages;
 
     room.socket.on('text', function(text) {
       messages.push(text);
+
+      Notifications.create(null, text.author + ' says', text.message);
     });
 
-    $scope.send = function(input) {
+    $scope.send = function(input, event) {
       if (!input) {
         return;
       }
@@ -130,14 +151,28 @@ ngDefine('disco.pages', [
 
       room.socket.emit('text', msg);
       $scope.input = input = '';
+
+      event.preventDefault();
+      event.stopPropagation();
     };
 
     $scope.isEnter = function(e) {
       return e.keyCode == '13' && !e.shiftKey;
     };
+
+    $scope.$watch('messages.length', function(newValue) {
+      var lastMsg = $(".chat").find(".message:last-child");
+      if (!lastMsg.length) {
+        return;
+      }
+
+      $(".messages").animate({
+         scrollTop: lastMsg.offset().top
+      }, 200);
+    });
   };
 
-  ChatController.$inject = [ '$scope', 'Sounds' ];
+  ChatController.$inject = [ '$scope', 'Sounds', 'Notifications' ];
 
 
   /**
@@ -279,7 +314,7 @@ ngDefine('disco.pages', [
   /**
    * Controller that handles joining a room
    */
-  var JoinRoomController = function JoinRoomController($scope) {
+  var JoinRoomController = function JoinRoomController($scope, $location) {
 
     var room = $scope.room;
 
@@ -290,9 +325,16 @@ ngDefine('disco.pages', [
 
       room.socket.emit('channelJoin', { participantName: $scope.name });
     };
+
+    // shortcut to join channel with a given name
+    $scope.name = $location.search().user;
+
+    if ($scope.name) {
+      $scope.join();
+    }
   };
 
-  JoinRoomController.$inject = [ '$scope' ];
+  JoinRoomController.$inject = [ '$scope', '$location' ];
 
 
   var RouteConfig = function($routeProvider) {

@@ -17,7 +17,13 @@ ngDefine('disco', [
 
   DefaultController.$inject = [ '$scope' ];
 
-  var NavigationController = function NavigationController($scope, Sounds) {
+  var NavigationController = function NavigationController($scope, Sounds, Notifications) {
+
+    $scope.openAbout = function() {
+      console.log($("#about-box"));
+
+      $("#about-box").modal('show');
+    };
 
     $scope.toggleMute = function () {
       Sounds.toggleMute();
@@ -26,9 +32,17 @@ ngDefine('disco', [
     $scope.isMuted = function() {
       return Sounds.muted();
     };
+
+    $scope.toggleNotifications = function () {
+      Notifications.toggle();
+    };
+
+    $scope.isNotificationsEnabled = function() {
+      return Notifications.enabled();
+    };
   };
 
-  NavigationController.$inject = [ '$scope', 'Sounds'];
+  NavigationController.$inject = [ '$scope', 'Sounds', 'Notifications' ];
 
   var ModuleConfig = function($routeProvider, UriProvider) {
     $routeProvider.otherwise({ redirectTo: '/room/lobby' });

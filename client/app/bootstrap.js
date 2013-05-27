@@ -16,6 +16,7 @@
       'jquery' : 'assets/vendor/jquery/jquery-1.9.1.min',
       'jquery-ui' : 'assets/vendor/jquery-ui/js/jquery-ui-1.10.3.custom' + MINIFIED,
       'jquery-mousewheel' : 'assets/vendor/jquery/mousewheel/jquery.mousewheel' + MINIFIED,
+      'bootstrap' : 'assets/vendor/bootstrap/js/bootstrap-modal' + MINIFIED,
       'angular' : 'assets/vendor/angular/angular' + MINIFIED,
       'angular-resource' : 'assets/vendor/angular/angular-resource' + MINIFIED,
       'angular-bootstrap' : 'assets/vendor/angular/angular-bootstrap' + MINIFIED,
@@ -29,7 +30,8 @@
       'sound-cloud': { exports: 'SC' },
       'jquery-mousewheel' : { deps: [ 'jquery' ] },
       'jquery-custom-scrollbar' : { deps: [ 'jquery-mousewheel' ] },
-      'jquery-ui' : { deps: [ 'jquery' ] }
+      'jquery-ui' : { deps: [ 'jquery' ] },
+      'bootstrap' : { deps: [ 'jquery' ] }
     },
     packages: [
       { name: 'disco', location: 'app', main: 'disco' },
@@ -38,7 +40,7 @@
     ]
   });
 
-  require([ 'angular', 'sound-cloud-client', 'ngDefine' ], function(angular, SC) {
+  require([ 'angular', 'bootstrap', 'sound-cloud-client', 'ngDefine' ], function(angular, SC) {
 
     require([ APP_NAME, 'domReady!' ], function() {
       angular.bootstrap(document, [ APP_NAME ]);

@@ -19,14 +19,18 @@
     <!-- chat window -->
     <div ng-controller="ChatController" class="chat">
       <div class="messages ctn-scroll">
-        <div ng-repeat="message in messages">
+        <div ng-repeat="message in messages" class="message">
           <strong ng-show="message.author" ng-bind="message.author"></strong>
           <span ng-bind="message.message"></span>
         </div>
       </div>
 
       <form ng-submit="send(input)">
-        <textarea ng-model="input" placeholder="Type a message" ng-keyup="isEnter($event) && send(input)"></textarea>
+        <textarea ng-model="input" placeholder="Type message or song url" ng-keydown="isEnter($event) && send(input, $event)"></textarea>
+        <div class="note">
+          Messages will be sent to all members of this room. 
+          Links to songs on <a target="_blank" href="https://soundcloud.com">SoundCloud</a> will be resolved and added to playlist.
+        </div>
       </form>
     </div>
   </div>

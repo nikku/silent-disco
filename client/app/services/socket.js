@@ -29,19 +29,24 @@ ngDefine('disco.services', [
         }
       }
 
-      function receive(data, e) {
+      function receiveObj(obj, e) {
 
-        var envelope = JSON.parse(data);
 
-        for (var key in envelope) {
+        for (var key in obj) {
 
           var typeCallbacks = getCallbacks(key);
-          var message = envelope[key];
+          var message = obj[key];
 
           for (var i = 0; i < typeCallbacks.length; i++) {
             typeCallbacks[i].apply(null, [ message, e, key ]);
           }
         }
+      }
+
+      function receive(data, e) {
+
+        var envelope = JSON.parse(data);
+        receiveObj(envelope, e);
       }
 
       function getCallbacks(type) {
@@ -55,8 +60,12 @@ ngDefine('disco.services', [
 
       function initSocket(socket, connection) {
 
-        connection.onopen = function() {
+        connection.onopen = function(e) {
           opened = true;
+
+          $rootScope.$apply(function() {
+            receiveObj({ '__open' : { } }, e);
+          });
 
           while (outgoing.length) {
             var envelope = outgoing.shift();
@@ -65,20 +74,31 @@ ngDefine('disco.services', [
         };
 
         // Log errors
-        connection.onerror = function (error) {
-          console.log("Connection error: ", error);
-          socket.emit('error', data);
+        connection.onerror = function(e) {
+          $rootScope.$apply(function() {
+            receiveObj({ '__error' : { } }, e);
+          });
+        };
+
+        connection.onclose = function(e) {
+          // was previously opened?
+          var closed = opened;
+
+          opened = false;
+
+          $rootScope.$apply(function() {
+            var envelope = {};
+            envelope[closed ? '__close' : '__openTimeout'] = {};
+
+            receiveObj(envelope, e);
+          });
         };
 
         // Log messages from the server
         connection.onmessage = function (e) {
-          try {
-            $rootScope.$apply(function() {
-              receive(e.data);
-            });
-          } catch (ex) {
-            console.log(ex);
-          }
+          $rootScope.$apply(function() {
+            receive(e.data);
+          });
         };
       }
 

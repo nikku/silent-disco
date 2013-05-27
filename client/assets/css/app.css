@@ -79,13 +79,29 @@ html, body {
   overflow: auto;
 }
 
-.ctn-main {
-  width: 50%;
+.navbar .brand {
+  margin-left: 5px;
+  background-color: #58b123;
+
+  padding: 10px 20px 10px;
+  background: #58b123;
+  background: -webkit-linear-gradient(#58b123,#4ea917);
+  background: linear-gradient(#58b123,#4ea917);
+
+  color: #F7F7F7;
+  text-shadow: 0 1px 0 #18750B;
+
+  box-shadow: -1px 0 0 rgba(255, 255, 255, .08);
+  border-color: rgba(173, 73, 0, .7) rgba(255, 255, 255, .15) #AD4900;
 }
 
-.ctn-main > div {
-  height: 100%;
-  position: relative;
+.navbar .nav a {
+  border: 1px solid rgba(0,0,0, .07);
+  border-width: 0 1px;
+}
+
+.ctn-main {
+  width: 50%;
 }
 
 .ctn-side {
@@ -97,6 +113,11 @@ html, body {
 .ctn-playlist {
   width: 34%;
   float: right;
+}
+
+.chat {
+  height: 100%;
+  position: relative;
 }
 
 .chat form {
@@ -111,6 +132,17 @@ html, body {
   width: 100%;
   max-width: 100%;
   min-width: 100%;
+  margin-bottom: 5px;
+}
+
+.chat .note {
+  font-size: 0.80em;
+  color: #AAA;
+  margin-bottom: 10px;
+}
+
+.chat .note:hover {
+  color: #333;
 }
 
 .messages {
@@ -118,7 +150,7 @@ html, body {
   left: 10px;
   right: 10px;
   top: 10px;
-  bottom: 70px;
+  bottom: 90px;
 }
 
 .tracks {
@@ -227,5 +259,7 @@ html, body {
 }
 
 .sc-user, .sc-user img, .sc-user .options:hover {
-  border-color: #f60;
+  border-color: #58b123;
 }
+
+.disabled { opacity: 0.2; }

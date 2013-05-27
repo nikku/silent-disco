@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>silent disco</title>
+    <title>silent disco - distributed sounds</title>
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <meta name="author" content="Nico Rehwaldt" />
 
-    <link href="../assets/css/app.css" rel="stylesheet" />
     <link href="../assets/vendor/bootstrap/css/bootstrap.css" rel="stylesheet" />
+    <link href="../assets/css/app.css" rel="stylesheet" />
 
     <link rel="shortcut icon" type="image/x-icon" href="../assets/img/favicon.ico" />
 
@@ -26,9 +26,17 @@
             <a class="brand" href="#/">
               <span>silent disco</span>
             </a>
-            <span class="btn btn-small" ng-click="toggleMute()">
-              <i ng-class="{ 'icon-volume-up': isMuted(), 'icon-volume-off': !isMuted() }"></i>
-            </span>
+            <a title="Toggle mute" class="btn btn-small" ng-click="toggleMute()">
+              <i ng-class="{ 'icon-volume-up': !isMuted(), 'icon-volume-off': isMuted() }"></i>
+            </a>
+            <a title="Toggle desktop notifications" class="btn btn-small" ng-click="toggleNotifications()">
+              <i class="icon-comment" ng-class="{ 'disabled' : !isNotificationsEnabled() }"></i>
+            </a>
+            <ul class="nav">
+              <li>
+                <a href ng-class="{ active: aboutOpen }" ng-click="openAbout()">About</a>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -38,5 +46,7 @@
         
       </div>
     </div>
+
+    <div ng-include="'common/about.html'"></div>
   </body>
 </html>
