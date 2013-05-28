@@ -83,9 +83,11 @@ public class DefaultRoomHandler extends AbstractRoomHandler<Base> {
       StartTrack startTrack = (StartTrack) message;
 
       String trackId = startTrack.getTrackId();
-      Disco.startPlay(trackId);
+      int position = startTrack.getPosition();
 
-      sendAll(ctx, ctx.channel(), new TrackStarted(trackId, participant));
+      Disco.startPlay(trackId, position);
+
+      sendAll(ctx, ctx.channel(), new TrackStarted(trackId, position, participant));
     } else
     if (message instanceof StopTrack) {
       StopTrack stopTrack = (StopTrack) message;

@@ -92,7 +92,7 @@ public class DatabaseTest {
 
     assertThat(firstTrack.getTrackId()).isEqualTo(track.getTrackId());
 
-    Disco.startPlay(firstTrack.getTrackId());
+    Disco.startPlay(firstTrack.getTrackId(), 0);
 
     Room roomPlaying = Disco.getRoom(room.getName());
 
@@ -105,7 +105,7 @@ public class DatabaseTest {
     Disco.stopPlay(firstTrack.getTrackId());
 
     Disco.addTrack(new Track(), room.getName(), null);
-    
+
     Room roomAfterStop = Disco.getRoom(room.getName());
 
     Position positionAfterStop = roomAfterStop.getPosition();

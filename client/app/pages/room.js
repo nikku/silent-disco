@@ -210,6 +210,16 @@ ngDefine('disco.pages', [
       }
     }
 
+    function startTrack(track, position) {
+      Sounds.playTrack(track, position || 0);
+      $scope.current = track;
+    }
+
+    function stopTrack(track) {
+      Sounds.stop(track);
+      $scope.current = null;
+    }
+
     room.socket.on('trackAdded', function(trackAdded) {
       var track = trackAdded.track;
       var position = trackAdded.position;
@@ -226,7 +236,7 @@ ngDefine('disco.pages', [
 
       var track = findTrack({ trackId: trackId });
       if (track) {
-        Sounds.playTrack(track);
+        startTrack(track, message.position);
       }
     });
 
@@ -249,19 +259,18 @@ ngDefine('disco.pages', [
       }
     });
 
-    function startTrack(track) {
-      Sounds.playTrack(track);
-      $scope.current = track;
-    }
+    $scope.skip = function(track, e) {
+      var percent = e.offsetX / $(e.currentTarget).width();
+      var position = Math.round(percent * track.duration);
 
-    function stopTrack(track) {
-      Sounds.stop(track);
-      $scope.current = null;
-    }
+      startTrack(track, position);
+
+      room.socket.emit('startTrack', { trackId: track.trackId, position: position });
+    };
 
     $scope.start = function(track) {
       startTrack(track);
-      room.socket.emit('startTrack', { trackId: track.trackId });
+      room.socket.emit('startTrack', { trackId: track.trackId, position: 0 });
     };
 
     $scope.stop = function(track) {

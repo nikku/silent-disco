@@ -37,6 +37,7 @@
 
   <div class="ctn ctn-playlist" ng-class="{ 'playing': current }" ng-switch-when="true" ng-controller="TrackListController">
 
+    <!-- current track -->
     <div class="current-track" ng-if="current">
 
       <img ng-src="{{ current.artwork_url }}" />
@@ -54,12 +55,13 @@
         <div class="track-progress">
           <span class="current">{{ current.position | time }}</span>
           <span class="total">{{ current.duration | time }}</span>
-          <div class="progress progress-info">
+          <div class="progress progress-info" ng-click="skip(current, $event)">
             <div class="bar" style="width: {{ (current.position / current.duration) * 100 }}%"></div>
           </div>
         </div>
       </div>
     </div>
+
     <!-- track list -->
     <div class="tracks ctn-scroll" 
          ui-sortable="{ placeholder: 'track-dropable', opacity: '0.8', axis: 'y' }"

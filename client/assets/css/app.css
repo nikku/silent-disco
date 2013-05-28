@@ -342,4 +342,5 @@ html, body {
   height: 6px;
   border-radius: 3px;
   margin-bottom: 5px;
+  cursor: pointer;
 }

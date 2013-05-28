@@ -6,7 +6,19 @@ package de.nixis.web.disco.dto;
  */
 public class TrackStarted extends TrackOperation {
 
-  public TrackStarted(String trackId, String user) {
+  private int position;
+
+  public TrackStarted(String trackId, int position, String user) {
     super(trackId, user);
+
+    this.position = position;
+  }
+
+  public int getPosition() {
+    return position;
+  }
+
+  public void setPosition(int position) {
+    this.position = position;
   }
 }

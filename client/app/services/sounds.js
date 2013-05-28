@@ -36,7 +36,26 @@ ngDefine('disco.services', [
         this.current = sound;
       },
 
-      playTrack: function(track, callback) {
+      playTrack: function(track, position, callback) {
+        var current = this.current;
+
+        if (current && current.track == track) {
+          current.stream.setPosition(position);
+          if (callback) {
+            callback.apply(null, [ current.stream ]);
+          }
+        } else {
+          this.loadAndPlayTrack(track, function(stream) {
+            stream.setPosition(position);
+
+            if (callback) {
+              callback.apply(null, [ stream ]);
+            }
+          });
+        }
+      },
+
+      loadAndPlayTrack: function(track, callback) {
         var self = this;
 
         var options = {

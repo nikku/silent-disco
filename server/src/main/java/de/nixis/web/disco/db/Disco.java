@@ -49,12 +49,12 @@ public class Disco {
 
     Room room = getRoomByNameQuery(track.getRoomName()).get();
 
-    room.setPosition(new Position(track.getTrackId(), Status.STOPPED, new Date()));
+    room.setPosition(new Position(track.getTrackId(), 0, Status.STOPPED, new Date()));
 
     getDatastore().merge(room);
   }
 
-  public static void startPlay(String trackId) {
+  public static void startPlay(String trackId, int position) {
 
     Track track = getTrack(trackId);
     if (track == null) {
@@ -63,7 +63,7 @@ public class Disco {
 
     Room room = getRoomByNameQuery(track.getRoomName()).get();
 
-    room.setPosition(new Position(track.getTrackId(), Status.PLAYING, new Date()));
+    room.setPosition(new Position(track.getTrackId(), position, Status.PLAYING, new Date()));
 
     getDatastore().merge(room);
   }
