@@ -112,6 +112,7 @@ html, body {
 
 .ctn-playlist {
   width: 34%;
+  position: relative;
   float: right;
 }
 
@@ -153,73 +154,9 @@ html, body {
   bottom: 90px;
 }
 
-.tracks {
-  height: 100%;
-}
-
-.track {
-  margin: 0;
-  padding: 0;
-  line-height: 40px;
-  border-bottom: solid 1px #CCC;
-
-  background-color: #FCFCFC;
-}
-
-.track.active {
-  background-color: #F0F0F0;
-  border-top: solid 1px #CCC;
-  border-bottom: solid 2px #CCC;
-}
-
-.track .title {
-  margin: 0 5px 0 5px;
-  overflow: hidden;
-}
-
-.track img {
-  height: 40px;
-  margin-right: 10px;
-  float: left;
-}
-
-.track .position {
-  float: right;
-  line-height: 40px;
-}
-
-.track-dropable {
-  margin: 0;
-  padding: 0;
-  height: 4px;
-  background-color: #CCA300;
-  border-bottom: solid 1px #CCC;
-}
-
 /**
- * Start room
+ * Participant column
  */
-.form-signin {
-  max-width: 300px;
-  padding: 19px 29px 29px;
-  margin: 60px auto 20px;
-  background-color: #fff;
-  border: 1px solid #e5e5e5;
-  border-radius: 5px;
-  box-shadow: 0 1px 2px rgba(0,0,0,.05);
-}
-.form-signin .form-signin-heading,
-.form-signin .checkbox {
-  margin-bottom: 10px;
-}
-.form-signin input[type="text"],
-.form-signin input[type="password"] {
-  font-size: 16px;
-  height: auto;
-  margin-bottom: 15px;
-  padding: 7px 9px;
-}
-
 .participant {
   position: relative;
   margin: 10px;
@@ -263,3 +200,146 @@ html, body {
 }
 
 .disabled { opacity: 0.2; }
+
+
+/**
+ * Track column
+ */
+
+.tracks {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.playing .tracks {
+  top: 82px;
+  border-top: solid 1px #CCC;
+}
+
+.track, .current-track {
+  position: relative;
+}
+
+.current-track {
+  height: 80px;
+
+  background-image: #DDD;
+  background-image: linear-gradient(to bottom, #DDD, #BBB);
+
+  border-bottom: solid 2px #fff;
+}
+
+.track {
+  height: 34px;
+
+  border-bottom: solid 1px #CCC;
+  background-color: #FCFCFC;
+}
+
+.tracks .active {
+  background-color: #F0F0F0;
+  border-top: solid 1px #CCC;
+  border-bottom: solid 2px #CCC;
+}
+
+.tracks .active:first-child {
+  border-top: 0 none;
+}
+
+.track-dropable {
+  margin: 0;
+  padding: 0;
+  height: 4px;
+  background-color: #CCA300;
+  border-bottom: solid 1px #CCC;
+}
+
+.current-track img, .track img {
+  position: absolute;
+  left: 5px;
+
+  padding: 1px;
+  border: solid 1px #AAA;
+  background: #FFF;
+}
+
+.current-track img { width: 66px; height: 66px; top: 5px; bottom: 5px; }
+.track img { width: 26px; height: 26px; top: 2px; bottom: 2px; }
+
+.current-track .info {
+  position: absolute;
+  left: 80px;
+  top: 5px;
+  bottom: 5px;
+  right: 5px;
+}
+
+.track .info {
+  position: absolute;
+  line-height: 35px;
+
+  left: 40px;
+  top: 0;
+  bottom: 0;
+  right: 5px;
+}
+
+.track .title {
+  position: absolute;
+  left: 0;
+  right: 100px;
+  top: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+
+.track .controls {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+.current-track .title, .current-track .controls {
+  line-height: 28px;
+  display: inline-block;
+}
+
+.current-track .controls {
+  float: right;
+}
+
+.track-progress {
+  position: relative;
+}
+
+.track-progress {
+  padding-top: 20px;
+
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+.track-progress .current {
+  position: absolute;
+
+  left: 0;
+  top: 0;
+}
+
+.track-progress .total {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.track-progress .progress {
+  height: 6px;
+  border-radius: 3px;
+  margin-bottom: 5px;
+}

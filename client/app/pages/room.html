@@ -35,10 +35,33 @@
     </div>
   </div>
 
-  <div class="ctn ctn-playlist" ng-switch-when="true">
+  <div class="ctn ctn-playlist" ng-class="{ 'playing': current }" ng-switch-when="true" ng-controller="TrackListController">
+
+    <div class="current-track" ng-if="current">
+
+      <img ng-src="{{ current.artwork_url }}" />
+
+      <div class="info">
+        <div class="title">
+          <a target="_blank" ng-href="{{ current.user.permalink_url }}">{{ current.user.username }}</a>
+          -
+          <a target="_blank" ng-href="{{ current.permalink_url }}">{{ current.title }}</a>
+        </div>
+        <div class="controls">
+          <button class="btn btn-small" ng-click="stop(current)"><i class="icon-stop"></i></button>
+        </div>
+
+        <div class="track-progress">
+          <span class="current">{{ current.position | time }}</span>
+          <span class="total">{{ current.duration | time }}</span>
+          <div class="progress progress-info">
+            <div class="bar" style="width: {{ (current.position / current.duration) * 100 }}%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- track list -->
     <div class="tracks ctn-scroll" 
-         ng-controller="TrackListController" 
          ui-sortable="{ placeholder: 'track-dropable', opacity: '0.8', axis: 'y' }"
          ng-model="tracks">
       <div class="track"
@@ -47,21 +70,23 @@
 
         <img ng-src="{{ track.artwork_url }}" />
 
-        <div class="title">
-          <a target="_blank" ng-href="{{ track.user.permalink_url }}" class="author">{{ track.user.username }}</a>
-          -
-          <a target="_blank" ng-href="{{ track.permalink_url }}" class="title">{{ track.title }}</a>
-
-          <div class="position" ng-switch="isPlaying(track)">
-            <span ng-switch-when="false">
-              <span>{{ track.duration | time }}</span>
-              <button class="btn btn-small" ng-click="start(track)"><i class="icon-play"></i></button>
-            </span>
-
-            <span ng-switch-when="true">
-              <span>{{ track.position | time }} / {{ track.duration | time }}</span>
-              <button class="btn btn-small" ng-click="stop(track)"><i class="icon-stop"></i></button>
-            </span>
+        <div class="info">
+          <div class="title">
+            <a target="_blank" ng-href="{{ track.user.permalink_url }}">{{ track.user.username }}</a>
+            -
+            <a target="_blank" ng-href="{{ track.permalink_url }}">{{ track.title }}</a>
+          </div>
+          <div class="controls">
+            <div class="position" ng-switch="isPlaying(track)">
+              <span ng-switch-when="false">
+                <span>{{ track.duration | time }}</span>
+                <button class="btn btn-small" ng-click="start(track)"><i class="icon-play"></i></button>
+              </span>
+              <span ng-switch-when="true">
+                <span>{{ track.position | time }} / {{ track.duration | time }}</span>
+                <button class="btn btn-small" ng-click="stop(track)"><i class="icon-stop"></i></button>
+              </span>
+            </div>
           </div>
         </div>
       </div>

@@ -249,18 +249,28 @@ ngDefine('disco.pages', [
       }
     });
 
-    $scope.start = function(track) {
+    function startTrack(track) {
       Sounds.playTrack(track);
+      $scope.current = track;
+    }
+
+    function stopTrack(track) {
+      Sounds.stop(track);
+      $scope.current = null;
+    }
+
+    $scope.start = function(track) {
+      startTrack(track);
       room.socket.emit('startTrack', { trackId: track.trackId });
     };
 
     $scope.stop = function(track) {
-      Sounds.stop(track);
+      stopTrack(track);
       room.socket.emit('stopTrack', { trackId: track.trackId });
     };
 
     $scope.isPlaying = function(track) {
-      return Sounds.isPlaying(track);
+      return $scope.current == track;
     };
 
     $scope.$on('sounds.finished', function(e, track) {
@@ -272,7 +282,7 @@ ngDefine('disco.pages', [
       var nextTrack = tracks[idx + 1];
 
       if (nextTrack) {
-        Sounds.playTrack(nextTrack);
+        startTrack(nextTrack);
       }
     });
   };
