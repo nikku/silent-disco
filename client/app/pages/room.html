@@ -96,27 +96,26 @@
   </div>
 
   <div class="ctn ctn-side" ng-switch-when="true">
+
     <!-- participants list -->
     <div class="participants" ng-controller="ParticipantListController">
       <div class="participant" ng-class="{ 'sc-user': user.sc }" ng-repeat="user in participants">
-        <div ng-switch="user.sc">
-          <div ng-switch-when="true">
-            <img ng-src="{{ user.avatar_url }}"/>
-            <a target="_blank" ng-href="{{ user.permalink_url }}">{{ user.username }}</a>
+        <img ng-if="user.sc" ng-src="{{ user.avatar_url }}"/>
+        <img ng-if="!user.sc" src="../assets/img/app/no_avatar.png" />
 
-            <div class="btn-group options">
-              <a class="dropdown-toggle" toggle="dropdown">
-                <i class="icon-user"></i>
-              </a>
-              <ul class="dropdown-menu pull-right">
-                <li><a href ng-click="addFavourites(user)">Add Favourites</a></li>
-              </ul>
-            </div>
-          </div>
-          <div ng-switch-default>
-            <img src="../assets/img/app/no_avatar.png" />
-            {{ user.username }}
-          </div>
+        <span>
+          {{ user.name }}
+          <span ng-if="user.sc">(<a target="_blank" ng-href="{{ user.permalink_url }}">{{ user.username }}</a>)</span>
+        </span>
+
+        <div class="btn-group options">
+          <a class="dropdown-toggle" toggle="dropdown">
+            <i class="icon-user"></i>
+          </a>
+          <ul class="dropdown-menu pull-right">
+            <li ng-if="user.sc"><a href ng-click="addFavorites(user)">Add Favorites</a></li>
+            <li ng-if="!user.sc"><a href ng-click="connectToSoundCloud(user)">Connect to SoundCloud</a></li>
+          </ul>
         </div>
       </div>
     </div>

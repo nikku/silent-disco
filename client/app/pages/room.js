@@ -40,19 +40,7 @@ ngDefine('disco.pages', [
     };
 
     function addParticipant(name) {
-      SC.get('/users/' + name, function(user, error) {
-        if (error && error.message.indexOf('404') != -1) {
-          user = { username: name, sc: false };
-        } else {
-          user.sc = true;
-        }
-
-        user.name = name;
-
-        $scope.$apply(function () {
-          room.participants.push(user);
-        });
-      });
+      room.participants.push({ name: name, sc: false });
     }
 
     function removeParticipant(name) {
@@ -307,7 +295,21 @@ ngDefine('disco.pages', [
     var room = $scope.room;
     var participants = $scope.participants = room.participants;
 
-    $scope.addFavourites = function(user) {
+
+    $scope.connectToSoundCloud = function(user) {
+
+      SC.get('/users/' + user.name, function(usr, error) {
+        if (error && error.message.indexOf('404') != -1) {
+          // well, no user ...
+        } else {
+          angular.extend(user, usr, { sc: true });
+        }
+
+        $scope.$apply();
+      });
+    };
+
+    $scope.addFavorites = function(user) {
       SC.get('/users/' + user.id + '/favorites', function (favorites, error) {
         room.messages.push({ message: 'Adding ' + favorites.length + ' favorites of ' + user.username });
 
