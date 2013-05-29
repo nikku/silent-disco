@@ -3,7 +3,7 @@ ngDefine('disco.services', [
   'sound-cloud'
 ], function(module, angular, SC) {
 
-  module.factory('Sounds', function($rootScope) {
+  module.factory('Sounds', function($rootScope, $timeout) {
 
     var service = function() { };
 
@@ -29,29 +29,77 @@ ngDefine('disco.services', [
           stream.mute();
         }
 
+        this.current = sound;
+
         if (callback) {
           callback.apply(this, [ stream ]);
         }
-
-        this.current = sound;
       },
 
       playTrack: function(track, position, callback) {
+        var self = this;
         var current = this.current;
 
-        if (current && current.track == track) {
-          current.stream.setPosition(position);
-          if (callback) {
-            callback.apply(null, [ current.stream ]);
-          }
+        if (current && current.stream && current.track == track) {
+          this.setPosition(track, position, callback);
         } else {
           this.loadAndPlayTrack(track, function(stream) {
-            stream.setPosition(position);
-
-            if (callback) {
-              callback.apply(null, [ stream ]);
-            }
+            self.setPosition(track, position, callback);
           });
+        }
+      },
+
+      /**
+       * Sets position of a stream, taking into account the preloading 
+       * time that may be required.
+       */
+      setPosition: function(track, position, callback) {
+        var self = this,
+            current = this.current,
+            stream = current ? current.stream : null;
+
+        function changed() {
+          return current != self.current ||
+                 position != current.targetPosition;
+        }
+
+        function done() {
+          current.targetPosition = null;
+
+          if (callback) {
+            callback.apply(null, [ stream ]);
+          }
+        }
+
+        // save target position to recognize changes
+        // (parallel skips)
+        current.targetPosition = position;
+
+        if (changed()) {
+          return;
+        }
+
+        if (!position) {
+          done();
+        } else {
+          skipTo(position);
+        }
+
+        function skipTo(pos) {
+
+          if (changed()) {
+            return;
+          }
+
+          stream.setPosition(pos);
+
+          if (Math.abs(stream.position - pos) < 3000) {
+            done();
+          } else {
+            $timeout(function() {
+              skipTo(pos + 2000);
+            }, 2000);
+          }
         }
       },
 
