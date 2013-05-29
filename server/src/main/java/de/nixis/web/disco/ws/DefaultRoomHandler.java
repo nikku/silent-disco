@@ -77,7 +77,7 @@ public class DefaultRoomHandler extends AbstractRoomHandler<Base> {
 
       Disco.addTrack(track, ctx.getRoomName(), position);
 
-      sendAll(ctx, new TrackAdded(track, position));
+      sendAll(ctx, new TrackAdded(track, position, participant));
     } else
     if (message instanceof StartTrack) {
       StartTrack startTrack = (StartTrack) message;

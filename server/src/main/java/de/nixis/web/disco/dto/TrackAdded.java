@@ -12,9 +12,12 @@ public class TrackAdded extends Base {
 
   private TrackPosition position;
 
-  public TrackAdded(Track track, TrackPosition position) {
+  private String user;
+
+  public TrackAdded(Track track, TrackPosition position, String user) {
     this.track = track;
     this.position = position;
+    this.user = user;
   }
 
   public void setTrack(Track track) {
@@ -31,5 +34,13 @@ public class TrackAdded extends Base {
 
   public void setPosition(TrackPosition position) {
     this.position = position;
+  }
+
+  public void setUser(String user) {
+    this.user = user;
+  }
+
+  public String getUser() {
+    return user;
   }
 }

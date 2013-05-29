@@ -125,19 +125,26 @@ ngDefine('disco.pages', [
         return;
       }
 
-      var msg = { message: input, author: 'you' };
+      function postMessage() {
+        var msg = { message: input, author: 'you' };
+
+        messages.push(msg);
+        room.socket.emit('text', msg);
+      }
 
       if (/^\s*http(s)*:\/\/soundcloud.com\//.test(input)) {
         Sounds.resolve(input, function(track) {
           if (track && track.kind == 'track') {
+            messages.push({ message: 'Adding track ' + track.title });
             $scope.addTrack(track);
+          } else {
+            postMessage();
           }
         });
       } else {
-        messages.push(msg);
+        postMessage();
       }
 
-      room.socket.emit('text', msg);
       $scope.input = input = '';
 
       event.preventDefault();
@@ -214,9 +221,9 @@ ngDefine('disco.pages', [
       Notifications.create(null, title, message);
     }
 
-    room.socket.on('trackAdded', function(trackAdded) {
-      var track = trackAdded.track;
-      var position = trackAdded.position;
+    room.socket.on('trackAdded', function(message) {
+      var track = message.track;
+      var position = message.position;
 
       if (!position) {
         room.tracks.push(track);
