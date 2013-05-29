@@ -11,6 +11,8 @@ ngDefine('disco.services', [ 'jquery' ], function(module, $) {
     function WebkitNotifications() {
       var notifications = window.webkitNotifications;
 
+      var open = [];
+
       this.create = function(icon, title, content) {
 
         if (focused || !enabled) {
@@ -20,7 +22,21 @@ ngDefine('disco.services', [ 'jquery' ], function(module, $) {
         if (!notifications.checkPermission()) {
           // 0 is PERMISSION_ALLOWED
           // function defined in step 2
-          notifications.createNotification(icon, title, content).show();
+          var notification = notifications.createNotification(icon, title, content);
+
+          open.push(notification);
+
+          notification.onclose = function() {
+            var idx = open.indexOf(notification);
+            if (idx != -1) {
+              open.splice(idx, 1);
+            }
+          };
+
+          notification.show();
+          if (open.length > 2) {
+            open.shift().close();
+          }
         }
       };
 

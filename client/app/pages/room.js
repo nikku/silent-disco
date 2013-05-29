@@ -166,7 +166,7 @@ ngDefine('disco.pages', [
   /**
    * Controller that handles the track list
    */
-  var TrackListController = function TrackListController($scope, $filter, Sounds) {
+  var TrackListController = function TrackListController($scope, $filter, Sounds, Notifications) {
 
     var room = $scope.room;
     var tracks = $scope.tracks = $scope.room.tracks;
@@ -208,6 +208,12 @@ ngDefine('disco.pages', [
       $scope.current = null;
     }
 
+    function publishMessage(title, message) {
+      room.messages.push({ message: message });
+
+      Notifications.create(null, title, message);
+    }
+
     room.socket.on('trackAdded', function(trackAdded) {
       var track = trackAdded.track;
       var position = trackAdded.position;
@@ -217,6 +223,8 @@ ngDefine('disco.pages', [
       } else {
         insertTrack(track, position);
       }
+
+      publishMessage('Track added', '<' + message.user + '> added track ' + track.title);
     });
 
     room.socket.on('trackStarted', function(message) {
@@ -226,6 +234,8 @@ ngDefine('disco.pages', [
       if (track) {
         startTrack(track, message.position);
       }
+
+      publishMessage('Track started', '<' + message.user + '> started track ' + track.title);
     });
 
     room.socket.on('trackStopped', function(message) {
@@ -235,6 +245,8 @@ ngDefine('disco.pages', [
       if (Sounds.isPlaying(track)) {
         stopTrack(track);
       }
+
+      publishMessage('Track stopped', '<' + message.user + '> stopped track ' + track.title);
     });
 
     room.socket.on('trackMoved', function(message) {
@@ -245,6 +257,8 @@ ngDefine('disco.pages', [
       if (track) {
         insertTrack(track, position);
       }
+
+      publishMessage('Track moved', '<' + message.user + '> moved track ' + track.title);
     });
 
     $scope.skip = function(track, e) {
@@ -286,7 +300,7 @@ ngDefine('disco.pages', [
     });
   };
 
-  TrackListController.$inject = [ '$scope', '$filter', 'Sounds' ];
+  TrackListController.$inject = [ '$scope', '$filter', 'Sounds', 'Notifications' ];
 
 
   /**
