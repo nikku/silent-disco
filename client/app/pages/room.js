@@ -233,7 +233,7 @@ ngDefine('disco.pages', [
 
       var track = findTrack({ trackId: trackId });
       if (Sounds.isPlaying(track)) {
-        Sounds.stop();
+        stopTrack(track);
       }
     });
 
@@ -271,6 +271,8 @@ ngDefine('disco.pages', [
     };
 
     $scope.$on('sounds.finished', function(e, track) {
+      $scope.current = null;
+
       var idx = tracks.indexOf(track);
       if (idx == -1) {
         return;
