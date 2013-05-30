@@ -59,7 +59,7 @@
       <img ng-src="{{ current.artwork_url }}" />
 
       <div class="info">
-        <div class="title">
+        <div class="title" title="{{ current.user.username }} - {{ current.title }}">
           <a target="_blank" ng-href="{{ current.user.permalink_url }}">{{ current.user.username }}</a>
           -
           <a target="_blank" ng-href="{{ current.permalink_url }}">{{ current.title }}</a>
@@ -89,7 +89,7 @@
         <img ng-src="{{ track.artwork_url }}" />
 
         <div class="info">
-          <div class="title">
+          <div class="title" title="{{ track.user.username }} - {{ track.title }}">
             <a target="_blank" ng-href="{{ track.user.permalink_url }}">{{ track.user.username }}</a>
             -
             <a target="_blank" ng-href="{{ track.permalink_url }}">{{ track.title }}</a>

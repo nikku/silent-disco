@@ -277,6 +277,15 @@ html, body {
   right: 5px;
 }
 
+.current-track .title {
+  position: absolute;
+  left: 0;
+  right: 55px;
+  height: 28px;
+  top: 0;
+  overflow: hidden;
+}
+
 .track .info {
   position: absolute;
   line-height: 35px;
@@ -294,6 +303,10 @@ html, body {
   top: 0;
   bottom: 0;
   overflow: hidden;
+}
+
+.active .title {
+  right: 180px;
 }
 
 .track .controls {
