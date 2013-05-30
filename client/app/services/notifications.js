@@ -33,10 +33,17 @@ ngDefine('disco.services', [ 'jquery' ], function(module, $) {
             }
           };
 
-          notification.show();
+          notification.onshow = function() {
+            setTimeout(function() {
+              notification.close();
+            }, 15000);
+          };
+
           if (open.length > 2) {
             open.shift().close();
           }
+
+          notification.show();
         }
       };
 
