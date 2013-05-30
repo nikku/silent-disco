@@ -38,7 +38,7 @@ import io.netty.util.AttributeKey;
  */
 public class DefaultRoomHandler extends AbstractRoomHandler<Base> {
 
-  private static final AttributeKey<Map<String, Participant>> PARTICIPANTS = new AttributeKey<Map<String, Participant>>("Members");
+  private static final AttributeKey<Map<String, Participant>> PARTICIPANTS = new AttributeKey<Map<String, Participant>>("Participants");
 
   @Override
   public void handleMessage(RoomContext ctx, Base message) {
@@ -71,7 +71,10 @@ public class DefaultRoomHandler extends AbstractRoomHandler<Base> {
     } else
     if (message instanceof ChannelLeave) {
       channels.remove(ctx.channel());
-      getParticipants(ctx).remove(participantId);
+
+      if (participantId != null) {
+        getParticipants(ctx).remove(participantId);
+      }
 
       sendAll(ctx, new ParticipantLeft(participantId));
     } else
