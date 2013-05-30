@@ -233,7 +233,7 @@ ngDefine('disco.pages', [
       }
 
       $(".messages").animate({
-         scrollTop: lastMsg.offset().top
+         scrollTop: $(".messages").prop("scrollHeight")
       }, 200);
     });
   };
