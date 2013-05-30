@@ -1,6 +1,7 @@
 ngDefine('disco.pages', [
-  'angular'
-], function(module, angular) {
+  'angular',
+  'jquery'
+], function(module, angular, $) {
 
   var cp = function(obj, attrs) {
     var copy = {};
@@ -173,6 +174,10 @@ ngDefine('disco.pages', [
 
       Notifications.create(null, participant.name + ':', text.message);
     });
+
+    $scope.focusInput = function() {
+      $("#chat-input").focus();
+    };
 
     $scope.send = function(input, event) {
       if (!input) {

@@ -18,7 +18,7 @@
 
     <!-- chat window -->
     <div ng-controller="ChatController" class="chat">
-      <div class="messages ctn-scroll">
+      <div class="messages ctn-scroll" ng-click="focusInput()">
         <div ng-repeat="message in messages" class="message" ng-switch="message.type">
           <span ng-switch-when="text">
             <strong ng-show="message.user" ng-switch="isCurrent(message.user)">
@@ -42,7 +42,7 @@
       </div>
 
       <form ng-submit="send(input)">
-        <textarea ng-model="input" placeholder="Type message or song url" ng-keydown="isEnter($event) && send(input, $event)"></textarea>
+        <textarea ng-model="input" id="chat-input" placeholder="Type message or song url" ng-keydown="isEnter($event) && send(input, $event)"></textarea>
         <div class="note">
           Messages will be sent to all members of this room. 
           Links to songs or playlists on <a target="_blank" href="https://soundcloud.com">SoundCloud</a> will be resolved and added to playlist.
