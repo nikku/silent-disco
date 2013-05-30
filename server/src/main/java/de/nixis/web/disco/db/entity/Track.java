@@ -31,7 +31,7 @@ public class Track {
   private String title;
 
   @Embedded
-  private User user;
+  private SoundCloudUser user;
 
   private long duration;
 
@@ -45,7 +45,7 @@ public class Track {
 
   }
 
-  public Track(String id, String artwork_url, String permalink_url, String title, User user, long duration, String roomName) {
+  public Track(String id, String artwork_url, String permalink_url, String title, SoundCloudUser user, long duration, String roomName) {
     this.artwork_url = artwork_url;
     this.permalink_url = permalink_url;
     this.title = title;
@@ -98,11 +98,11 @@ public class Track {
     this.title = title;
   }
 
-  public User getUser() {
+  public SoundCloudUser getUser() {
     return user;
   }
 
-  public void setUser(User user) {
+  public void setUser(SoundCloudUser user) {
     this.user = user;
   }
 

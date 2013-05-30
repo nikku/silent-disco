@@ -19,9 +19,25 @@
     <!-- chat window -->
     <div ng-controller="ChatController" class="chat">
       <div class="messages ctn-scroll">
-        <div ng-repeat="message in messages" class="message">
-          <strong ng-show="message.author" ng-bind="message.author"></strong>
-          <span ng-bind="message.message"></span>
+        <div ng-repeat="message in messages" class="message" ng-switch="message.type">
+          <span ng-switch-when="text">
+            <strong ng-show="message.user" ng-switch="isCurrent(message.user)">
+              <span ng-switch-when="true">you</span>
+              <span ng-switch-when="false" ng-bind="message.user.name"></span>
+            </strong>
+            <span ng-bind="message.message"></span>
+          </span>
+          <span ng-switch-when="track">
+            <span ng-show="message.user" ng-switch="isCurrent(message.user)">
+              &lt;<span ng-switch-when="true">you</span><span ng-switch-when="false" ng-bind="message.user.name"></span>&gt;
+            </span>
+            <span ng-bind="message.message"></span>
+            <a target="_blank" ng-href="{{ message.track.user.permalink_url }}" ng-bind="message.track.user.username"></a> - 
+            <a target="_blank" ng-href="{{ message.track.permalink_url }}" ng-bind="message.track.title"></a>
+          </span>
+          <span ng-switch-default>
+            <span ng-bind="message.message"></span>
+          </span>
         </div>
       </div>
 

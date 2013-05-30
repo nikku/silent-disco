@@ -1,6 +1,5 @@
 package de.nixis.web.disco.room;
 
-import de.nixis.web.disco.dto.Base;
 import io.netty.channel.Channel;
 
 /**

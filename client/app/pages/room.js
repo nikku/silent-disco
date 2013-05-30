@@ -15,7 +15,7 @@ ngDefine('disco.pages', [
   /**
    * Root controller of a room
    */
-  var RoomController = function ($scope, $routeParams, socket, Sounds) {
+  var RoomController = function($scope, $routeParams, socket, Sounds) {
 
     var room = $scope.room = {
       id: $routeParams['id'],
@@ -39,17 +39,20 @@ ngDefine('disco.pages', [
       room.socket.emit('addTrack', { track: trk });
     };
 
-    function addParticipant(name) {
-      room.participants.push({ name: name, sc: false });
+    function addParticipant(participant) {
+      angular.extend(participant, { sc: false });
+      room.participants.push(participant);
     }
 
-    function removeParticipant(name) {
+    function removeParticipant(id) {
       var participants = room.participants;
+      var participant;
       var idx = -1;
 
       for (var i = 0, p; !!(p = participants[i]); i++) {
-        if (p.name == name) {
+        if (p.id == id) {
           idx = i;
+          participant = p;
           break;
         }
       }
@@ -57,6 +60,8 @@ ngDefine('disco.pages', [
       if (idx != -1) {
         participants.splice(idx, 1);
       }
+
+      return participant;
     }
 
     room.socket.on('__open', function() {
@@ -78,7 +83,7 @@ ngDefine('disco.pages', [
 
     room.socket.on('channelJoined', function(data) {
       room.connected = true;
-      room.messages.push({ message: 'You joined the room as <' + data.name + '>'});
+      room.identity = data.user;
 
       angular.forEach(data.tracks, function(track) {
         room.tracks.push(track);
@@ -88,17 +93,24 @@ ngDefine('disco.pages', [
         addParticipant(participant);
       });
 
-      addParticipant(data.name);
+      addParticipant(data.user);
+
+      room.messages.push({ message: 'You joined the room as <' + data.user.name + '>'});
     });
 
     room.socket.on('participantJoined', function(data) {
-      room.messages.push({ message: 'Participant <' + data.name + '> joined the room'});
-      addParticipant(data.name);
+      var user = data.user;
+
+      addParticipant(user);
+
+      room.messages.push({ message: 'Participant <' + user.name + '> joined the room'});
     });
 
     room.socket.on('participantLeft', function(data) {
-      removeParticipant(data.name);
-      room.messages.push({ message: 'Participant <' + data.name + '> left the room'});
+      var participant = removeParticipant(data.userId);
+      if (participant) {
+        room.messages.push({ message: 'Participant <' + participant.name + '> left the room'});
+      }
     });
   };
 
@@ -109,15 +121,22 @@ ngDefine('disco.pages', [
    * Controller that handles the input field and 
    * chat area.
    */
-  var ChatController = function($scope, Sounds, Notifications) {
+  var ChatController = function($scope, $filter, Sounds, Notifications) {
 
     var room = $scope.room;
     var messages = $scope.messages = room.messages;
 
-    room.socket.on('text', function(text) {
-      messages.push(text);
+    function findParticipant(pattern) {
+      return $filter('filter')(room.participants, pattern)[0];
+    }
 
-      Notifications.create(null, text.author + ' says', text.message);
+    room.socket.on('text', function(text) {
+
+      var participant = findParticipant({ id: text.author });
+
+      messages.push({ type: 'text', message: text.message, user: participant });
+
+      Notifications.create(null, participant.name + ':', text.message);
     });
 
     $scope.send = function(input, event) {
@@ -126,16 +145,14 @@ ngDefine('disco.pages', [
       }
 
       function postMessage() {
-        var msg = { message: input, author: 'you' };
+        room.socket.emit('text', { message: input });
 
-        messages.push(msg);
-        room.socket.emit('text', msg);
+        messages.push({ type: 'text', user: room.identity, message: input });
       }
 
       if (/^\s*http(s)*:\/\/soundcloud.com\//.test(input)) {
         Sounds.resolve(input, function(track) {
           if (track && track.kind == 'track') {
-            messages.push({ message: 'Adding track ' + track.title });
             $scope.addTrack(track);
           } else {
             postMessage();
@@ -149,6 +166,10 @@ ngDefine('disco.pages', [
 
       event.preventDefault();
       event.stopPropagation();
+    };
+
+    $scope.isCurrent = function(user) {
+      return room.identity == user;
     };
 
     $scope.isEnter = function(e) {
@@ -167,7 +188,7 @@ ngDefine('disco.pages', [
     });
   };
 
-  ChatController.$inject = [ '$scope', 'Sounds', 'Notifications' ];
+  ChatController.$inject = [ '$scope', '$filter', 'Sounds', 'Notifications' ];
 
 
   /**
@@ -180,6 +201,10 @@ ngDefine('disco.pages', [
 
     function findTrack(pattern) {
       return $filter('filter')(tracks, pattern)[0];
+    }
+
+    function findParticipant(pattern) {
+      return $filter('filter')(room.participants, pattern)[0];
     }
 
     function insertTrack(track, position) {
@@ -215,10 +240,17 @@ ngDefine('disco.pages', [
       $scope.current = null;
     }
 
-    function publishMessage(title, message) {
-      room.messages.push({ message: message });
+    function publishMessage(message) {
 
-      Notifications.create(null, title, message);
+      var title = message.title,
+          track = message.track,
+          participant = message.participant || findParticipant({ id: message.userId });
+
+      room.messages.push({ type: 'track', track: track, user: participant, message: title });
+
+      var name = participant == room.identity ? 'you' : participant.name;
+
+      Notifications.create(null, name, title + ' ' + track.name);
     }
 
     room.socket.on('trackAdded', function(message) {
@@ -231,7 +263,7 @@ ngDefine('disco.pages', [
         insertTrack(track, position);
       }
 
-      publishMessage('Track added', '<' + message.user + '> added track ' + track.title);
+      publishMessage({ title: 'Added track', track: track, userId: message.user });
     });
 
     room.socket.on('trackStarted', function(message) {
@@ -242,7 +274,7 @@ ngDefine('disco.pages', [
         startTrack(track, message.position);
       }
 
-      publishMessage('Track started', '<' + message.user + '> started track ' + track.title);
+      publishMessage({ title: 'Started track', track: track, userId: message.user });
     });
 
     room.socket.on('trackStopped', function(message) {
@@ -253,7 +285,7 @@ ngDefine('disco.pages', [
         stopTrack(track);
       }
 
-      publishMessage('Track stopped', '<' + message.user + '> stopped track ' + track.title);
+      publishMessage({ title: 'Stopped track', track: track, userId: message.user });
     });
 
     room.socket.on('trackMoved', function(message) {
@@ -265,7 +297,7 @@ ngDefine('disco.pages', [
         insertTrack(track, position);
       }
 
-      publishMessage('Track moved', '<' + message.user + '> moved track ' + track.title);
+      publishMessage({ title: 'Moved track', track: track, userId: message.user });
     });
 
     $scope.skip = function(track, e) {

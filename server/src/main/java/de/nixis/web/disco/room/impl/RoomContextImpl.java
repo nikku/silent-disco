@@ -1,12 +1,15 @@
 package de.nixis.web.disco.room.impl;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executor;
+
+import de.nixis.web.disco.room.Room;
 import de.nixis.web.disco.room.RoomContext;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.Attribute;
+import io.netty.util.AttributeKey;
 
 /**
  *
@@ -16,14 +19,14 @@ public class RoomContextImpl implements RoomContext {
 
   private final ChannelHandlerContext channelCtx;
 
-  private final Map<Channel, String> channelMap;
-  
+  private final Room room;
+
   private final String roomName;
 
-  public RoomContextImpl(String roomName, ChannelHandlerContext channelCtx, Map<Channel, String> channelMap) {
+  public RoomContextImpl(String roomName, ChannelHandlerContext channelCtx, Room room) {
     this.roomName = roomName;
     this.channelCtx = channelCtx;
-    this.channelMap = channelMap;
+    this.room = room;
   }
 
   public Executor executor() {
@@ -35,18 +38,23 @@ public class RoomContextImpl implements RoomContext {
   }
 
   public Set<Channel> channels() {
-    return channelMap.keySet();
+    return room.channels();
   }
 
   public Map<Channel, String> channelMap() {
-    return channelMap;
+    return room.channelMap();
   }
 
-  public Collection<String> participants() {
-    return channelMap.values();
+  public Set<String> participantIds() {
+    return room.participantIds();
   }
 
   public String getRoomName() {
     return roomName;
+  }
+
+  public <T> Attribute<T> attr(AttributeKey<T> key) {
+
+    return room.attr(key);
   }
 }

@@ -16,7 +16,7 @@ import de.nixis.web.disco.db.entity.Position;
 import de.nixis.web.disco.db.entity.Position.Status;
 import de.nixis.web.disco.db.entity.Room;
 import de.nixis.web.disco.db.entity.Track;
-import de.nixis.web.disco.db.entity.User;
+import de.nixis.web.disco.db.entity.SoundCloudUser;
 
 /**
  *
@@ -50,7 +50,7 @@ public class DatabaseTest {
     Room room = new Room("FOO");
     datastore.save(room);
 
-    Track track = new Track("1234112", "http://foo/aw", "http://foo", "foo", new User("klaus", "http://klaus"), 200000, "FOO");
+    Track track = new Track("1234112", "http://foo/aw", "http://foo", "foo", new SoundCloudUser("klaus", "http://klaus"), 200000, "FOO");
 
     Key<Track> key = datastore.save(track);
 

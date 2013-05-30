@@ -11,14 +11,14 @@ import de.nixis.web.disco.db.entity.Track;
  */
 public class ChannelJoined extends ParticipantJoined {
 
-  private List<String> participants;
+  private List<Participant> participants;
 
   private List<Track> tracks;
 
   private Room room;
 
-  public ChannelJoined(String name, List<String> participants, List<Track> tracks, Room room) {
-    super(name);
+  public ChannelJoined(Participant user, List<Participant> participants, List<Track> tracks, Room room) {
+    super(user);
 
     this.tracks = tracks;
     this.participants = participants;
@@ -29,7 +29,7 @@ public class ChannelJoined extends ParticipantJoined {
   public ChannelJoined() {
   }
 
-  public List<String> getParticipants() {
+  public List<Participant> getParticipants() {
     return participants;
   }
 
@@ -37,7 +37,7 @@ public class ChannelJoined extends ParticipantJoined {
     return room;
   }
 
-  public void setParticipants(List<String> participants) {
+  public void setParticipants(List<Participant> participants) {
     this.participants = participants;
   }
 

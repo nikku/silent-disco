@@ -6,22 +6,22 @@ package de.nixis.web.disco.dto;
  */
 public class ParticipantJoined extends Base {
 
-  private String name;
+  private Participant user;
 
   public ParticipantJoined() {
-    
+
   }
 
-  public ParticipantJoined(String name) {
+  public ParticipantJoined(Participant user) {
 
-    this.name = name;
+    this.user = user;
   }
 
-  public String getName() {
-    return name;
+  public Participant getUser() {
+    return user;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setUser(Participant user) {
+    this.user = user;
   }
 }

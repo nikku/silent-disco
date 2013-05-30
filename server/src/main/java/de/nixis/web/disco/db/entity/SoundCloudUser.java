@@ -5,17 +5,17 @@ package de.nixis.web.disco.db.entity;
  *
  * @author nico.rehwaldt
  */
-public class User {
+public class SoundCloudUser {
 
   private String username;
 
   private String permalink_url;
 
-  public User() {
+  public SoundCloudUser() {
 
   }
 
-  public User(String username, String permalink_url) {
+  public SoundCloudUser(String username, String permalink_url) {
     this.username = username;
     this.permalink_url = permalink_url;
   }

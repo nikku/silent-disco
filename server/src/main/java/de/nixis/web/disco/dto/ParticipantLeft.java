@@ -6,22 +6,22 @@ package de.nixis.web.disco.dto;
  */
 public class ParticipantLeft extends Base {
 
-  private String name;
+  private String userId;
 
   public ParticipantLeft() {
-    
+
   }
 
-  public ParticipantLeft(String name) {
+  public ParticipantLeft(String userId) {
 
-    this.name = name;
+    this.userId = userId;
   }
 
-  public String getName() {
-    return name;
+  public String getUserId() {
+    return userId;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setUserId(String id) {
+    this.userId = id;
   }
 }
