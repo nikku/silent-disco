@@ -3,10 +3,15 @@
   <!-- pre join ui -->
   <div class="ctn ctn-main" ng-switch-when="false">
     <!-- connect option -->
-    <div ng-controller="JoinRoomController">
+    <div ng-controller="JoinRoomController" class="join">
       <form ng-submit="join()">
-        <input type="text" placeholder="Your nickname" ng-model="name" style="margin-top: 10px" />
-        <input class="btn" type="submit" value="join room" />
+        <div class="input-append">
+          <input type="text" placeholder="Your nickname" ng-model="name" />
+          <button class="btn" type="submit">Join Room</button>
+        </div>
+        <div class="note">
+          You will end up in the room <a ng-href="#/room/{{ room.id }}">{{ room.id }}</a>.
+        </div>
       </form>
     </div>
   </div>

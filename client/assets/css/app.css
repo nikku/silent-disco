@@ -121,6 +121,10 @@ html, body {
   position: relative;
 }
 
+.join {
+  margin: 10px;
+}
+
 .chat form {
   position: absolute;
   left: 10px;
@@ -136,7 +140,7 @@ html, body {
   margin-bottom: 5px;
 }
 
-.chat .note {
+.note {
   font-size: 0.80em;
   color: #AAA;
   margin-bottom: 10px;
