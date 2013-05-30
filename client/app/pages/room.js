@@ -34,6 +34,11 @@ ngDefine('disco.pages', [
     });
 
     $scope.addTrack = function(track) {
+      if (!track.streamable) {
+        room.messages.push({ message: "Not adding track " + track.title + ": Track is not streamable" });
+        return;
+      }
+
       var trk = cp(track, [ 'id', 'artwork_url', 'permalink_url', 'title', 'duration']);
       trk.user = cp(track.user, [ 'username', 'permalink_url' ]);
 
