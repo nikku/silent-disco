@@ -151,12 +151,22 @@ ngDefine('disco.pages', [
       }
 
       if (/^\s*http(s)*:\/\/soundcloud.com\//.test(input)) {
-        Sounds.resolve(input, function(track) {
-          if (track && track.kind == 'track') {
-            $scope.addTrack(track);
-          } else {
-            postMessage();
+        Sounds.resolve(input, function(e) {
+          if (e) {
+            switch (e.kind) {
+            case 'track':
+              $scope.addTrack(track);
+              return;
+            case 'playlist':
+              messages.push({ type: 'text', message: 'Adding tracks from playlist ' + e.title });
+              angular.forEach(e.tracks, function(track) {
+                $scope.addTrack(track);
+              });
+              return;
+            }
           }
+
+          postMessage();
         });
       } else {
         postMessage();
