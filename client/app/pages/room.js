@@ -195,7 +195,7 @@ ngDefine('disco.pages', [
           if (e) {
             switch (e.kind) {
             case 'track':
-              $scope.addTrack(track);
+              $scope.addTrack(e);
               return;
             case 'playlist':
               messages.push({ type: 'text', message: 'Adding tracks from playlist ' + e.title });
