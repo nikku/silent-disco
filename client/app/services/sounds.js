@@ -27,6 +27,8 @@ ngDefine('disco.services', [
         stream.play();
         if (this.__muted) {
           stream.mute();
+        } else {
+          stream.unmute();
         }
 
         this.current = sound;
@@ -58,13 +60,21 @@ ngDefine('disco.services', [
             current = this.current,
             stream = current ? current.stream : null;
 
+        // set track.loading to the position to be loaded
+        // and check regularily whether the position is still up to date 
+        // and loading should continue
+
         function changed() {
           return current != self.current ||
-                 position != current.targetPosition;
+                 position != track.loading;
         }
 
         function done() {
-          current.targetPosition = null;
+          track.loading = null;
+
+          if (!self.__muted) {
+            stream.unmute();
+          }
 
           if (callback) {
             callback.apply(null, [ stream ]);
@@ -73,11 +83,14 @@ ngDefine('disco.services', [
 
         // save target position to recognize changes
         // (parallel skips)
-        current.targetPosition = position;
+        track.loading = position;
 
         if (changed()) {
           return;
         }
+
+        // mute stream while loading
+        stream.mute();
 
         if (!position) {
           done();

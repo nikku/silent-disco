@@ -71,7 +71,7 @@
         <div class="track-progress">
           <span class="current">{{ current.position | time }}</span>
           <span class="total">{{ current.duration | time }}</span>
-          <div class="progress progress-info" ng-click="skip(current, $event)">
+          <div class="progress" ng-class="{' progress-info': !current.loading, 'active progress-striped': current.loading}" ng-click="skip(current, $event)">
             <div class="bar" style="width: {{ (current.position / current.duration) * 100 }}%"></div>
           </div>
         </div>
