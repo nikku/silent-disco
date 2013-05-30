@@ -351,7 +351,10 @@ ngDefine('disco.pages', [
     });
 
     $scope.skip = function(track, e) {
-      var percent = e.offsetX / $(e.currentTarget).width();
+      var target = $(e.currentTarget);
+
+      var offset = e.offsetX || e.pageX - target.offset().left;
+      var percent = offset / target.width();
       var position = Math.round(percent * track.duration);
 
       startTrack(track, position);
