@@ -15,7 +15,7 @@ ngDefine('disco.pages', [
   /**
    * Root controller of a room
    */
-  var RoomController = function($scope, $routeParams, socket, Sounds) {
+  var RoomController = function($scope, $routeParams, $filter, socket, Sounds) {
 
     var room = $scope.room = {
       id: $routeParams['id'],
@@ -38,6 +38,34 @@ ngDefine('disco.pages', [
 
       room.socket.emit('addTrack', { track: trk });
     };
+
+    function findTrack(pattern) {
+      return $filter('filter')(room.tracks, pattern)[0];
+    }
+
+    function resumePlaylist(trackId, diff) {
+
+      var track = findTrack({ trackId: trackId });
+
+      if (!track) {
+        return;
+      }
+
+      var idx = room.tracks.indexOf(track);
+
+      // skip through playlist until currently 
+      // playing track is found
+      while (diff > track.duration) {
+        diff -= track.duration;
+        track = room.tracks[++idx];
+
+        if (!track) {
+          return;
+        }
+      }
+
+      room.socket.fire('trackStarted', { trackId: track.trackId, position: diff, user: room.identity.id });
+    }
 
     function addParticipant(participant) {
       angular.extend(participant, { sc: false });
@@ -95,7 +123,14 @@ ngDefine('disco.pages', [
 
       addParticipant(data.user);
 
-      room.messages.push({ message: 'You joined the room as <' + data.user.name + '>'});
+      room.messages.push({ message: 'You joined the room ' + room.id + ' as <' + data.user.name + '>'});
+
+      var position = data.room.position;
+
+      if (position.status == 'PLAYING') {
+        var diff = data.time - position.date + position.position;
+        resumePlaylist(position.trackId, diff);
+      }
     });
 
     room.socket.on('participantJoined', function(data) {
@@ -114,7 +149,7 @@ ngDefine('disco.pages', [
     });
   };
 
-  RoomController.$inject = [ '$scope', '$routeParams', 'socket', 'Sounds'];
+  RoomController.$inject = [ '$scope', '$routeParams', '$filter', 'socket', 'Sounds'];
 
 
   /**

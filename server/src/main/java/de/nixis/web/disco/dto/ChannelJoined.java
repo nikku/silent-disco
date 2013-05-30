@@ -1,5 +1,6 @@
 package de.nixis.web.disco.dto;
 
+import java.util.Date;
 import java.util.List;
 
 import de.nixis.web.disco.db.entity.Room;
@@ -17,6 +18,8 @@ public class ChannelJoined extends ParticipantJoined {
 
   private Room room;
 
+  private Date time;
+
   public ChannelJoined(Participant user, List<Participant> participants, List<Track> tracks, Room room) {
     super(user);
 
@@ -24,6 +27,7 @@ public class ChannelJoined extends ParticipantJoined {
     this.participants = participants;
 
     this.room = room;
+    this.time = new Date();
   }
 
   public ChannelJoined() {
@@ -51,5 +55,13 @@ public class ChannelJoined extends ParticipantJoined {
 
   public void setTracks(List<Track> tracks) {
     this.tracks = tracks;
+  }
+
+  public Date getTime() {
+    return time;
+  }
+
+  public void setTime(Date time) {
+    this.time = time;
   }
 }

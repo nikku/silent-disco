@@ -29,24 +29,25 @@ ngDefine('disco.services', [
         }
       }
 
-      function receiveObj(obj, e) {
+      function receiveMessage(type, message, e) {
 
-
-        for (var key in obj) {
-
-          var typeCallbacks = getCallbacks(key);
-          var message = obj[key];
+          var typeCallbacks = getCallbacks(type);
 
           for (var i = 0; i < typeCallbacks.length; i++) {
-            typeCallbacks[i].apply(null, [ message, e, key ]);
+            typeCallbacks[i].apply(null, [ message, e, type ]);
           }
+      }
+
+      function receiveEnvelope(envelope, e) {
+        for (var key in envelope) {
+          receiveMessage(key, envelope[key], e);
         }
       }
 
       function receive(data, e) {
 
         var envelope = JSON.parse(data);
-        receiveObj(envelope, e);
+        receiveEnvelope(envelope, e);
       }
 
       function getCallbacks(type) {
@@ -64,7 +65,7 @@ ngDefine('disco.services', [
           opened = true;
 
           $rootScope.$apply(function() {
-            receiveObj({ '__open' : { } }, e);
+            receiveMessage('__open', { }, e);
           });
 
           while (outgoing.length) {
@@ -76,7 +77,7 @@ ngDefine('disco.services', [
         // Log errors
         connection.onerror = function(e) {
           $rootScope.$apply(function() {
-            receiveObj({ '__error' : { } }, e);
+            receiveMessage('__error', { }, e);
           });
         };
 
@@ -87,10 +88,7 @@ ngDefine('disco.services', [
           opened = false;
 
           $rootScope.$apply(function() {
-            var envelope = {};
-            envelope[closed ? '__close' : '__openTimeout'] = {};
-
-            receiveObj(envelope, e);
+            receiveMessage(closed ? '__close' : '__openTimeout', {}, e);
           });
         };
 
@@ -116,6 +114,20 @@ ngDefine('disco.services', [
           envelope[type] = message;
 
           send(envelope);
+        },
+
+        /**
+         * Asynchronously dispatches event to listeners
+         *
+         * @param type {String} type of the message
+         * @param message {Object} the message
+         */
+        fire: function(type, message) {
+          setTimeout(function() {
+            $rootScope.$apply(function() {
+              receiveMessage(type, message);
+            });
+          }, 0);
         },
 
         on: function(type, callback) {
