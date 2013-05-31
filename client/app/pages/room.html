@@ -50,7 +50,7 @@
         <textarea ng-model="input" id="chat-input" placeholder="Type message or song url" ng-keydown="isEnter($event) && send(input, $event)"></textarea>
         <div class="note">
           Messages will be sent to all members of this room. 
-          Links to songs or playlists on <a target="_blank" href="https://soundcloud.com">SoundCloud</a> will be resolved and added to playlist.
+          Links to songs or playlists on <a target="_blank" href="https://soundcloud.com">SoundCloud</a> will be resolved and added to the room.
         </div>
       </form>
     </div>
@@ -70,11 +70,11 @@
           <a target="_blank" ng-href="{{ current.permalink_url }}">{{ current.title }}</a>
         </div>
         <div class="controls">
-          <button class="btn btn-small" ng-click="stop(current)"><i class="icon-stop"></i></button>
+          <button class="btn btn-small btn-link" ng-click="stop(current)"><i class="icon-stop"></i></button>
         </div>
 
         <div class="track-progress">
-          <span class="current">{{ current.position | time }}</span>
+          <span class="current">{{ current.position | time }} <span ng-if="current.loading">&hellip;</span></span>
           <span class="total">{{ current.duration | time }}</span>
           <div class="progress" ng-class="{' progress-info': !current.loading, 'active progress-striped': current.loading}" ng-click="skip(current, $event)">
             <div class="bar" style="width: {{ (current.position / current.duration) * 100 }}%"></div>
@@ -103,11 +103,11 @@
             <div class="position" ng-switch="isPlaying(track)">
               <span ng-switch-when="false">
                 <span>{{ track.duration | time }}</span>
-                <button class="btn btn-small" ng-click="start(track)"><i class="icon-play"></i></button>
+                <button class="btn btn-small btn-link" ng-click="start(track)"><i class="icon-play"></i></button>
               </span>
               <span ng-switch-when="true">
                 <span>{{ track.position | time }} / {{ track.duration | time }}</span>
-                <button class="btn btn-small" ng-click="stop(track)"><i class="icon-stop"></i></button>
+                <button class="btn btn-small btn-link" ng-click="stop(track)"><i class="icon-stop"></i></button>
               </span>
             </div>
           </div>

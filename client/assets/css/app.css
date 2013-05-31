@@ -218,6 +218,15 @@ html, body {
   bottom: 0;
 }
 
+.tracks .btn {
+  opacity: 0.5;
+  padding: 2px 5px;
+}
+
+.tracks .btn:hover {
+  opacity: 1.0;
+}
+
 .playing .tracks {
   top: 82px;
   border-top: solid 1px #CCC;
@@ -273,60 +282,52 @@ html, body {
 .current-track img { width: 66px; height: 66px; top: 5px; bottom: 5px; }
 .track img { width: 26px; height: 26px; top: 2px; bottom: 2px; }
 
-.current-track .info {
+.current-track .info, .track .info {
   position: absolute;
+  line-height: 35px;
+}
+
+.current-track .info {
   left: 80px;
   top: 5px;
   bottom: 5px;
   right: 5px;
 }
 
-.current-track .title {
-  position: absolute;
-  left: 0;
-  right: 55px;
-  height: 28px;
-  top: 0;
-  overflow: hidden;
-}
-
 .track .info {
-  position: absolute;
-  line-height: 35px;
-
   left: 40px;
   top: 0;
   bottom: 0;
   right: 5px;
 }
 
-.track .title {
+.track .title, .current-track .title {
   position: absolute;
   left: 0;
-  right: 100px;
   top: 0;
   bottom: 0;
   overflow: hidden;
+}
+
+.track .title {
+  right: 100px;
+}
+
+.current-track .title {
+  right: 55px;
+  height: 28px;
 }
 
 .active .title {
   right: 180px;
 }
 
-.track .controls {
+.track .controls, .current-track .controls {
   position: absolute;
   right: 0;
   top: 0;
   bottom: 0;
   overflow: hidden;
-}
-.current-track .title, .current-track .controls {
-  line-height: 28px;
-  display: inline-block;
-}
-
-.current-track .controls {
-  float: right;
 }
 
 .track-progress {
@@ -335,6 +336,7 @@ html, body {
 
 .track-progress {
   padding-top: 20px;
+  line-height: 20px;
 
   position: absolute;
   left: 0;
