@@ -24,6 +24,8 @@ ngDefine('disco.services', [ 'jquery' ], function(module, $) {
           // function defined in step 2
           var notification = notifications.createNotification(icon, title, content);
 
+          var win = window;
+
           open.push(notification);
 
           notification.onclose = function() {
@@ -37,6 +39,11 @@ ngDefine('disco.services', [ 'jquery' ], function(module, $) {
             setTimeout(function() {
               notification.close();
             }, 15000);
+          };
+
+          notification.onclick = function() {
+            $(win).focus();
+            notification.close();
           };
 
           if (open.length > 2) {
