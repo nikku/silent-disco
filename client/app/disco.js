@@ -2,6 +2,7 @@ ngDefine('disco', [
   'jquery',
   'module:ng',
   'module:ngResource:angular-resource',
+  'module:ngSanitize:angular-sanitize',
   'module:bootstrap:angular-bootstrap',
   'module:disco.pages:./pages/main',
   'module:disco.services:./services/main',

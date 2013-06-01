@@ -19,6 +19,7 @@
       'bootstrap' : 'assets/vendor/bootstrap/js/bootstrap-modal' + MINIFIED,
       'angular' : 'assets/vendor/angular/angular' + MINIFIED,
       'angular-resource' : 'assets/vendor/angular/angular-resource' + MINIFIED,
+      'angular-sanitize' : 'assets/vendor/angular/angular-sanitize' + MINIFIED,
       'angular-bootstrap' : 'assets/vendor/angular/angular-bootstrap' + MINIFIED,
       'sound-cloud' : 'http://connect.soundcloud.com/sdk',
       'sound-cloud-client' : 'app/soundcloud/client'
@@ -27,6 +28,7 @@
       'angular' : { deps: [ 'jquery' ], exports: 'angular' },
       'angular-resource': { deps: [ 'angular' ] },
       'angular-bootstrap': { deps: [ 'angular' ] },
+      'angular-sanitize': { deps: [ 'angular' ] },
       'sound-cloud': { exports: 'SC' },
       'jquery-mousewheel' : { deps: [ 'jquery' ] },
       'jquery-custom-scrollbar' : { deps: [ 'jquery-mousewheel' ] },

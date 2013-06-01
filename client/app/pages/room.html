@@ -30,7 +30,7 @@
               <span ng-switch-when="true">you</span>
               <span ng-switch-when="false" ng-bind="message.user.name"></span>
             </strong>
-            <span ng-bind="message.message"></span>
+            <span ng-bind-html="message.message | linky:'_blank'"></span>
           </span>
           <span ng-switch-when="track">
             <span ng-show="message.user" ng-switch="isCurrent(message.user)">
@@ -41,7 +41,7 @@
             <a sound-cloud-track="message.track" />
           </span>
           <span ng-switch-default>
-            <span ng-bind-html="message.message"></span>
+            <span ng-bind-html="message.message | linky:'_blank'"></span>
           </span>
         </div>
       </div>
