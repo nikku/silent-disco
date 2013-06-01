@@ -286,7 +286,7 @@ html, body {
 .track.active {
   height: 80px;
 
-  background-image: #DDD;
+  background: #DDD;
   background-image: linear-gradient(to bottom, #DDD, #BBB);
 
   border-bottom: solid 2px #fff;
@@ -357,9 +357,11 @@ html, body {
   display: block;
 }
 
-/**
-.ctn-playlist.show-fixed-top .tracks {
-  position: absolute;
-  top: 82px;
+.track.selected {
+  background: #E5F0E6;
 }
-**/
+
+.track.active.selected {
+  background: #D5DEE2;
+  background-image: linear-gradient(to bottom, #D5DEE2, #AAB2B9);
+}

@@ -3,6 +3,7 @@ package de.nixis.web.disco.db.entity;
 import java.util.Date;
 
 import org.bson.types.ObjectId;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import com.github.jmkgreen.morphia.annotations.Embedded;
 import com.github.jmkgreen.morphia.annotations.Entity;
 import com.github.jmkgreen.morphia.annotations.Id;
@@ -37,8 +38,12 @@ public class Track {
 
   private String roomName;
 
+  @JsonIgnore
   private boolean deleted = false;
 
+  /**
+   * The position of the track in the track list
+   */
   private String position;
 
   public Track() {
@@ -64,6 +69,14 @@ public class Track {
 
   public void setId(String id) {
     this.id = id;
+  }
+
+  public boolean isDeleted() {
+    return deleted;
+  }
+
+  public void setDeleted(boolean deleted) {
+    this.deleted = deleted;
   }
 
   public String getArtwork_url() {

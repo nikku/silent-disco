@@ -27,6 +27,8 @@ import de.nixis.web.disco.dto.TrackPosition;
 import de.nixis.web.disco.dto.TrackStarted;
 import de.nixis.web.disco.dto.TrackStopped;
 import de.nixis.web.disco.dto.Participant;
+import de.nixis.web.disco.dto.RemoveTrack;
+import de.nixis.web.disco.dto.TrackRemoved;
 import de.nixis.web.disco.room.RoomContext;
 import io.netty.channel.Channel;
 import io.netty.util.Attribute;
@@ -95,6 +97,12 @@ public class DefaultRoomHandler extends AbstractRoomHandler<Base> {
       Disco.addTrack(track, ctx.getRoomName(), position);
 
       sendAll(ctx, new TrackAdded(track, position, participantId));
+    } else
+    if (message instanceof RemoveTrack) {
+      RemoveTrack removeTrack = (RemoveTrack) message;
+      Disco.remove(removeTrack.getTrackId());
+
+      sendAll(ctx, ctx.channel(), new TrackRemoved(removeTrack.getTrackId(), participantId));
     } else
     if (message instanceof StartTrack) {
       StartTrack startTrack = (StartTrack) message;

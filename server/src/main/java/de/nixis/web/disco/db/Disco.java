@@ -73,7 +73,7 @@ public class Disco {
   }
 
   private static Query<Track> getTracksByRoomQuery(String roomName) {
-    return getDatastore().find(Track.class).order("position").order("position").order("added").filter("deleted", false).filter("roomName =", roomName);
+    return getDatastore().find(Track.class).order("position").order("added").filter("deleted", false).filter("roomName =", roomName);
   }
 
   public static void moveTrack(String trackId, TrackPosition position) {
@@ -83,7 +83,18 @@ public class Disco {
     updateTrackPosition(track, position);
 
     getDatastore().merge(track);
+  }
 
+  public static void remove(String trackId) {
+
+    Track track = getTrack(trackId);
+    if (track == null) {
+      return;
+    }
+
+    track.setDeleted(true);
+
+    getDatastore().merge(track);
   }
 
   public static Track addTrack(Track track, String roomName, TrackPosition position) {

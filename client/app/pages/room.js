@@ -254,6 +254,23 @@ ngDefine('disco.pages', [
     var room = $scope.room;
     var tracks = $scope.tracks = $scope.room.tracks;
 
+    var selected = null;
+
+    function observeKeyPress(e) {
+      // DEL key
+      if (e.which == 46 && selected) {
+        $scope.$apply(function() {
+          $scope.removeTrack(selected);
+        });
+      }
+    }
+
+    $(".ctn-playlist").hover(function() {
+      $(document).on('keyup', observeKeyPress);
+    }, function() {
+      $(document).off('keyup', observeKeyPress);
+    });
+
     function findTrack(pattern) {
       return $filter('filter')(tracks, pattern)[0];
     }
@@ -319,10 +336,11 @@ ngDefine('disco.pages', [
       var trackId = message.trackId;
 
       var track = findTrack({ trackId: trackId });
-      if (track) {
-        startTrack(track, message.position);
+      if (!track) {
+        return;
       }
 
+      startTrack(track, message.position);
       publishMessage({ title: 'Started track', track: track, userId: message.user });
     });
 
@@ -332,14 +350,46 @@ ngDefine('disco.pages', [
       var track = findTrack({ trackId: trackId });
       if (Sounds.isPlaying(track)) {
         stopTrack(track);
+        publishMessage({ title: 'Stopped track', track: track, userId: message.user });
       }
-
-      publishMessage({ title: 'Stopped track', track: track, userId: message.user });
     });
 
     room.socket.on('trackMoved', function(message) {
-
+      
     });
+
+    room.socket.on('trackRemoved', function(message) {
+      var trackId = message.trackId;
+
+      var track = findTrack({ trackId: trackId });
+      if (!track) {
+        return;
+      }
+
+      if ($scope.current == track) {
+        stopTrack(track);
+      }
+
+      tracks.splice(tracks.indexOf(track), 1);
+      publishMessage({ title: 'Removed track', track: track, userId: message.user });
+    });
+
+    $scope.select = function(track) {
+      selected = track;
+    };
+
+    $scope.isSelected = function(track) {
+      return track == selected;
+    };
+
+    $scope.removeTrack = function(track) {
+      if ($scope.current == track) {
+        stopTrack(track);
+      }
+
+      tracks.splice(tracks.indexOf(track), 1);
+      room.socket.emit('removeTrack', { trackId: track.trackId });
+    };
 
     $scope.movedTrack = function(e, ui) {
 

@@ -56,7 +56,11 @@
     </div>
   </div>
 
-  <div class="ctn ctn-playlist" ng-class="{ 'show-fixed-top': showCurrentOnTop() }" ng-switch-when="true" ng-controller="TrackListController">
+  <div ng-switch-when="true"
+       class="ctn ctn-playlist" 
+       ng-class="{ 'show-fixed-top': showCurrentOnTop() }"
+       ng-controller="TrackListController"
+       tabindex="0">
 
     <div class="fixed-top track active">
       <div current-track
@@ -74,8 +78,10 @@
 
       <div class="track"
            ng-repeat="track in tracks"
-           ng-class="{ active: isPlaying(track) }"
-           ng-switch="isPlaying(track)">
+           ng-class="{ active: isPlaying(track), selected: isSelected(track) }"
+           ng-switch="isPlaying(track)"
+           ng-click="select(track)"
+           tabindex="0">
 
         <div ng-switch-when="true"
           current-track
