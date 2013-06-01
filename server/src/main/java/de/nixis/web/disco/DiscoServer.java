@@ -1,5 +1,6 @@
 package de.nixis.web.disco;
 
+import java.util.logging.Logger;
 import de.nixis.web.disco.json.PojoDecoder;
 import de.nixis.web.disco.json.PojoEncoder;
 import de.nixis.web.disco.ws.DefaultRoomHandler;
@@ -32,6 +33,8 @@ public class DiscoServer {
   private final int port;
   private final String host;
 
+  private static Logger logger = Logger.getLogger(Main.class.getName());
+
   public DiscoServer(String host, int port) {
     this.host = host;
     this.port = port;
@@ -60,7 +63,8 @@ public class DiscoServer {
       });
 
       final Channel ch = sb.bind(host, port).sync().channel();
-      System.out.println("silent disco backend started at http://" + host + ":" + port);
+
+      logger.info("silent disco backend started at http://" + host + ":" + port);
 
       ch.closeFuture().sync();
     } finally {
