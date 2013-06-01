@@ -264,24 +264,18 @@ ngDefine('disco.pages', [
 
     function insertTrack(track, position) {
 
-      var oldTrackIdx = tracks.indexOf(track);
+      var idx = tracks.indexOf(track);
+      if (idx != -1) {
+        tracks.splice(idx, 1);
+      }
 
-      var before = position.before ? findTrack({ trackId: position.before }) : null;
-      var after = position.after ? findTrack({ trackId: position.after }) : null;
+      var referenceTrack = findTrack({ trackId: position.previous });
 
-      if (before || after) {
-        // remove track
-        if (oldTrackIdx != -1) {
-          room.tracks.splice(trackIdx, 1);
-        }
-
-        var newPos = tracks.indexOf(after) || tracks.indexOf(before) + 1;
-        room.tracks.splice(newPos, 0, track);
-      } else
-      // make sure track is added even if before or 
-      // after tracks have not been found
-      if (oldTrackIdx == -1) {
-        room.tracks.push(track);
+      if (!referenceTrack) {
+        tracks.push(track);
+      } else {
+        var insertIdx = tracks.indexOf(referenceTrack);
+        tracks.splice(insertIdx, 0, track);
       }
     }
 
@@ -344,24 +338,14 @@ ngDefine('disco.pages', [
     });
 
     room.socket.on('trackMoved', function(message) {
-      var trackId = message.trackId;
-      var position = message.position;
 
-      var track = findTrack({ trackId: trackId });
-      if (track) {
-        insertTrack(track, position);
-      }
-
-      publishMessage({ title: 'Moved track', track: track, userId: message.user });
     });
 
-    $scope.skip = function(track, e) {
-      var target = $(e.currentTarget);
+    $scope.movedTrack = function(e, ui) {
 
-      var offset = e.offsetX || e.pageX - target.offset().left;
-      var percent = offset / target.width();
-      var position = Math.round(percent * track.duration);
+    };
 
+    $scope.skip = function(track, position) {
       startTrack(track, position);
 
       room.socket.emit('startTrack', { trackId: track.trackId, position: position });
@@ -381,7 +365,36 @@ ngDefine('disco.pages', [
       return $scope.current == track;
     };
 
+    $scope.showCurrentOnTop = function() {
+      var current = $scope.current;
+      if (!current) {
+        return false;
+      }
+
+      var idx = tracks.indexOf(current);
+
+      var element = $(".tracks .track").eq(idx);
+      var parent = element.parent();
+
+      function isScrolledIntoView(element, container) {
+        var containerHeight = container.height();
+        var containerScrollTop = container.scrollTop();
+        var containerScrollBottom = containerHeight + container.scrollTop();
+
+        var elementTop = element.position().top;
+        var elementBottom = elementTop + element.height();
+
+        var topInView = elementTop >= 0;
+        var bottomInView = elementBottom <= containerHeight;
+
+        return topInView && bottomInView;
+      }
+
+      return !isScrolledIntoView(element, parent);
+    };
+
     $scope.$on('sounds.finished', function(e, track) {
+
       $scope.current = null;
 
       var idx = tracks.indexOf(track);
@@ -501,6 +514,91 @@ ngDefine('disco.pages', [
   };
 
   RouteConfig.$inject = [ '$routeProvider' ];
+
+
+  module.filter('track', function($sanitize) {
+
+    return function(track) {
+      if (!track) {
+        return '';
+      }
+
+      return '<a href="' + $sanitize(track.permalink_url) + '" target="_blank">' + $sanitize(track.title) + '</a>';
+    };
+  });
+
+  module.directive('soundCloudTrack', function() {
+
+    return {
+      scope: {
+        track: '=soundCloudTrack'
+      },
+      replace: true,
+      template: '<a ng-href="{{ track.permalink_url }}" target="_blank">{{ track.title}}</a>'
+    };
+  });
+
+  module.directive('soundCloudUser', function() {
+    return {
+      scope: {
+        user: '=soundCloudUser'
+      },
+      replace: true,
+      template: '<a ng-href="{{ user.permalink_url }}" target="_blank">{{ user.username }}</a>'
+    };
+  });
+
+  module.directive('trackTitle', function() {
+    return {
+      scope: {
+        track: '='
+      },
+      replace: true,
+      template:
+        '<div class="title" title="{{ track.user.username }} - {{ track.title }}">' +
+        '  <a sound-cloud-user="track.user"></a>' +
+        '  -' +
+        '  <a sound-cloud-track="track"></a>' +
+        '</div>'
+    };
+  });
+
+  module.directive('currentTrack', function() {
+    return {
+      scope: {
+        track: "=track",
+        onSkip: "&",
+        onStop: "&",
+        onMute: "&"
+      },
+      replace: true,
+      templateUrl: 'common/current-track.html',
+      link: function(scope, element, attrs, trackList) {
+
+        scope.stop = function() {
+          scope.onStop();
+        };
+
+        scope.skip = function(e) {
+          var track = scope.track;
+
+          var target = $(e.currentTarget);
+
+          // firefox compatibility (does not support offsetX)
+          var offset = e.offsetX || e.pageX - target.offset().left;
+
+          var percent = offset / target.width();
+          var position = Math.round(percent * track.duration);
+
+          scope.onSkip({ position: position });
+        };
+
+        scope.mute = function() {
+          scope.onMute();
+        };
+      }
+    };
+  });
 
   module
     .config(RouteConfig)

@@ -1,0 +1,20 @@
+<div>
+  <img ng-src="{{ track.artwork_url }}" />
+
+  <div class="info">
+    <div class="title" track-title track="track">
+    </div>
+    <div class="controls">
+      <button class="btn btn-small btn-link" style="opacity: 0.3" ng-click="mute()" title="Mute track"><i class="icon-volume-off"></i></button>
+      <button class="btn btn-small btn-link" ng-click="stop()" title="Stop track"><i class="icon-stop"></i></button>
+    </div>
+
+    <div class="track-progress">
+      <span class="current">{{ track.position | time }}</span>
+      <span class="total">{{ track.duration | time }}</span>
+      <div class="progress" ng-class="{' progress-info': !track.loading, 'active progress-striped': track.loading}" ng-click="skip($event)">
+        <div class="bar" style="width: {{ (track.position / track.duration) * 100 }}%"></div>
+      </div>
+    </div>
+  </div>
+</div>

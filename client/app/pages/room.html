@@ -37,11 +37,11 @@
               &lt;<span ng-switch-when="true">you</span><span ng-switch-when="false" ng-bind="message.user.name"></span>&gt;
             </span>
             <span ng-bind="message.message"></span>
-            <a target="_blank" ng-href="{{ message.track.user.permalink_url }}" ng-bind="message.track.user.username"></a> - 
-            <a target="_blank" ng-href="{{ message.track.permalink_url }}" ng-bind="message.track.title"></a>
+            <a sound-cloud-user="message.track.user" /> - 
+            <a sound-cloud-track="message.track" />
           </span>
           <span ng-switch-default>
-            <span ng-bind="message.message"></span>
+            <span ng-bind-html="message.message"></span>
           </span>
         </div>
       </div>
@@ -56,59 +56,45 @@
     </div>
   </div>
 
-  <div class="ctn ctn-playlist" ng-class="{ 'playing': current }" ng-switch-when="true" ng-controller="TrackListController">
+  <div class="ctn ctn-playlist" ng-class="{ 'show-fixed-top': showCurrentOnTop() }" ng-switch-when="true" ng-controller="TrackListController">
 
-    <!-- current track -->
-    <div class="current-track" ng-if="current">
-
-      <img ng-src="{{ current.artwork_url }}" />
-
-      <div class="info">
-        <div class="title" title="{{ current.user.username }} - {{ current.title }}">
-          <a target="_blank" ng-href="{{ current.user.permalink_url }}">{{ current.user.username }}</a>
-          -
-          <a target="_blank" ng-href="{{ current.permalink_url }}">{{ current.title }}</a>
-        </div>
-        <div class="controls">
-          <button class="btn btn-small btn-link" ng-click="stop(current)"><i class="icon-stop"></i></button>
-        </div>
-
-        <div class="track-progress">
-          <span class="current">{{ current.position | time }} <span ng-if="current.loading">&hellip;</span></span>
-          <span class="total">{{ current.duration | time }}</span>
-          <div class="progress" ng-class="{' progress-info': !current.loading, 'active progress-striped': current.loading}" ng-click="skip(current, $event)">
-            <div class="bar" style="width: {{ (current.position / current.duration) * 100 }}%"></div>
-          </div>
-        </div>
+    <div class="fixed-top track active">
+      <div current-track
+        track="current"
+        on-skip="skip(current, position)"
+        on-stop="stop(current)"
+        on-mute="mute(current)">
       </div>
     </div>
 
     <!-- track list -->
-    <div class="tracks ctn-scroll" 
-         ui-sortable="{ placeholder: 'track-dropable', opacity: '0.8', axis: 'y' }"
+    <div class="ctn-scroll tracks" 
+         ui-sortable="{ placeholder: 'track-dropable', opacity: '0.8', axis: 'y', stop: movedTrack }"
          ng-model="tracks">
+
       <div class="track"
            ng-repeat="track in tracks"
-           ng-class="{ active: isPlaying(track) }">
+           ng-class="{ active: isPlaying(track) }"
+           ng-switch="isPlaying(track)">
 
-        <img ng-src="{{ track.artwork_url }}" />
+        <div ng-switch-when="true"
+          current-track
+          track="track"
+          on-skip="skip(track, position)"
+          on-stop="stop(track)"
+          on-mute="mute(track)">
 
-        <div class="info">
-          <div class="title" title="{{ track.user.username }} - {{ track.title }}">
-            <a target="_blank" ng-href="{{ track.user.permalink_url }}">{{ track.user.username }}</a>
-            -
-            <a target="_blank" ng-href="{{ track.permalink_url }}">{{ track.title }}</a>
-          </div>
-          <div class="controls">
-            <div class="position" ng-switch="isPlaying(track)">
-              <span ng-switch-when="false">
+        </div>
+        <div ng-switch-default>
+          <img ng-src="{{ track.artwork_url }}" />
+
+          <div class="info">
+            <div track-title track="track"></div>
+            <div class="controls">
+              <div class="position">
                 <span>{{ track.duration | time }}</span>
-                <button class="btn btn-small btn-link" ng-click="start(track)"><i class="icon-play"></i></button>
-              </span>
-              <span ng-switch-when="true">
-                <span>{{ track.position | time }} / {{ track.duration | time }}</span>
-                <button class="btn btn-small btn-link" ng-click="stop(track)"><i class="icon-stop"></i></button>
-              </span>
+                <button class="btn btn-small btn-link" ng-click="start(track)" title="Start track"><i class="icon-play"></i></button>
+              </div>
             </div>
           </div>
         </div>

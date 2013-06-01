@@ -227,41 +227,6 @@ html, body {
   opacity: 1.0;
 }
 
-.playing .tracks {
-  top: 82px;
-  border-top: solid 1px #CCC;
-}
-
-.track, .current-track {
-  position: relative;
-}
-
-.current-track {
-  height: 80px;
-
-  background-image: #DDD;
-  background-image: linear-gradient(to bottom, #DDD, #BBB);
-
-  border-bottom: solid 2px #fff;
-}
-
-.track {
-  height: 34px;
-
-  border-bottom: solid 1px #CCC;
-  background-color: #FCFCFC;
-}
-
-.tracks .active {
-  background-color: #F0F0F0;
-  border-top: solid 1px #CCC;
-  border-bottom: solid 2px #CCC;
-}
-
-.tracks .active:first-child {
-  border-top: 0 none;
-}
-
 .track-dropable {
   margin: 0;
   padding: 0;
@@ -270,7 +235,24 @@ html, body {
   border-bottom: solid 1px #CCC;
 }
 
-.current-track img, .track img {
+.track {
+  position: relative;
+
+  height: 34px;
+
+  border-bottom: solid 1px #CCC;
+  background-color: #FCFCFC;
+}
+
+.track .controls {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+
+.track img {
   position: absolute;
   left: 5px;
 
@@ -279,55 +261,57 @@ html, body {
   background: #FFF;
 }
 
-.current-track img { width: 66px; height: 66px; top: 5px; bottom: 5px; }
 .track img { width: 26px; height: 26px; top: 2px; bottom: 2px; }
-
-.current-track .info, .track .info {
-  position: absolute;
-  line-height: 35px;
-}
-
-.current-track .info {
-  left: 80px;
-  top: 5px;
-  bottom: 5px;
-  right: 5px;
-}
 
 .track .info {
   left: 40px;
   top: 0;
   bottom: 0;
   right: 5px;
+
+  position: absolute;
+  line-height: 35px;
 }
 
-.track .title, .current-track .title {
+.track .title {
   position: absolute;
   left: 0;
   top: 0;
   bottom: 0;
   overflow: hidden;
-}
 
-.track .title {
   right: 100px;
 }
 
-.current-track .title {
+.track.active {
+  height: 80px;
+
+  background-image: #DDD;
+  background-image: linear-gradient(to bottom, #DDD, #BBB);
+
+  border-bottom: solid 2px #fff;
+}
+
+.track.active .title {
   right: 55px;
   height: 28px;
 }
 
-.active .title {
-  right: 180px;
+.track.active .btn {
+  opacity: 0.8;
+  padding: 2px 5px;
 }
 
-.track .controls, .current-track .controls {
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  overflow: hidden;
+.track.active img { width: 66px; height: 66px; top: 5px; bottom: 5px; }
+.track.active .info {
+  left: 80px;
+  top: 5px;
+  bottom: 5px;
+  right: 5px;
+}
+
+.track.active .title {
+  right: 180px;
 }
 
 .track-progress {
@@ -344,17 +328,12 @@ html, body {
   right: 0;
 }
 
-.track-progress .current {
-  position: absolute;
-
-  left: 0;
-  top: 0;
+.track-progress .current-position {
+  float: left;
 }
 
 .track-progress .total {
-  position: absolute;
-  right: 0;
-  top: 0;
+  float: right;
 }
 
 .track-progress .progress {
@@ -363,3 +342,24 @@ html, body {
   margin-bottom: 5px;
   cursor: pointer;
 }
+
+.ctn-playlist .fixed-top {
+  position: fixed;
+  top: 41px;
+  right: 0;
+  width: 34%;
+
+  z-index: 10;
+  display: none;
+}
+
+.ctn-playlist.show-fixed-top .fixed-top {
+  display: block;
+}
+
+/**
+.ctn-playlist.show-fixed-top .tracks {
+  position: absolute;
+  top: 82px;
+}
+**/
