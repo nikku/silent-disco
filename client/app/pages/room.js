@@ -29,6 +29,8 @@ ngDefine('disco.pages', [
     room.socket = socket.getSocket(room.id);
 
     $scope.$on('$destroy', function (event, next) {
+      Sounds.stop(null);
+
       socket.closeSocket(room.id);
       room.socket = null;
     });
