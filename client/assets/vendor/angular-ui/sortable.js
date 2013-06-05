@@ -1,6 +1,9 @@
 /*
  jQuery UI Sortable plugin wrapper
 
+ refactored to be usable with external callback
+ -- Nikku
+
  @param [ui-sortable] {object} Options to pass to $.fn.sortable() merged onto ui.config
 */
 angular.module('ui.sortable', []).value('uiSortableConfig',{}).directive('uiSortable', [

@@ -278,9 +278,9 @@ html, body {
   left: 0;
   top: 0;
   bottom: 0;
-  overflow: hidden;
-
   right: 100px;
+
+  overflow: hidden;
 }
 
 .track.active {
@@ -288,7 +288,9 @@ html, body {
 
   background: #DDD;
   background-image: linear-gradient(to bottom, #DDD, #BBB);
+}
 
+.track.fixed-top {
   border-bottom: solid 2px #fff;
 }
 
@@ -298,8 +300,12 @@ html, body {
 }
 
 .track.active .btn {
-  opacity: 0.8;
+  opacity: 0.7;
   padding: 2px 5px;
+}
+
+.track.active .btn:hover {
+  opacity: 1.0;
 }
 
 .track.active img { width: 66px; height: 66px; top: 5px; bottom: 5px; }
@@ -357,11 +363,11 @@ html, body {
   display: block;
 }
 
-.track.selected {
+.track:focus {
   background: #E5F0E6;
 }
 
-.track.active.selected {
+.track.active:focus {
   background: #D5DEE2;
   background-image: linear-gradient(to bottom, #D5DEE2, #AAB2B9);
 }

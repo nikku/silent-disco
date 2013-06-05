@@ -514,12 +514,14 @@ ngDefine('disco.pages', [
   var JoinRoomController = function JoinRoomController($scope, $location) {
 
     var room = $scope.room;
+    $scope.joining = false;
 
     $scope.join = function() {
-      if (!$scope.name) {
+      if (!$scope.name || $scope.joining) {
         return;
       }
 
+      $scope.joining = true;
       room.socket.emit('channelJoin', { participantName: $scope.name });
     };
 
@@ -610,6 +612,20 @@ ngDefine('disco.pages', [
         '  -' +
         '  <a sound-cloud-track="track"></a>' +
         '</div>'
+    };
+  });
+
+  module.directive('focusable', function() {
+    return {
+      link: function(scope, element, attrs) {
+
+        $(element)
+          .attr('tabindex', 0)
+          .disableSelection()
+          .click(function() {
+            $(this).focus();
+          });
+      }
     };
   });
 
