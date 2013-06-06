@@ -6,28 +6,20 @@ package de.nixis.web.disco.dto;
  */
 public class TrackPosition {
 
-  private String beforeId;
+  private String previous;
 
-  private String afterId;
-
-  public TrackPosition(String beforeId, String afterId) {
-    this.beforeId = beforeId;
-    this.afterId = afterId;
+  public TrackPosition() {
   }
 
-  public String getBeforeId() {
-    return beforeId;
+  public TrackPosition(String previous) {
+    this.previous = previous;
   }
 
-  public void setBeforeId(String beforeId) {
-    this.beforeId = beforeId;
+  public String getPrevious() {
+    return previous;
   }
 
-  public String getAfterId() {
-    return afterId;
-  }
-
-  public void setAfterId(String afterId) {
-    this.afterId = afterId;
+  public void setPrevious(String previous) {
+    this.previous = previous;
   }
 }

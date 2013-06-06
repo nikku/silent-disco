@@ -2,12 +2,15 @@ package de.nixis.web.disco.db;
 
 import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.bson.types.ObjectId;
 import com.github.jmkgreen.morphia.Datastore;
 import com.github.jmkgreen.morphia.Morphia;
 import com.github.jmkgreen.morphia.query.Query;
+import com.github.jmkgreen.morphia.query.UpdateOperations;
+import com.github.jmkgreen.morphia.query.UpdateResults;
 import com.mongodb.MongoClient;
 import de.nixis.web.disco.db.entity.Position;
 import de.nixis.web.disco.db.entity.Position.Status;
@@ -68,17 +71,24 @@ public class Disco {
     getDatastore().merge(room);
   }
 
+  private static Track getLastTrack(String roomName) {
+    return getDatastore().find(Track.class).filter("roomName =", roomName).order("-added, -position").limit(1).get();
+  }
+
   public static List<Track> getTracks(String roomName) {
     return getTracksByRoomQuery(roomName).asList();
   }
 
   private static Query<Track> getTracksByRoomQuery(String roomName) {
-    return getDatastore().find(Track.class).order("position").order("added").filter("deleted", false).filter("roomName =", roomName);
+    return getDatastore().find(Track.class).order("position, added").filter("deleted", false).filter("roomName =", roomName);
   }
 
   public static void moveTrack(String trackId, TrackPosition position) {
 
     Track track = getTrack(trackId);
+    if (track == null) {
+      return;
+    }
 
     updateTrackPosition(track, position);
 
@@ -103,6 +113,12 @@ public class Disco {
     getRoom(roomName);
 
     track.setRoomName(roomName);
+
+    Track lastTrack = getLastTrack(roomName);
+
+    if (lastTrack != null) {
+      track.setPosition(lastTrack.getPosition() + 1);
+    }
 
     if (position != null) {
       updateTrackPosition(track, position);
@@ -144,6 +160,27 @@ public class Disco {
   }
 
   private static void updateTrackPosition(Track track, TrackPosition position) {
-    System.out.println("#notImplemented(updateTrackPosition)");
+
+    long pos = 0;
+
+    if (position.getPrevious() != null) {
+
+      Track previous = getTrack(position.getPrevious());
+      if (previous == null) {
+        return;
+      }
+
+      pos = previous.getPosition() + 1;
+    }
+
+    Query<Track> query = getDatastore()
+        .find(Track.class)
+          .filter("position >= ", pos);
+
+    UpdateOperations<Track> updateOperation = getDatastore().createUpdateOperations(Track.class).inc("position", 1);
+
+    UpdateResults<Track> updateResult = getDatastore().update(query, updateOperation);
+
+    track.setPosition(pos);
   }
 }

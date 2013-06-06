@@ -3,7 +3,6 @@ package de.nixis.web.disco.db;
 import static org.fest.assertions.Assertions.assertThat;
 
 import java.net.UnknownHostException;
-import java.util.Date;
 import java.util.List;
 
 import org.junit.After;
@@ -17,6 +16,7 @@ import de.nixis.web.disco.db.entity.Position.Status;
 import de.nixis.web.disco.db.entity.Room;
 import de.nixis.web.disco.db.entity.Track;
 import de.nixis.web.disco.db.entity.SoundCloudUser;
+import de.nixis.web.disco.dto.TrackPosition;
 
 /**
  *
@@ -70,50 +70,158 @@ public class DatabaseTest {
   }
 
   @Test
-  public void databaseIntegrationTest() {
+  public void shouldCreateRoom() {
 
+    // when
     Room room = Disco.getRoom("foobar");
-
-    assertThat(room.getName()).isEqualTo("foobar");
-
     Room roomAgain = Disco.getRoom("foobar");
 
+    // then
+    assertThat(room.getName()).isEqualTo("foobar");
     assertThat(roomAgain.getName()).isEqualTo(room.getName());
+  }
 
+  @Test
+  public void shouldAddTrack() {
+
+    // given
+    Room room = Disco.getRoom("foobar");
+
+    // when
     Track track = Disco.addTrack(new Track(), room.getName(), null);
-
-    assertThat(track.getRoomName()).isEqualTo(room.getName());
-
     List<Track> tracks = Disco.getTracks(room.getName());
-
-    assertThat(tracks).hasSize(1);
-
     Track firstTrack = tracks.get(0);
 
+    // then
+    assertThat(track.getRoomName()).isEqualTo(room.getName());
+    assertThat(tracks).hasSize(1);
+
     assertThat(firstTrack.getTrackId()).isEqualTo(track.getTrackId());
+  }
 
-    Disco.startPlay(firstTrack.getTrackId(), 0);
+  @Test
+  public void shouldPlayTrack() {
 
+    // given
+    Room room = Disco.getRoom("foobar");
+    Track track = Disco.addTrack(new Track(), room.getName(), null);
+
+    // when
+    Room roomNotPlaying = Disco.getRoom(room.getName());
+    Disco.startPlay(track.getTrackId(), 0);
+    Room roomPlaying = Disco.getRoom(room.getName());
+
+    Position positionInitial = roomNotPlaying.getPosition();
+    Position positionPlaying = roomPlaying.getPosition();
+
+    // then
+    assertThat(positionInitial).isNull();
+
+    assertThat(positionPlaying).isNotNull();
+    assertThat(positionPlaying.getTrackId()).isEqualTo(track.getTrackId());
+    assertThat(positionPlaying.getStatus()).isEqualTo(Status.PLAYING);
+  }
+
+  @Test
+  public void shouldPlayTrackAtPosition() {
+    // given
+    Room room = Disco.getRoom("foobar");
+    Track track = Disco.addTrack(new Track(), room.getName(), null);
+
+    // when
+    Disco.startPlay(track.getTrackId(), 2000);
     Room roomPlaying = Disco.getRoom(room.getName());
 
     Position positionPlaying = roomPlaying.getPosition();
 
-    assertThat(positionPlaying).isNotNull();
-    assertThat(positionPlaying.getTrackId()).isEqualTo(firstTrack.getTrackId());
-    assertThat(positionPlaying.getStatus()).isEqualTo(Status.PLAYING);
+    // then
+    assertThat(positionPlaying.getPosition()).isEqualTo(2000);
+  }
 
-    Disco.stopPlay(firstTrack.getTrackId());
+  @Test
+  public void shouldStopTrack() {
 
-    Disco.addTrack(new Track(), room.getName(), null);
+    // given
+    Room room = Disco.getRoom("foobar");
+    Track track = Disco.addTrack(new Track(), room.getName(), null);
+
+    // when
+    Disco.startPlay(track.getTrackId(), 0);
+    Disco.stopPlay(track.getTrackId());
 
     Room roomAfterStop = Disco.getRoom(room.getName());
 
     Position positionAfterStop = roomAfterStop.getPosition();
 
+    // then
     assertThat(positionAfterStop).isNotNull();
-    assertThat(positionAfterStop.getTrackId()).isEqualTo(firstTrack.getTrackId());
+    assertThat(positionAfterStop.getTrackId()).isEqualTo(track.getTrackId());
     assertThat(positionAfterStop.getStatus()).isEqualTo(Status.STOPPED);
+  }
 
-    assertThat(Disco.getTracks(room.getName())).hasSize(2);
+  @Test
+  public void shouldIncrementPositionOnAdd() {
+
+    // given
+    Room room = Disco.getRoom("foobar");
+
+    // when
+    Track track0 = Disco.addTrack(new Track(), room.getName(), null);
+    Track track1 = Disco.addTrack(new Track(), room.getName(), null);
+    Track track2 = Disco.addTrack(new Track(), room.getName(), null);
+
+    // then
+    assertThat(track0.getPosition()).isLessThan(track1.getPosition());
+    assertThat(track1.getPosition()).isLessThan(track2.getPosition());
+  }
+
+  @Test
+  public void shouldMoveTrack() {
+
+    // given
+    Room room = Disco.getRoom("foobar");
+
+    Track track0 = Disco.addTrack(new Track(), room.getName(), null);
+    Track track1 = Disco.addTrack(new Track(), room.getName(), null);
+    Track track2 = Disco.addTrack(new Track(), room.getName(), null);
+
+    // when
+    // move track0 behind track1
+    Disco.moveTrack(track0.getTrackId(), new TrackPosition(track1.getTrackId()));
+
+    List<Track> tracksAfterMove0 = Disco.getTracks(room.getName());
+
+    // move track2 to front
+    Disco.moveTrack(track2.getTrackId(), new TrackPosition(null));
+
+    List<Track> tracksAfterMove1 = Disco.getTracks(room.getName());
+
+    // then
+    assertThat(tracksAfterMove0.get(0).getTrackId()).isEqualTo(track1.getTrackId());
+    assertThat(tracksAfterMove0.get(1).getTrackId()).isEqualTo(track0.getTrackId());
+    assertThat(tracksAfterMove0.get(2).getTrackId()).isEqualTo(track2.getTrackId());
+
+    assertThat(tracksAfterMove1.get(0).getTrackId()).isEqualTo(track2.getTrackId());
+    assertThat(tracksAfterMove1.get(1).getTrackId()).isEqualTo(track1.getTrackId());
+    assertThat(tracksAfterMove1.get(2).getTrackId()).isEqualTo(track0.getTrackId());
+  }
+
+  @Test
+  public void shouldDeleteTracks() {
+
+    // given
+    Room room = Disco.getRoom("foobar");
+
+    Track track0 = Disco.addTrack(new Track(), room.getName(), null);
+    Track track1 = Disco.addTrack(new Track(), room.getName(), null);
+    Track track2 = Disco.addTrack(new Track(), room.getName(), null);
+
+    // when
+    Disco.remove(track1.getTrackId());
+
+    List<Track> tracksAfterRemove = Disco.getTracks(room.getName());
+
+    // then
+    assertThat(tracksAfterRemove).excludes(track1);
   }
 }

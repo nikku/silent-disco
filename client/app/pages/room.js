@@ -135,7 +135,7 @@ ngDefine('disco.pages', [
 
       var position = data.room.position;
 
-      if (position.status == 'PLAYING') {
+      if (position && position.status == 'PLAYING') {
         var diff = data.time - position.date + position.position;
         resumePlaylist(position.trackId, diff);
       }
@@ -288,12 +288,17 @@ ngDefine('disco.pages', [
         tracks.splice(idx, 1);
       }
 
+      if (!position.previous) {
+        tracks.unshift(track);
+        return;
+      }
+
       var referenceTrack = findTrack({ trackId: position.previous });
 
       if (!referenceTrack) {
         tracks.push(track);
       } else {
-        var insertIdx = tracks.indexOf(referenceTrack);
+        var insertIdx = tracks.indexOf(referenceTrack) + 1;
         tracks.splice(insertIdx, 0, track);
       }
     }
@@ -357,7 +362,16 @@ ngDefine('disco.pages', [
     });
 
     room.socket.on('trackMoved', function(message) {
-      
+      var trackId = message.trackId;
+      var newPosition = message.newPosition;
+
+      var track = findTrack({ trackId: trackId });
+      if (!track) {
+        return;
+      }
+
+      insertTrack(track, newPosition);
+      publishMessage({ title: 'Moved track', track: track, userId: message.user });
     });
 
     room.socket.on('trackRemoved', function(message) {
@@ -395,6 +409,23 @@ ngDefine('disco.pages', [
 
     $scope.movedTrack = function(e, ui) {
 
+      var start = ui.item.sortable.index;
+      var end = ui.item.index();
+
+      var oldPrevious = tracks[start - 1];
+      var newPrevious = tracks[end - 1];
+
+      var track = tracks[end];
+
+      room.socket.emit('moveTrack', {
+        trackId: track.trackId,
+        oldPosition: { previous: (oldPrevious ? oldPrevious.trackId : null) },
+        newPosition: { previous: (newPrevious ? newPrevious.trackId : null) },
+        playlistPosition: $scope.current ? {
+          trackId: $scope.current.trackId,
+          position: $scope.current.position
+        } : null
+      });
     };
 
     $scope.skip = function(track, position) {

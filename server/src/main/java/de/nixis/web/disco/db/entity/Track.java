@@ -44,7 +44,8 @@ public class Track {
   /**
    * The position of the track in the track list
    */
-  private String position;
+  @JsonIgnore
+  private long position = 0;
 
   public Track() {
 
@@ -77,6 +78,14 @@ public class Track {
 
   public void setDeleted(boolean deleted) {
     this.deleted = deleted;
+  }
+
+  public long getPosition() {
+    return position;
+  }
+
+  public void setPosition(long position) {
+    this.position = position;
   }
 
   public String getArtwork_url() {
