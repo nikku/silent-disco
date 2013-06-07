@@ -47,6 +47,18 @@ ngDefine('disco.pages', [
       room.socket.emit('addTrack', { track: trk });
     };
 
+    $scope.undoAction = function(action) {
+
+      var undo = action.undo;
+
+      if (!undo) {
+        return;
+      }
+
+      action.undo = null;
+      room.socket.emit(undo.name, undo.message);
+    };
+
     function findTrack(pattern) {
       return $filter('filter')(room.tracks, pattern)[0];
     }
@@ -182,6 +194,10 @@ ngDefine('disco.pages', [
       Notifications.create(null, participant.name + ':', text.message);
     });
 
+    $scope.clearMessages = function() {
+      room.messages = messages = $scope.messages = [];
+    };
+
     $scope.focusInput = function() {
       $("#chat-input").focus();
     };
@@ -251,7 +267,7 @@ ngDefine('disco.pages', [
   /**
    * Controller that handles the track list
    */
-  var TrackListController = function TrackListController($scope, $filter, Sounds, Notifications) {
+  var TrackListController = function TrackListController($scope, $filter, Sounds, Notifications, $timeout) {
 
     var room = $scope.room;
     var tracks = $scope.tracks = $scope.room.tracks;
@@ -288,19 +304,7 @@ ngDefine('disco.pages', [
         tracks.splice(idx, 1);
       }
 
-      if (!position.previous) {
-        tracks.unshift(track);
-        return;
-      }
-
-      var referenceTrack = findTrack({ trackId: position.previous });
-
-      if (!referenceTrack) {
-        tracks.push(track);
-      } else {
-        var insertIdx = tracks.indexOf(referenceTrack) + 1;
-        tracks.splice(insertIdx, 0, track);
-      }
+      tracks.splice(position.position, 0, track);
     }
 
     function startTrack(track, position) {
@@ -313,13 +317,23 @@ ngDefine('disco.pages', [
       $scope.current = null;
     }
 
-    function publishMessage(message) {
+    function publishMessage(message, undo) {
 
       var title = message.title,
           track = message.track,
           participant = message.participant || findParticipant({ id: message.userId });
 
-      room.messages.push({ type: 'track', track: track, user: participant, message: title });
+      var msg = { type: 'track', track: track, user: participant, message: title };
+
+      room.messages.push(msg);
+
+      if (undo) {
+        msg.undo = undo;
+
+        $timeout(function() {
+          msg.undo = null;
+        }, 20000);
+      }
 
       var name = participant == room.identity ? 'you' : participant.name;
 
@@ -329,6 +343,11 @@ ngDefine('disco.pages', [
     room.socket.on('trackAdded', function(message) {
       var track = message.track;
       var position = message.position;
+
+      if (findTrack({ trackId: track.trackId })) {
+        // track already added
+        return;
+      }
 
       if (!position) {
         room.tracks.push(track);
@@ -363,14 +382,14 @@ ngDefine('disco.pages', [
 
     room.socket.on('trackMoved', function(message) {
       var trackId = message.trackId;
-      var newPosition = message.newPosition;
+      var to = message.to;
 
       var track = findTrack({ trackId: trackId });
       if (!track) {
         return;
       }
 
-      insertTrack(track, newPosition);
+      insertTrack(track, to);
       publishMessage({ title: 'Moved track', track: track, userId: message.user });
     });
 
@@ -387,7 +406,7 @@ ngDefine('disco.pages', [
       }
 
       tracks.splice(tracks.indexOf(track), 1);
-      publishMessage({ title: 'Removed track', track: track, userId: message.user });
+      publishMessage({ title: 'Removed track', track: track, userId: message.user}, message.undo);
     });
 
     $scope.select = function(track) {
@@ -399,28 +418,20 @@ ngDefine('disco.pages', [
     };
 
     $scope.removeTrack = function(track) {
-      if ($scope.current == track) {
-        stopTrack(track);
-      }
-
-      tracks.splice(tracks.indexOf(track), 1);
       room.socket.emit('removeTrack', { trackId: track.trackId });
     };
 
     $scope.movedTrack = function(e, ui) {
 
-      var start = ui.item.sortable.index;
-      var end = ui.item.index();
+      var from = ui.item.sortable.index;
+      var to = ui.item.index();
 
-      var oldPrevious = tracks[start - 1];
-      var newPrevious = tracks[end - 1];
-
-      var track = tracks[end];
+      var track = tracks[to];
 
       room.socket.emit('moveTrack', {
         trackId: track.trackId,
-        oldPosition: { previous: (oldPrevious ? oldPrevious.trackId : null) },
-        newPosition: { previous: (newPrevious ? newPrevious.trackId : null) },
+        from: { position: from },
+        to: { position: to },
         playlistPosition: $scope.current ? {
           trackId: $scope.current.trackId,
           position: $scope.current.position
@@ -493,7 +504,7 @@ ngDefine('disco.pages', [
     });
   };
 
-  TrackListController.$inject = [ '$scope', '$filter', 'Sounds', 'Notifications' ];
+  TrackListController.$inject = [ '$scope', '$filter', 'Sounds', 'Notifications', '$timeout' ];
 
 
   /**

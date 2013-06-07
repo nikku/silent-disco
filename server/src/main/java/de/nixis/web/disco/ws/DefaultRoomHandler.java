@@ -1,5 +1,7 @@
 package de.nixis.web.disco.ws;
 
+import de.nixis.web.disco.dto.PlaylistPositionSync;
+import de.nixis.web.disco.dto.TrackAndPosition;
 import de.nixis.web.disco.room.AbstractRoomHandler;
 
 import de.nixis.web.disco.dto.ChannelJoined;
@@ -11,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 import de.nixis.web.disco.db.Disco;
+import de.nixis.web.disco.db.entity.Position;
+import de.nixis.web.disco.db.entity.Position.Status;
 import de.nixis.web.disco.db.entity.Room;
 import de.nixis.web.disco.db.entity.Track;
 import de.nixis.web.disco.dto.AddTrack;
@@ -31,6 +35,7 @@ import de.nixis.web.disco.dto.Participant;
 import de.nixis.web.disco.dto.RemoveTrack;
 import de.nixis.web.disco.dto.TrackMoved;
 import de.nixis.web.disco.dto.TrackRemoved;
+import de.nixis.web.disco.dto.UndoRemoveTrack;
 import de.nixis.web.disco.room.RoomContext;
 import io.netty.channel.Channel;
 import io.netty.util.Attribute;
@@ -108,9 +113,15 @@ public class DefaultRoomHandler extends AbstractRoomHandler<Base> {
     } else
     if (message instanceof RemoveTrack) {
       RemoveTrack removeTrack = (RemoveTrack) message;
-      Disco.remove(removeTrack.getTrackId());
+      Disco.delete(removeTrack.getTrackId());
 
-      sendAll(ctx, ctx.channel(), new TrackRemoved(removeTrack.getTrackId(), participantId));
+      sendAll(ctx, new TrackRemoved(removeTrack.getTrackId(), participantId));
+    } else
+    if (message instanceof UndoRemoveTrack) {
+      UndoRemoveTrack undoRemoveTrack = (UndoRemoveTrack) message;
+      TrackAndPosition trackAndPosition = Disco.undelete(undoRemoveTrack.getTrackId());
+
+      sendAll(ctx, new TrackAdded(trackAndPosition.getTrack(), trackAndPosition.getPosition(), participantId));
     } else
     if (message instanceof StartTrack) {
       StartTrack startTrack = (StartTrack) message;
@@ -134,11 +145,23 @@ public class DefaultRoomHandler extends AbstractRoomHandler<Base> {
       MoveTrack moveTrack = (MoveTrack) message;
 
       String trackId = moveTrack.getTrackId();
-      TrackPosition newPosition = moveTrack.getNewPosition();
+      TrackPosition newPosition = moveTrack.getTo();
 
       Disco.moveTrack(trackId, newPosition);
 
       sendAll(ctx, ctx.channel(), new TrackMoved(newPosition, trackId, participantId));
+    }
+
+    if (message instanceof PlaylistPositionSync) {
+      PlaylistPositionSync syncMessage = (PlaylistPositionSync) message;
+      Position position = syncMessage.getPlaylistPosition();
+
+      if (position != null) {
+        position.setDate(new Date());
+        position.setStatus(Status.PLAYING);
+      }
+
+      Disco.updatePlaylistPosition(ctx.getRoomName(), position);
     }
   }
 

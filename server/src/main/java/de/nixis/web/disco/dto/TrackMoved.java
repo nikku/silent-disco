@@ -6,23 +6,23 @@ package de.nixis.web.disco.dto;
  */
 public class TrackMoved extends TrackOperation {
 
-  private TrackPosition newPosition;
+  private TrackPosition to;
 
-  public TrackMoved(TrackPosition newPosition, String trackId, String user) {
+  public TrackMoved(TrackPosition to, String trackId, String user) {
     super(trackId, user);
-    
-    this.newPosition = newPosition;
+
+    this.to = to;
   }
 
   public TrackMoved() {
 
   }
 
-  public TrackPosition getNewPosition() {
-    return newPosition;
+  public TrackPosition getTo() {
+    return to;
   }
 
-  public void setNewPosition(TrackPosition newPosition) {
-    this.newPosition = newPosition;
+  public void setTo(TrackPosition to) {
+    this.to = to;
   }
 }

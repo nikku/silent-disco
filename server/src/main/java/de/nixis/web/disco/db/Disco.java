@@ -2,7 +2,6 @@ package de.nixis.web.disco.db;
 
 import java.net.UnknownHostException;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -16,6 +15,7 @@ import de.nixis.web.disco.db.entity.Position;
 import de.nixis.web.disco.db.entity.Position.Status;
 import de.nixis.web.disco.db.entity.Room;
 import de.nixis.web.disco.db.entity.Track;
+import de.nixis.web.disco.dto.TrackAndPosition;
 import de.nixis.web.disco.dto.TrackPosition;
 
 /**
@@ -50,11 +50,7 @@ public class Disco {
       throw new RuntimeException("#stopPlay(): track not found with id " + trackId);
     }
 
-    Room room = getRoomByNameQuery(track.getRoomName()).get();
-
-    room.setPosition(new Position(track.getTrackId(), 0, Status.STOPPED, new Date()));
-
-    getDatastore().merge(room);
+    updatePlaylistPosition(track.getRoomName(), new Position(track.getTrackId(), 0, Status.STOPPED));
   }
 
   public static void startPlay(String trackId, int position) {
@@ -64,11 +60,7 @@ public class Disco {
       throw new RuntimeException("#startPlay(): track not found with id " + trackId);
     }
 
-    Room room = getRoomByNameQuery(track.getRoomName()).get();
-
-    room.setPosition(new Position(track.getTrackId(), position, Status.PLAYING, new Date()));
-
-    getDatastore().merge(room);
+    updatePlaylistPosition(track.getRoomName(), new Position(track.getTrackId(), position, Status.PLAYING));
   }
 
   private static Track getLastTrack(String roomName) {
@@ -77,6 +69,10 @@ public class Disco {
 
   public static List<Track> getTracks(String roomName) {
     return getTracksByRoomQuery(roomName).asList();
+  }
+
+  private static Track getTrackAtPosition(String roomName, int position) {
+    return getTracksByRoomQuery(roomName).offset(position).limit(1).get();
   }
 
   private static Query<Track> getTracksByRoomQuery(String roomName) {
@@ -95,7 +91,7 @@ public class Disco {
     getDatastore().merge(track);
   }
 
-  public static void remove(String trackId) {
+  public static void delete(String trackId) {
 
     Track track = getTrack(trackId);
     if (track == null) {
@@ -105,6 +101,20 @@ public class Disco {
     track.setDeleted(true);
 
     getDatastore().merge(track);
+  }
+
+  public static TrackAndPosition undelete(String trackId) {
+
+    Track track = getTrack(trackId);
+    if (track == null) {
+      return null;
+    }
+
+    track.setDeleted(false);
+
+    getDatastore().merge(track);
+
+    return new TrackAndPosition(track, getTrackPosition(track));
   }
 
   public static Track addTrack(Track track, String roomName, TrackPosition position) {
@@ -159,13 +169,24 @@ public class Disco {
     return getDatastore().find(Room.class, "name =", name);
   }
 
+  private static TrackPosition getTrackPosition(Track track) {
+    long count = getDatastore()
+               .find(Track.class)
+                 .filter("roomName =", track.getRoomName())
+                 .filter("position <", track.getPosition())
+                 .countAll();
+
+    // TODO: unsafe cast from long to int
+    return new TrackPosition((int) count);
+  }
+
   private static void updateTrackPosition(Track track, TrackPosition position) {
 
     long pos = 0;
 
-    if (position.getPrevious() != null) {
+    if (position.getPosition() != 0) {
 
-      Track previous = getTrack(position.getPrevious());
+      Track previous = getTrackAtPosition(track.getRoomName(), position.getPosition());
       if (previous == null) {
         return;
       }
@@ -175,6 +196,7 @@ public class Disco {
 
     Query<Track> query = getDatastore()
         .find(Track.class)
+          .filter("roomName = ", track.getRoomName())
           .filter("position >= ", pos);
 
     UpdateOperations<Track> updateOperation = getDatastore().createUpdateOperations(Track.class).inc("position", 1);
@@ -182,5 +204,13 @@ public class Disco {
     UpdateResults<Track> updateResult = getDatastore().update(query, updateOperation);
 
     track.setPosition(pos);
+  }
+
+  public static void updatePlaylistPosition(String roomName, Position position) {
+    Room room = getRoomByNameQuery(roomName).get();
+
+    room.setPosition(position);
+
+    getDatastore().merge(room);
   }
 }

@@ -39,9 +39,9 @@ html, body {
 .ctn-scroll::-webkit-scrollbar{width:8px;height:8px;}
 .ctn-scroll::-webkit-scrollbar-button:start:decrement,
 .ctn-scroll::-webkit-scrollbar-button:end:increment{display:block;height:0;background-color:transparent;}
-.ctn-scroll::-webkit-scrollbar-track-piece{background-color:#FAFAFA;-webkit-border-radius:0;-webkit-border-bottom-right-radius:8px;-webkit-border-bottom-left-radius:8px;}
-.ctn-scroll::-webkit-scrollbar-thumb:vertical{height:50px;background-color:#999;-webkit-border-radius:8px;}
-.ctn-scroll::-webkit-scrollbar-thumb:horizontal{width:50px;background-color:#999;-webkit-border-radius:8px;}
+.ctn-scroll::-webkit-scrollbar-track-piece{background-color:#FAFAFA;-webkit-border-radius:0;-webkit-border-bottom-right-radius:2px;-webkit-border-bottom-left-radius:2px;}
+.ctn-scroll::-webkit-scrollbar-thumb:vertical{height:50px;background-color:#999;-webkit-border-radius:2px;}
+.ctn-scroll::-webkit-scrollbar-thumb:horizontal{width:50px;background-color:#999;-webkit-border-radius:2px;}
 
 .ctn-scroll {
   overflow: auto;
@@ -156,6 +156,36 @@ html, body {
   right: 10px;
   top: 10px;
   bottom: 90px;
+}
+
+.messages .controls {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+
+  display: none;
+  opacity: 0.2;
+}
+
+.messages:hover .controls {
+  display: block;
+}
+
+.messages .controls:hover {
+  opacity: 1.0;
+}
+
+.messages .controls a {
+  display: inline-block;
+  padding: 5px;
+}
+
+.message i {
+  opacity: 0.3;
+}
+
+.message:hover i {
+  opacity: 0.8;
 }
 
 /**

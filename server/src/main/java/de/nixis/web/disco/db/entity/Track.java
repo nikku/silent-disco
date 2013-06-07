@@ -147,4 +147,9 @@ public class Track {
   public String getTrackId() {
     return trackId.toString();
   }
+
+  @Override
+  public String toString() {
+    return "Track(id=" + getTrackId() + ")";
+  }
 }

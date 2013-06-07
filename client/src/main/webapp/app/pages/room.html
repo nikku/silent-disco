@@ -27,6 +27,12 @@
     <!-- chat window -->
     <div ng-controller="ChatController" class="chat">
       <div class="messages ctn-scroll" ng-click="focusInput()">
+        <div class="controls">
+          <a href title="Clear messages" ng-click="clearMessages()">
+            <i class="icon-remove"></i>
+          </a>
+        </div>
+
         <div ng-repeat="message in messages" class="message" ng-switch="message.type">
           <span ng-switch-when="text">
             <strong ng-show="message.user" ng-switch="isCurrent(message.user)">
@@ -46,6 +52,9 @@
           <span ng-switch-default>
             <span ng-bind-html="message.message | linky:'_blank'"></span>
           </span>
+          <a href title="Undo action" ng-if="message.undo" ng-click="undoAction(message)" class="undo">
+            <i class="icon-share-alt"></i>
+          </a>
         </div>
       </div>
 

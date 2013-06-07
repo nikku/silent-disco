@@ -10,9 +10,15 @@ public class TrackOperation extends Base {
 
   private String user;
 
+  private UndoAction undo;
+
   public TrackOperation(String trackId, String user) {
     this.trackId = trackId;
     this.user = user;
+  }
+
+  public TrackOperation(String trackId) {
+    this.trackId = trackId;
   }
 
   public TrackOperation() {
@@ -33,5 +39,13 @@ public class TrackOperation extends Base {
 
   public String getUser() {
     return user;
+  }
+
+  public UndoAction getUndo() {
+    return undo;
+  }
+
+  public void setUndo(UndoAction undo) {
+    this.undo = undo;
   }
 }

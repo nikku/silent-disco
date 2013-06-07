@@ -187,12 +187,12 @@ public class DatabaseTest {
 
     // when
     // move track0 behind track1
-    Disco.moveTrack(track0.getTrackId(), new TrackPosition(track1.getTrackId()));
+    Disco.moveTrack(track0.getTrackId(), new TrackPosition(1));
 
     List<Track> tracksAfterMove0 = Disco.getTracks(room.getName());
 
     // move track2 to front
-    Disco.moveTrack(track2.getTrackId(), new TrackPosition(null));
+    Disco.moveTrack(track2.getTrackId(), new TrackPosition(0));
 
     List<Track> tracksAfterMove1 = Disco.getTracks(room.getName());
 
@@ -207,7 +207,48 @@ public class DatabaseTest {
   }
 
   @Test
-  public void shouldDeleteTracks() {
+  public void shouldUpdateTracksOnTrackMoveInAffectedRoomOnly() {
+
+    // given
+    Room room0 = Disco.getRoom("foobar");
+    Room room1 = Disco.getRoom("asdf");
+
+    Track track0 = Disco.addTrack(new Track(), room0.getName(), null);
+    Track track3 = Disco.addTrack(new Track(), room1.getName(), null);
+    Track track4 = Disco.addTrack(new Track(), room1.getName(), null);
+    Track track1 = Disco.addTrack(new Track(), room0.getName(), null);
+    Track track2 = Disco.addTrack(new Track(), room0.getName(), null);
+    Track track5 = Disco.addTrack(new Track(), room1.getName(), null);
+
+    // when
+    // move track0 behind track1
+    Disco.moveTrack(track0.getTrackId(), new TrackPosition(1));
+
+    List<Track> tracksAfterMove0 = Disco.getTracks(room0.getName());
+
+    // move track2 to front
+    Disco.moveTrack(track2.getTrackId(), new TrackPosition(0));
+
+    List<Track> tracksAfterMove1 = Disco.getTracks(room0.getName());
+
+    List<Track> tracksInRoom1 = Disco.getTracks(room1.getName());
+
+    // then
+    assertThat(tracksAfterMove0.get(0).getTrackId()).isEqualTo(track1.getTrackId());
+    assertThat(tracksAfterMove0.get(1).getTrackId()).isEqualTo(track0.getTrackId());
+    assertThat(tracksAfterMove0.get(2).getTrackId()).isEqualTo(track2.getTrackId());
+
+    assertThat(tracksAfterMove1.get(0).getTrackId()).isEqualTo(track2.getTrackId());
+    assertThat(tracksAfterMove1.get(1).getTrackId()).isEqualTo(track1.getTrackId());
+    assertThat(tracksAfterMove1.get(2).getTrackId()).isEqualTo(track0.getTrackId());
+
+    assertThat(tracksInRoom1.get(0).getTrackId()).isEqualTo(track3.getTrackId());
+    assertThat(tracksInRoom1.get(1).getTrackId()).isEqualTo(track4.getTrackId());
+    assertThat(tracksInRoom1.get(2).getTrackId()).isEqualTo(track5.getTrackId());
+  }
+
+  @Test
+  public void shouldDeleteTrack() {
 
     // given
     Room room = Disco.getRoom("foobar");
@@ -217,11 +258,34 @@ public class DatabaseTest {
     Track track2 = Disco.addTrack(new Track(), room.getName(), null);
 
     // when
-    Disco.remove(track1.getTrackId());
+    Disco.delete(track1.getTrackId());
 
-    List<Track> tracksAfterRemove = Disco.getTracks(room.getName());
+    List<Track> tracksAfterDelete = Disco.getTracks(room.getName());
 
     // then
-    assertThat(tracksAfterRemove).excludes(track1);
+    assertThat(tracksAfterDelete.toString()).doesNotContain(track1.toString());
+    assertThat(tracksAfterDelete.toString()).contains(track0.toString());
+    assertThat(tracksAfterDelete.toString()).contains(track2.toString());
+  }
+
+  @Test
+  public void shouldUndeleteTrack() {
+
+    // given
+    Room room = Disco.getRoom("foobar");
+
+    Track track0 = Disco.addTrack(new Track(), room.getName(), null);
+    Track track1 = Disco.addTrack(new Track(), room.getName(), null);
+    Track track2 = Disco.addTrack(new Track(), room.getName(), null);
+
+    Disco.delete(track1.getTrackId());
+
+    // when
+    Disco.undelete(track1.getTrackId());
+
+    List<Track> tracksAfterUndelete = Disco.getTracks(room.getName());
+
+    // then
+    assertThat(tracksAfterUndelete.toString()).contains(track1.toString());
   }
 }

@@ -6,11 +6,11 @@ import de.nixis.web.disco.db.entity.Position;
  *
  * @author nico.rehwaldt
  */
-public class MoveTrack extends TrackOperation {
+public class MoveTrack extends TrackOperation implements PlaylistPositionSync {
 
-  private TrackPosition oldPosition;
+  private TrackPosition from;
 
-  private TrackPosition newPosition;
+  private TrackPosition to;
 
   private Position playlistPosition;
 
@@ -18,20 +18,20 @@ public class MoveTrack extends TrackOperation {
 
   }
 
-  public TrackPosition getOldPosition() {
-    return oldPosition;
+  public TrackPosition getFrom() {
+    return from;
   }
 
-  public void setOldPosition(TrackPosition oldPosition) {
-    this.oldPosition = oldPosition;
+  public void setFrom(TrackPosition from) {
+    this.from = from;
   }
 
-  public TrackPosition getNewPosition() {
-    return newPosition;
+  public TrackPosition getTo() {
+    return to;
   }
 
-  public void setNewPosition(TrackPosition newPosition) {
-    this.newPosition = newPosition;
+  public void setTo(TrackPosition to) {
+    this.to = to;
   }
 
   public Position getPlaylistPosition() {

@@ -11,5 +11,7 @@ public class TrackRemoved extends TrackOperation {
 
   public TrackRemoved(String trackId, String user) {
     super(trackId, user);
+
+    super.setUndo(new UndoAction(new UndoRemoveTrack(trackId)));
   }
 }

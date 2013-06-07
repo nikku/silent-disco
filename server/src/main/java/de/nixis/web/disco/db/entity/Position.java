@@ -21,9 +21,9 @@ public class Position {
 
   private int position;
 
-  public Position(String trackId, int position, Status status, Date date) {
+  public Position(String trackId, int position, Status status) {
     this.trackId = trackId;
-    this.date = date;
+    this.date = new Date();
     this.status = status;
     this.position = position;
   }
@@ -39,8 +39,16 @@ public class Position {
     return status;
   }
 
+  public void setStatus(Status status) {
+    this.status = status;
+  }
+
   public Date getDate() {
     return date;
+  }
+
+  public void setDate(Date date) {
+    this.date = date;
   }
 
   public int getPosition() {
