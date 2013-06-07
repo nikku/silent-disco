@@ -54,6 +54,12 @@ public class DefaultRoomHandler extends AbstractRoomHandler<Base> {
     if (message instanceof ChannelJoin) {
       ChannelJoin join = (ChannelJoin) message;
 
+      // check if already joined,
+      // if so leave before new join
+      if (participantId != null) {
+        handleMessage(ctx, new ChannelLeave());
+      }
+
       String roomName = ctx.getRoomName();
 
       String participantName = findFreeName(ctx, join.getParticipantName());
