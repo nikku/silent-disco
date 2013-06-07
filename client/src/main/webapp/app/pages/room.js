@@ -337,7 +337,7 @@ ngDefine('disco.pages', [
 
       var name = participant == room.identity ? 'you' : participant.name;
 
-      Notifications.create(null, name, title + ' ' + track.name);
+      Notifications.create(null, name, title + ' ' + track.title);
     }
 
     room.socket.on('trackAdded', function(message) {
