@@ -5,8 +5,12 @@
     <div class="title" track-title track="track">
     </div>
     <div class="controls">
-      <button class="btn btn-small btn-link" style="opacity: 0.3" ng-click="mute()" title="Mute track"><i class="icon-volume-off"></i></button>
-      <button class="btn btn-small btn-link" ng-click="stop()" title="Stop track"><i class="icon-stop"></i></button>
+      <button tabindex="-1" class="btn btn-small btn-link" style="opacity: 0.3" ng-click="mute()" title="Mute track">
+        <i class="icon-volume-off"></i>
+      </button>
+      <button tabindex="-1" class="btn btn-small btn-link" ng-click="stop()" title="Stop track">
+        <i class="icon-stop"></i>
+      </button>
     </div>
 
     <div class="track-progress">

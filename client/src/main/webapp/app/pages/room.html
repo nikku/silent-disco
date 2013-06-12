@@ -62,7 +62,7 @@
         <textarea ng-model="input" id="chat-input" placeholder="Type message or song url" ng-keydown="isEnter($event) && send(input, $event)"></textarea>
         <div class="note">
           Messages will be sent to all members of this room. 
-          Links to songs or playlists on <a target="_blank" href="https://soundcloud.com">SoundCloud</a> will be resolved and added to the room.
+          Links to songs or playlists on <a target="_blank" tabindex="-1" href="https://soundcloud.com">SoundCloud</a> will be resolved and added to the room.
         </div>
       </form>
     </div>
@@ -92,7 +92,8 @@
            ng-class="{ active: isPlaying(track), selected: isSelected(track) }"
            ng-switch="isPlaying(track)"
            ng-click="select(track)"
-           focusable>
+           focusable
+           ng-focus="select(track)">
 
         <div ng-switch-when="true"
           current-track
@@ -110,7 +111,7 @@
             <div class="controls">
               <div class="position">
                 <span>{{ track.duration | time }}</span>
-                <button class="btn btn-small btn-link" ng-click="start(track)" title="Start track"><i class="icon-play"></i></button>
+                <button class="btn btn-small btn-link" tabindex="-1" ng-click="start(track)" title="Start track"><i class="icon-play"></i></button>
               </div>
             </div>
           </div>

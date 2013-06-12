@@ -55,28 +55,14 @@ html, body {
   right: 0;
 }
 
-@media (max-width: 979px) {
-  .ctn-fixed {
-    top: 51px;
-  }
-}
-
-@media (max-width: 767px) {
-  .ctn-fixed .ctn-side {
-    display: none;
-  }
-
-  .ctn-fixed .ctn-main {
-    right: 0;
-  }
-}
-
 .ctn {
   float: left;
   height: 100%;
 
   border-left: solid 1px #DDD;
   overflow: auto;
+
+  box-sizing: border-box;
 }
 
 .navbar .brand {
@@ -128,16 +114,15 @@ html, body {
 .chat form {
   position: absolute;
   left: 10px;
-  right: 24px;
+  right: 10px;
   bottom: 0;
   margin: 0;
 }
 
 .chat textarea {
   width: 100%;
-  max-width: 100%;
-  min-width: 100%;
   margin-bottom: 5px;
+  box-sizing: border-box;
 }
 
 .note {
@@ -161,7 +146,7 @@ html, body {
 .messages .controls {
   position: absolute;
   top: -5px;
-  right: -5px;
+  right: 0;
 
   display: none;
   opacity: 0.2;
@@ -383,7 +368,7 @@ html, body {
   position: fixed;
   top: 41px;
   right: 0;
-  width: 34%;
+  width: 35%;
 
   z-index: 10;
   display: none;
@@ -400,4 +385,10 @@ html, body {
 .track.active:focus {
   background: #D5DEE2;
   background-image: linear-gradient(to bottom, #D5DEE2, #AAB2B9);
+}
+
+@media (max-width: 979px) {
+  .ctn-fixed {
+    top: 51px;
+  }
 }

@@ -630,7 +630,7 @@ ngDefine('disco.pages', [
         track: '=soundCloudTrack'
       },
       replace: true,
-      template: '<a ng-href="{{ track.permalink_url }}" target="_blank">{{ track.title}}</a>'
+      template: '<a ng-href="{{ track.permalink_url }}" tabindex="-1" target="_blank">{{ track.title}}</a>'
     };
   });
 
@@ -640,7 +640,7 @@ ngDefine('disco.pages', [
         user: '=soundCloudUser'
       },
       replace: true,
-      template: '<a ng-href="{{ user.permalink_url }}" target="_blank">{{ user.username }}</a>'
+      template: '<a ng-href="{{ user.permalink_url }}" tabindex="-1" target="_blank">{{ user.username }}</a>'
     };
   });
 
@@ -668,6 +668,11 @@ ngDefine('disco.pages', [
           .disableSelection()
           .click(function() {
             $(this).focus();
+          })
+          .focus(function(e) {
+            if (attrs.ngFocus) {
+              scope.$eval(attrs.ngFocus);
+            }
           });
       }
     };
