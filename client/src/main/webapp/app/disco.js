@@ -49,9 +49,15 @@ ngDefine('disco', [
     $routeProvider.otherwise({ redirectTo: '/room/lobby' });
 
     function getUri(id) {
-      var uri = $("base").attr(id);
       if (!id) {
         throw new Error("Uri base for " + id + " could not be resolved");
+      }
+      var uri = $("base").attr(id);
+
+      if (!uri) { // not configured, try to use app host
+        var hostname = document.location.hostname;
+        var port = document.location.port.length > 0 ? ":"+document.location.port : ""
+        return "ws://"+hostname+port+"/";
       }
 
       return uri;
