@@ -6,9 +6,7 @@ ngDefine('disco', [
   'module:bootstrap:angular-bootstrap',
   'module:disco.pages:./pages/main',
   'module:disco.services:./services/main',
-  'module:disco.services:./services/sounds',
   'module:common.web.uri:web-common/services/uri',
-  'module:common.web.if:web-common/directives/if',
   'module:ui.sortable:angular-ui/sortable'
 ], function(module, $) {
 
