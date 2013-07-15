@@ -1,22 +1,35 @@
-ngDefine('disco.services', [
-  'angular'
+ngDefine('disco.services.socket', [
+  'angular',
+  'module:common.web.uri:web-common/services/uri'
 ], function(module, angular) {
 
   module.factory('socket', function($rootScope, Uri) {
 
-    var Socket;
+    var nextId = 0;
+    var debug = debug;
 
-    (function() {
+    function createWebSocket(uri) {
+      var WS = window.WebSocket || window.MozWebSocket;
+
+      return new WS(uri);
+    }
+
+    var Socket = function(id, uri) {
 
       var callbacks = {},
           connection = null,
           outgoing = [],
           opened = false;
 
-      function createWebSocket(uri) {
-        var WS = window.WebSocket || window.MozWebSocket;
+      var self = this;
 
-        return new WS(uri);
+      this.id = id;
+      this.uri = uri;
+
+      function debug(direction, type, data) {
+        if (self.debugging) {
+          console.log("socket #" + id + " SEND " + type);
+        }
       }
 
       function send(data) {
@@ -25,17 +38,22 @@ ngDefine('disco.services', [
         } else {
           var str = JSON.stringify(data);
 
+          for (var key in data) {
+            debug("SEND", key, data[key]);
+          }
+
           connection.send(str);
         }
       }
 
       function receiveMessage(type, message, e) {
+        debug(receive, type, message);
 
-          var typeCallbacks = getCallbacks(type);
+        var typeCallbacks = getCallbacks(type);
 
-          for (var i = 0; i < typeCallbacks.length; i++) {
-            typeCallbacks[i].apply(null, [ message, e, type ]);
-          }
+        for (var i = 0; i < typeCallbacks.length; i++) {
+          typeCallbacks[i].apply(null, [ message, e, type ]);
+        }
       }
 
       function receiveEnvelope(envelope, e) {
@@ -100,15 +118,13 @@ ngDefine('disco.services', [
         };
       }
 
-      Socket = function(uri) {
-        connection = createWebSocket(uri);
-        callbacks = {};
-        outgoing = [];
+      connection = createWebSocket(uri);
+      callbacks = {};
+      outgoing = [];
 
-        initSocket(this, connection);
-      };
+      initSocket(this, connection);
 
-      angular.extend(Socket.prototype, {
+      angular.extend(this, {
         emit: function(type, message) {
           var envelope = {};
           envelope[type] = message;
@@ -130,29 +146,95 @@ ngDefine('disco.services', [
           }, 0);
         },
 
+        /**
+         * Registers a callback for a given message type
+         *
+         * @param type {string} the message type
+         * @param callback {Function} the callback to be called with (message, type) 
+         *                            when the message is being received
+         */
         on: function(type, callback) {
           getCallbacks(type).push(callback);
+        },
+
+        /**
+         * Registers a callback for a given message type that is
+         * executed once only, i.e. gets removed when a message of 
+         * the given type is received.
+         *
+         * @param type {string}
+         * @param callback {Function}
+         */
+        once: function(type, callback) {
+
+          var self = this;
+          var fn = function(data, type) {
+            self.off(type, fn);
+
+            callback(data, type);
+          }
+
+          this.on(type, fn);
+        },
+
+        /**
+         * Removes registration for messages by callback, callback + type or type
+         */
+        off: function(type, callback) {
+          if (angular.isFunction(type)) {
+            callback = type;
+            type = null;
+          }
+
+          function removeFromArray(e, array) {
+            var idx = array.indexOf(e);
+            if (idx != -1) {
+              array.splice(idx, 1);
+            }
+          }
+
+          if (type) {
+            var cbs = getCallbacks(type);
+
+            if (callback) {
+              removeFromArray(callback, cbs);
+            } else {
+              // empty callbacks
+              cbs.length = 0;
+            }
+          } else {
+            for (var i = 0, cbs; !!(cbs = callbacks[i]); i++) {
+              removeFromArray(callback, cbs);
+            }
+          }
         },
 
         close: function () {
           connection.close();
         }
       });
-    })();
+    };
 
     return {
-      sockets : {},
+      sockets: {},
 
-      getSocket : function (prefix) {
-        if (!this.sockets[prefix]) {
-          this.sockets[prefix] = new Socket(Uri.appUri('ws://'+prefix+'/websocket'));
-        }
-        return this.sockets[prefix];
+      createSocket: function(roomId) {
+        return new Socket(nextId++, Uri.appUri('ws://' + roomId + '/websocket'));
       },
 
-      closeSocket : function (socketId) {
-        this.sockets[socketId].close();
-        delete this.sockets[socketId];
+      getSocket: function(roomId) {
+        if (!this.sockets[roomId]) {
+          this.sockets[roomId] = this.createSocket(roomId);
+        }
+        return this.sockets[roomId];
+      },
+
+      closeSocket: function(roomId) {
+        var socket = this.sockets[roomId];
+        if (socket) {
+          socket.close();
+          delete this.sockets[roomId];
+        }
       }
     };
   });

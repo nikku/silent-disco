@@ -1,5 +1,5 @@
 ngDefine('disco.services', [
-  './socket',
+  'module:disco.services.socket:./socket',
   './sounds',
   './notifications'
 ], function(module) {
