@@ -36,6 +36,11 @@ html, body {
   min-height: 100%;
 }
 
+textarea, .ctn {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
 .ctn-scroll::-webkit-scrollbar{width:8px;height:8px;}
 .ctn-scroll::-webkit-scrollbar-button:start:decrement,
 .ctn-scroll::-webkit-scrollbar-button:end:increment{display:block;height:0;background-color:transparent;}
@@ -61,8 +66,6 @@ html, body {
 
   border-left: solid 1px #DDD;
   overflow: auto;
-
-  box-sizing: border-box;
 }
 
 .navbar .brand {
@@ -77,6 +80,7 @@ html, body {
   color: #F7F7F7;
   text-shadow: 0 1px 0 #18750B;
 
+  -moz-box-shadow: -1px 0 0 rgba(255, 255, 255, .08);
   box-shadow: -1px 0 0 rgba(255, 255, 255, .08);
   border-color: rgba(173, 73, 0, .7) rgba(255, 255, 255, .15) #AD4900;
 }
@@ -122,7 +126,6 @@ html, body {
 .chat textarea {
   width: 100%;
   margin-bottom: 5px;
-  box-sizing: border-box;
 }
 
 .note {
