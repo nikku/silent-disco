@@ -1,9 +1,9 @@
 package de.nixis.web.disco.json;
 
 import java.io.StringWriter;
+import java.util.List;
 import org.codehaus.jackson.map.ObjectMapper;
 import de.nixis.web.disco.dto.Base;
-import io.netty.buffer.MessageBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
@@ -15,7 +15,7 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 public class PojoEncoder extends MessageToMessageEncoder<Base> {
 
   @Override
-  protected void encode(ChannelHandlerContext ctx, Base msg, MessageBuf<Object> out) throws Exception {
+  protected void encode(ChannelHandlerContext ctx, Base msg, List<Object> out) throws Exception {
 
     StringWriter writer = new StringWriter();
 

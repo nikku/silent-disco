@@ -20,7 +20,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundMessageHandlerAdapter;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
@@ -34,7 +34,7 @@ import io.netty.util.DefaultAttributeMap;
  *
  * @author nico.rehwaldt
  */
-public class RoomAwareHandler extends ChannelInboundMessageHandlerAdapter<Base> {
+public class RoomAwareHandler extends SimpleChannelInboundHandler<Base> {
 
   public static final AttributeKey<String> ROOM_ID = new AttributeKey<String>("roomId");
 
@@ -58,7 +58,8 @@ public class RoomAwareHandler extends ChannelInboundMessageHandlerAdapter<Base> 
     }
   }
 
-  public void messageReceived(ChannelHandlerContext ctx, Base msg) throws Exception {
+  @Override
+  protected void channelRead0(ChannelHandlerContext ctx, Base msg) throws Exception {
     handleMessage(ctx, msg);
   }
 
@@ -85,9 +86,10 @@ public class RoomAwareHandler extends ChannelInboundMessageHandlerAdapter<Base> 
   /**
    * Extracts the room id from the websocket url
    */
-  public static class RoomIdExtractor extends ChannelInboundMessageHandlerAdapter<FullHttpRequest> {
+  public static class RoomIdExtractor extends SimpleChannelInboundHandler<FullHttpRequest> {
 
-    public void messageReceived(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
+    @Override
+    protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
       String uri = msg.getUri();
 
       Matcher matcher = Pattern.compile("/([^/]+)/websocket").matcher(uri);
@@ -99,7 +101,7 @@ public class RoomAwareHandler extends ChannelInboundMessageHandlerAdapter<Base> 
       }
 
       msg.retain();
-      ctx.nextInboundMessageBuffer().add(msg);
+      ctx.fireChannelRead(msg);
     }
 
     @Override

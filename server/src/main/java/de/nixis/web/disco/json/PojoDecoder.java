@@ -1,9 +1,8 @@
 package de.nixis.web.disco.json;
 
 
+import java.util.List;
 import de.nixis.web.disco.dto.Base;
-import de.nixis.web.disco.json.DecodeHelper;
-import io.netty.buffer.MessageBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
@@ -15,7 +14,7 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 public class PojoDecoder extends MessageToMessageDecoder<TextWebSocketFrame> {
 
   @Override
-  protected void decode(ChannelHandlerContext ctx, TextWebSocketFrame frame, MessageBuf<Object> out) throws Exception {
+  protected void decode(ChannelHandlerContext ctx, TextWebSocketFrame frame, List<Object> out) throws Exception {
 
     String msg = frame.text();
 

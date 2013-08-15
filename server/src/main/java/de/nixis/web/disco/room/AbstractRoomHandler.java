@@ -15,7 +15,7 @@ public abstract class AbstractRoomHandler<T> implements RoomHandler<T> {
   protected void send(RoomContext ctx, final Channel channel, final T msg) {
     ctx.executor().execute(new Runnable() {
       public void run() {
-        channel.write(msg);
+        channel.writeAndFlush(msg);
       }
     });
   }
@@ -34,7 +34,7 @@ public abstract class AbstractRoomHandler<T> implements RoomHandler<T> {
       ctx.executor().execute(new Runnable() {
         public void run() {
 
-          channel.write(msg);
+          channel.writeAndFlush(msg);
         }
       });
     }
