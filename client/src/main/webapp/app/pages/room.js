@@ -722,9 +722,11 @@ ngDefine('disco.pages', [
       replace: true,
       template:
         '<div class="title" title="{{ track.user.username }} - {{ track.title }}">' +
-        '  <a sound-cloud-user="track.user"></a>' +
-        '  -' +
-        '  <a sound-cloud-track="track"></a>' +
+        '  <div>' + 
+        '    <a sound-cloud-user="track.user"></a>' +
+        '    -' +
+        '    <a sound-cloud-track="track"></a>' +
+        '  </div>' + 
         '</div>'
     };
   });

@@ -12,6 +12,7 @@
   width: 16px;
   height: 16px;
   line-height: 16px;
+  display: inline-block;
 }
 
 /** utilities */
@@ -301,7 +302,6 @@ textarea, .ctn {
 
   line-height: 39px;
   padding-right: 5px;
-  overflow: hidden;
 }
 
 .track .box {
@@ -312,6 +312,10 @@ textarea, .ctn {
 .track .box > * {
   display: table-cell;
   vertical-align: top;
+}
+
+.track .title > div {
+  height: 40px;
 }
 
 .track img {
@@ -331,10 +335,6 @@ textarea, .ctn {
 
 .track .title > * {
   white-space: normal;
-}
-
-.track .controls {
-
 }
 
 .track .controls {
