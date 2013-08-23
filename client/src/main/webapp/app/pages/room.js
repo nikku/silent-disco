@@ -1,7 +1,8 @@
 ngDefine('disco.pages', [
   'angular',
-  'jquery'
-], function(module, angular, $) {
+  'jquery',
+  'require'
+], function(module, angular, $, require) {
 
   var cp = function(obj, attrs) {
     var copy = {};
@@ -13,20 +14,22 @@ ngDefine('disco.pages', [
     return copy;
   };
 
+  var WORD_REGEXP = /^[\w-]+$/;
+
   /**
    * Root controller of a room
    */
-  var RoomController = function($scope, $routeParams, $filter, socket, Sounds) {
+  var RoomController = [ '$scope', '$filter', '$location', '$timeout', 'socket', 'Sounds', 'room',
+                 function($scope, $filter, $location, $timeout, socket, Sounds, room) {
 
-    var room = $scope.room = {
-      id: $routeParams['id'],
-      connected: false,
-      participants: [],
-      messages: [],
-      tracks: []
-    };
+
+    $scope.room = room;
 
     room.socket = socket.getSocket(room.id);
+
+    $scope.$watch('room.connected', function(connected) {
+      $scope.page = connected ? 'pages/room/main.html' : 'pages/room/join.html';
+    });
 
     $scope.$on('$destroy', function (event, next) {
       Sounds.stop(null);
@@ -37,7 +40,7 @@ ngDefine('disco.pages', [
 
     $scope.addTrack = function(track) {
       if (!track.streamable) {
-        room.messages.push({ message: "Not adding track " + track.title + ": Track is not streamable" });
+        room.messages.push({ message: 'Not adding track ' + track.title + ': Track is not streamable' });
         return;
       }
 
@@ -114,19 +117,19 @@ ngDefine('disco.pages', [
 
     room.socket.on('__open', function() {
 
-      console.log("SOCKET OPENED");
+      console.log('SOCKET OPENED');
     });
 
     room.socket.on('__openTimeout', function() {
-      console.log("OPEN TIMED OUT");
+      console.log('OPEN TIMED OUT');
     });
 
     room.socket.on('__close', function() {
-      console.log("SOCKET CLOSED");
+      console.log('SOCKET CLOSED');
     });
 
     room.socket.on('__error', function(e) {
-      console.log("SOCKET ERROR", e);
+      console.log('SOCKET ERROR', e);
     });
 
     room.socket.on('channelJoined', function(data) {
@@ -147,9 +150,14 @@ ngDefine('disco.pages', [
 
       var position = data.room.position;
 
+      var resumeDelay = 2000;
+
       if (position && position.status == 'PLAYING') {
-        var diff = data.time - position.date + position.position;
-        resumePlaylist(position.trackId, diff);
+        var diff = data.time - position.date + position.position + resumeDelay;
+
+        $timeout(function() {
+          resumePlaylist(position.trackId, diff);
+        }, resumeDelay);
       }
     });
 
@@ -167,16 +175,15 @@ ngDefine('disco.pages', [
         room.messages.push({ message: 'Participant <' + participant.name + '> left the room'});
       }
     });
-  };
-
-  RoomController.$inject = [ '$scope', '$routeParams', '$filter', 'socket', 'Sounds'];
+  }];
 
 
   /**
    * Controller that handles the input field and 
    * chat area.
    */
-  var ChatController = function($scope, $filter, Sounds, Notifications) {
+  var ChatController = [ '$scope', '$filter', 'Sounds', 'Notifications', 
+                 function($scope, $filter, Sounds, Notifications) {
 
     var room = $scope.room;
     var messages = $scope.messages = room.messages;
@@ -199,7 +206,7 @@ ngDefine('disco.pages', [
     };
 
     $scope.focusInput = function() {
-      $("#chat-input").focus();
+      $('#chat-input').focus();
     };
 
     $scope.send = function(input, event) {
@@ -250,24 +257,22 @@ ngDefine('disco.pages', [
     };
 
     $scope.$watch('messages.length', function(newValue) {
-      var lastMsg = $(".chat").find(".message:last-child");
+      var lastMsg = $('.chat').find('.message:last-child');
       if (!lastMsg.length) {
         return;
       }
 
-      $(".messages").animate({
-         scrollTop: $(".messages").prop("scrollHeight")
+      $('.messages').animate({
+         scrollTop: $('.messages').prop('scrollHeight')
       }, 200);
     });
-  };
-
-  ChatController.$inject = [ '$scope', '$filter', 'Sounds', 'Notifications' ];
-
+  }];
 
   /**
    * Controller that handles the track list
    */
-  var TrackListController = function TrackListController($scope, $filter, Sounds, Notifications, $timeout) {
+  var TrackListController = [ '$scope', '$filter', 'Sounds', 'Notifications', '$timeout', 
+                     function ($scope, $filter, Sounds, Notifications, $timeout) {
 
     var room = $scope.room;
     var tracks = $scope.tracks = $scope.room.tracks;
@@ -283,7 +288,7 @@ ngDefine('disco.pages', [
       }
     }
 
-    $(".ctn-playlist").hover(function() {
+    $('.ctn-playlist').hover(function() {
       $(document).on('keyup', observeKeyPress);
     }, function() {
       $(document).off('keyup', observeKeyPress);
@@ -467,7 +472,7 @@ ngDefine('disco.pages', [
 
       var idx = tracks.indexOf(current);
 
-      var element = $(".tracks .track").eq(idx);
+      var element = $('.tracks .track').eq(idx);
       var parent = element.parent();
 
       function isScrolledIntoView(element, container) {
@@ -478,7 +483,7 @@ ngDefine('disco.pages', [
         var elementTop = element.position().top;
         var elementBottom = elementTop + element.height();
 
-        var topInView = elementTop >= 0;
+        var topInView = elementTop >= -1;
         var bottomInView = elementBottom <= containerHeight;
 
         return topInView && bottomInView;
@@ -502,15 +507,13 @@ ngDefine('disco.pages', [
         startTrack(nextTrack);
       }
     });
-  };
-
-  TrackListController.$inject = [ '$scope', '$filter', 'Sounds', 'Notifications', '$timeout' ];
+  }];
 
 
   /**
    * Controller that handles the list of participants
    */
-  var ParticipantListController = function ParticipantListController($scope) {
+  var ParticipantListController = [ '$scope', function ParticipantListController($scope) {
 
     var room = $scope.room;
     var participants = $scope.participants = room.participants;
@@ -547,50 +550,117 @@ ngDefine('disco.pages', [
         });
       });
     };
-  };
-
-  ParticipantListController.$inject = [ '$scope' ];
+  }];
 
 
   /**
    * Controller that handles joining a room
    */
-  var JoinRoomController = function JoinRoomController($scope, $location) {
+  var JoinRoomController = [ '$scope', '$location', function($scope, $location) {
 
     var room = $scope.room;
-    $scope.joining = false;
+    $scope.data = {
+      joining: false
+    };
 
-    $scope.join = function() {
-      if (!$scope.name || $scope.joining) {
+    $scope.word = WORD_REGEXP;
+
+    $scope.toggle = function(button) {
+      var form;
+
+      if ($scope._open) {
+
+        form = $scope[$scope._open  + 'Form'];
+        form.value.$setViewValue('');
+        form.$setPristine();
+
+        $scope.data[$scope._open] = null;
+      }
+
+      $scope._open = $scope.open == button ? null : button;
+    };
+    
+    $scope.open = function(button) {
+      return $scope._open == button;
+    };
+
+    $scope.join = function(name) {
+      if ($scope.jumpForm && !$scope.joinForm.$valid) {
         return;
       }
 
-      $scope.joining = true;
-      room.socket.emit('channelJoin', { participantName: $scope.name });
+      if ($scope.data.joining) {
+        return;
+      }
+
+      $scope.data.joining = true;
+      room.socket.emit('channelJoin', { participantName: name });
     };
 
-    // shortcut to join channel with a given name
-    $scope.name = $location.search().user;
+    $scope.jump = function(differentRoom) {
+      if (!$scope.jumpForm.$valid) {
+        return;
+      }
 
-    if ($scope.name) {
-      $scope.join();
+      $location.path('/room/' + differentRoom);
+      $location.search('join', true);
+    };
+
+    function initFromSearch() {
+      var search = $location.search(), 
+          name = search.name, 
+          join = search.join || name;
+
+      angular.extend($scope.data, {
+        name: name, 
+        join: join
+      });
+
+      if (join) {
+        $scope.toggle('join');  
+      }
+
+      if (name) {
+        $scope.join(name);
+      }
     }
-  };
 
-  JoinRoomController.$inject = [ '$scope', '$location' ];
+    initFromSearch();
+  }];
 
 
   var RouteConfig = function($routeProvider) {
     $routeProvider.when('/room/:id', {
       templateUrl: 'pages/room.html',
-      controller: RoomController
+      controller: RoomController, 
+      resolve: {
+        room: [ '$rootScope', '$q', '$route', function($rootScope, $q, $route) {
+
+          var roomId = $route.current.params.id;
+
+          if (!WORD_REGEXP.test(roomId || '')) {
+            $location.path('/');
+            return $q.reject(new Error('invalid  room id'));
+          }
+
+          var room = $rootScope.room = {
+            id: roomId,
+            connected: false,
+            participants: [],
+            messages: [],
+            tracks: []
+          };
+
+          return $q.when(room);
+        }]
+      }
     });
   };
 
   var timeFilter = function() {
 
     function leadingZero(number) {
-      return number < 10 ? "0" + number : number;
+      return number < 10 ? '0' + number : number;
     }
 
     function fmtTime(time) {
@@ -600,7 +670,7 @@ ngDefine('disco.pages', [
       var min =  Math.floor(time / 1000 / 60) % 60;
       var s = Math.floor(time / 1000) % 60;
 
-      return (h ? (h + ":") : "") + leadingZero(min) + ":" + leadingZero(s);
+      return (h ? (h + ':') : '') + leadingZero(min) + ':' + leadingZero(s);
     }
 
     return function(input, uppercase) {
@@ -681,10 +751,10 @@ ngDefine('disco.pages', [
   module.directive('currentTrack', function() {
     return {
       scope: {
-        track: "=track",
-        onSkip: "&",
-        onStop: "&",
-        onMute: "&"
+        track: '=track',
+        onSkip: '&',
+        onStop: '&',
+        onMute: '&'
       },
       replace: true,
       templateUrl: 'common/current-track.html',

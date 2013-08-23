@@ -1,27 +1,43 @@
 ngDefine('disco', [
   'jquery',
   'module:ng',
-  'module:ngResource:angular-resource',
   'module:ngSanitize:angular-sanitize',
-  'module:bootstrap:angular-bootstrap',
+  'module:ngRoute:angular-route',
+  'module:ngTouch:angular-touch',
+  'module:ngAnimate:angular-animate',
   'module:disco.pages:./pages/main',
   'module:disco.services:./services/main',
   'module:common.web.uri:web-common/services/uri',
-  'module:ui.sortable:angular-ui/sortable'
+  'module:ui.sortable:angular-ui/sortable',
+  'module:ui.bootstrap:ui-bootstrap'
 ], function(module, $) {
 
-  var DefaultController = function DefaultController($scope) {
+  var DefaultController = [ '$scope', '$rootScope', function($scope, $rootScope) {
 
-  };
+    $rootScope.$watch('room', function(newValue) {
+      $scope.roomId = newValue ? newValue.id : null;
+    });
+  }];
 
-  DefaultController.$inject = [ '$scope' ];
-
-  var NavigationController = function NavigationController($scope, Sounds, Notifications) {
+  var NavigationController = [ '$scope', '$dialog', 'Sounds', 'Notifications', 
+                      function ($scope, $dialog, Sounds, Notifications) {
 
     $scope.openAbout = function() {
-      console.log($("#about-box"));
+      var dialog = $dialog.dialog({
+        dialogFade: true, 
+        backdropFade: true,
+        templateUrl: 'common/about.html',
+        controller: [ '$scope', 'dialog', function($scope, dialog) { 
+          
+          $scope.dialog = dialog;
 
-      $("#about-box").modal('show');
+          $scope.close = function() {
+            dialog.close();
+          };
+        }]
+      });
+
+      dialog.open();
     };
 
     $scope.toggleMute = function () {
@@ -39,11 +55,11 @@ ngDefine('disco', [
     $scope.isNotificationsEnabled = function() {
       return Notifications.enabled();
     };
-  };
+  }];
 
-  NavigationController.$inject = [ '$scope', 'Sounds', 'Notifications' ];
+  var ModuleConfig = [ '$routeProvider', 'UriProvider', 
+    function($routeProvider, UriProvider) {
 
-  var ModuleConfig = function($routeProvider, UriProvider) {
     $routeProvider.otherwise({ redirectTo: '/room/lobby' });
 
     function getUri(id) {
@@ -55,16 +71,14 @@ ngDefine('disco', [
       if (!uri) { // not configured, try to use app host
         var hostname = document.location.hostname;
         var port = document.location.port.length > 0 ? ":"+document.location.port : ""
-        return "ws://"+hostname+port+"/";
+        return "ws://" + hostname + port + "/";
       }
 
       return uri;
-    }
+    };
 
     UriProvider.replace('ws://', getUri("ws-base"));
-  };
-
-  ModuleConfig.$inject = ['$routeProvider', 'UriProvider'];
+  }];
 
   module
     .config(ModuleConfig)

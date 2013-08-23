@@ -1,31 +1,36 @@
-<div id="about-box" class="modal hide fade">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-    <h3>About silent disco</h3>
-  </div>
-  <div class="modal-body">
-    <p>
-      silent disco synchronizes devices while they play songs hosted on 
-      <a target="_blank" href="https://soundcloud.com">SoundCloud</a> (c).
-    </p>
+<div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" ng-click="close()" aria-hidden="true">&times;</button>
+      <h4 class="modal-title">About silent disco</h4>
+    </div>
+    <div class="modal-body">
+      <p>
+        silent disco synchronizes devices while they play songs hosted on 
+        <a target="_blank" href="https://soundcloud.com">SoundCloud</a> (c).
+      </p>
 
-    <p>
-      Built using awesome technologies such as 
+      <p>
+        Built using awesome technologies such as 
 
-      <a target="_blank" href="http://angularjs.org">AngularJS</a>, 
-      <a target="_blank" href="http://requirejs.org">RequireJS</a> and 
-      <a target="_blank" href="http://twitter.github.io/bootstrap/">Twitter Bootstrap</a>.
+        <a target="_blank" href="http://angularjs.org">AngularJS</a>, 
+        <a target="_blank" href="http://requirejs.org">RequireJS</a> and 
+        <a target="_blank" href="http://twitter.github.io/bootstrap/">Twitter Bootstrap</a>.
 
-      Backend realized using <a target="_blank" href="http://netty.io/">Netty</a>.
-    </p>
+        Backend realized using <a target="_blank" href="http://netty.io/">Netty</a>.
+      </p>
 
-    <p>
-      Created by <a target="_blank" href="https://github.com/Nikku">Nikku</a>, with contributions by <a target="_blank" href="https://github.com/adrobisch">adrobisch</a>, 
-      forkable on <a target="_blank" href="https://github.com/Nikku/silent-disco">GitHub</a>.
-    </p>
+      <p>
+        Created by <a target="_blank" href="https://github.com/Nikku">Nikku</a>, with contributions by <a target="_blank" href="https://github.com/adrobisch">adrobisch</a>, 
+        forkable on <a target="_blank" href="https://github.com/Nikku/silent-disco">GitHub</a>.
+      </p>
 
-    <p>
-      Inspired by <a href="https://github.com/mgibowski/loudcloud">loudcloud</a>.
-    </p>
-  </div>
-</div>
+      <p>
+        Inspired by <a href="https://github.com/mgibowski/loudcloud">loudcloud</a>.
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default" ng-click="close()">Close</button>
+    </div>
+  </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->

@@ -1,0 +1,72 @@
+<div class="ctn ctn-main ctn-join">
+
+  <div class="jumbotron">
+    <div class="container">
+      <h1>Listen up!</h1>
+      <p>
+        Hear the sounds of the moment.
+        Together with yo fellows.
+      </p>
+      <div ng-controller="JoinRoomController">
+        <form name="joinForm" ng-submit="join(data.name)" ng-switch="open('join')">
+          <div class="swap-switch-container">
+            <button 
+              ng-switch-when="false"
+              ng-click="toggle('join')"
+              class="btn btn-primary btn-lg swap-switch-animation"
+              type="button">
+              Join {{ room.id }}
+            </button>
+
+            <div ng-switch-when="true" class="input-group input-group-lg swap-switch-animation">
+              <input class="form-control" type="text" name="value" placeholder="Your nickname" 
+                     autofocus
+                     required 
+                     ng-disabled="data.joining"
+                     ng-pattern="word"
+                     ng-model="data.name" />
+              <span class="input-group-btn" ng-switch="open('jump')">
+                <button ng-disabled="data.joining || joinForm.$invalid" class="btn btn-primary btn-lg" type="submit">
+                  Enter Room
+                </button>
+              </span>
+            </div><!-- /input-group -->
+          </div>
+          <small class="note" ng-if="joinForm.$invalid && !joinForm.$pristine">
+            Try a name consisting of <code>a-z</code> <code>_</code> <code>-</code>.
+          </small>
+        </form>
+
+        <form ng-hide="data.join" name="jumpForm" ng-submit="jump(data.jump)" ng-switch="open('jump')">
+          <div class="swap-switch-container" >
+            <button 
+              ng-switch-when="false"
+              ng-disabled="data.joining"
+              ng-click="toggle('jump')"
+              class="btn btn-default btn-lg swap-switch-animation"
+              type="button">
+              Go to different room
+            </button>
+
+            <div ng-switch-when="true" class="input-group input-group-lg swap-switch-animation">
+              <input class="form-control" type="text" name="value" placeholder="Room name"
+                     autofocus
+                     required
+                     ng-pattern="word"
+                     ng-model="data.jump" />
+              <span class="input-group-btn" ng-switch="open('jump')">
+                <button ng-disabled="jumpForm.$invalid" class="btn btn-default btn-lg" type="submit">
+                  Go
+                </button>
+              </span>
+            </div><!-- /input-group -->
+          </div>
+
+          <small class="note" ng-if="jumpForm.$invalid && !jumpForm.$pristine">
+            Try a name consisting of <code>a-z</code> <code>_</code> <code>-</code>.
+          </small>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -12,8 +12,6 @@
   width: 16px;
   height: 16px;
   line-height: 16px;
-  background-position: 0 0;
-  opacity: 1.0;
 }
 
 /** utilities */
@@ -54,7 +52,7 @@ textarea, .ctn {
 
 .ctn-fixed {
   position: fixed;
-  top: 41px;
+  top: 51px;
   left: 0;
   bottom: 0;
   right: 0;
@@ -68,30 +66,59 @@ textarea, .ctn {
   overflow: auto;
 }
 
-.navbar .brand {
-  margin-left: 5px;
+.navbar-default .navbar-brand, .navbar-default .navbar-brand:hover {
+  margin-left: 10px;
   background-color: #58b123;
+  color: #FCFCFC;
 
-  padding: 10px 20px 10px;
-  background: #58b123;
-  background: -webkit-linear-gradient(#58b123,#4ea917);
-  background: linear-gradient(#58b123,#4ea917);
-
-  color: #F7F7F7;
-  text-shadow: 0 1px 0 #18750B;
-
-  -moz-box-shadow: -1px 0 0 rgba(255, 255, 255, .08);
-  box-shadow: -1px 0 0 rgba(255, 255, 255, .08);
+  text-shadow: 1px 1px 1px #18750B;
+  
+  -moz-box-shadow: -2px 0 0 rgba(255, 255, 255, .08);
+       box-shadow: -2px 0 0 rgba(255, 255, 255, .08);
+  
   border-color: rgba(173, 73, 0, .7) rgba(255, 255, 255, .15) #AD4900;
 }
 
-.navbar .nav a {
-  border: 1px solid rgba(0,0,0, .07);
-  border-width: 0 1px;
+.swap-switch-container {
+  position:relative;
+  height: 50px;
+}
+
+.swap-switch-animation.ng-enter,
+.swap-switch-animation.ng-leave {
+  -webkit-transition:0.25s linear all;
+  -moz-transition:0.25s linear all;
+  -o-transition:0.25s linear all;
+  transition:0.25s linear all;
+  position:absolute;
+  top: 0;
+}
+
+.swap-switch-animation.btn.ng-enter,
+.swap-switch-animation.btn.ng-leave {
+  top: 1px;
+}
+
+.swap-switch-animation.ng-enter {
+  opacity: 0.0;
+}
+
+.swap-switch-animation.ng-leave,
+.swap-switch-animation.ng-enter.ng-enter-active {
+  opacity: 1.0;
+}
+
+.swap-switch-animation.ng-leave.ng-leave-active {
+  opacity: 0.0;
 }
 
 .ctn-main {
   width: 50%;
+}
+
+.ctn-join {
+  padding: 10px;
+  width: 100%;
 }
 
 .ctn-side {
@@ -126,15 +153,28 @@ textarea, .ctn {
 .chat textarea {
   width: 100%;
   margin-bottom: 5px;
+  
+  border: solid 1px #CCC;
+  border-radius: 4px;
+  padding: 3px 6px;
 }
 
 .note {
-  font-size: 0.80em;
+  font-size: 0.83em;
   color: #AAA;
   margin-bottom: 10px;
 }
 
-.chat .note:hover {
+.jumbotron .note {
+  font-size: 60%;
+  margin-bottom: 30px;
+}
+
+.jumbotron form {
+  margin-bottom: 15px;
+}
+
+.jumbotron .note, .chat .note:hover {
   color: #333;
 }
 
@@ -229,16 +269,16 @@ textarea, .ctn {
  */
 
 .tracks {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  height: 100%;
 }
 
 .tracks .btn {
   opacity: 0.5;
   padding: 2px 5px;
+}
+
+.tracks .btn .glyphicon {
+  top: 0;
 }
 
 .tracks .btn:hover {
@@ -254,55 +294,56 @@ textarea, .ctn {
 }
 
 .track {
-  position: relative;
-
-  height: 34px;
-
+  height: 39px;
+  width: 100%;
   border-bottom: solid 1px #CCC;
   background-color: #FCFCFC;
+
+  line-height: 39px;
+  padding-right: 5px;
+  overflow: hidden;
 }
 
-.track .controls {
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  overflow: hidden;
+.track .box {
+  width: 100%;
+  display: table;
+}
+
+.track .box > * {
+  display: table-cell;
+  vertical-align: top;
 }
 
 .track img {
-  position: absolute;
-  left: 5px;
-
+  margin: 2px 5px;
   padding: 1px;
   border: solid 1px #AAA;
   background: #FFF;
+
+  width: 34px; 
+  height: 34px; 
 }
 
-.track img { width: 26px; height: 26px; top: 2px; bottom: 2px; }
-
-.track .info {
-  left: 40px;
-  top: 0;
-  bottom: 0;
-  right: 5px;
-
-  position: absolute;
-  line-height: 35px;
-}
-
-.track .title {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  right: 100px;
-
+.track .title, .track .info {
   overflow: hidden;
+  width: 100%;
+}
+
+.track .title > * {
+  white-space: normal;
+}
+
+.track .controls {
+
+}
+
+.track .controls {
+  white-space: nowrap;
+  margin-left: 10px;
 }
 
 .track.active {
-  height: 80px;
+  height: 71px;
 
   background: #DDD;
   background-image: linear-gradient(to bottom, #DDD, #BBB);
@@ -310,11 +351,6 @@ textarea, .ctn {
 
 .track.fixed-top {
   border-bottom: solid 2px #fff;
-}
-
-.track.active .title {
-  right: 55px;
-  height: 28px;
 }
 
 .track.active .btn {
@@ -326,30 +362,11 @@ textarea, .ctn {
   opacity: 1.0;
 }
 
-.track.active img { width: 66px; height: 66px; top: 5px; bottom: 5px; }
-.track.active .info {
-  left: 80px;
-  top: 5px;
-  bottom: 5px;
-  right: 5px;
-}
-
-.track.active .title {
-  right: 180px;
-}
+.track.active img { width: 66px; height: 66px; }
 
 .track-progress {
   position: relative;
-}
-
-.track-progress {
-  padding-top: 20px;
   line-height: 20px;
-
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  right: 0;
 }
 
 .track-progress .current-position {
@@ -369,13 +386,21 @@ textarea, .ctn {
 
 .ctn-playlist .fixed-top {
   position: fixed;
-  top: 41px;
+  top: 51px;
   right: 0;
   width: 35%;
 
   z-index: 10;
   display: none;
 }
+/*
+.ctn-playlist.show-fixed-top .tracks .track.active {
+  opacity: 0.1;
+}
+
+.ctn-playlist.show-fixed-top {
+  padding-top: 51px;
+}*/
 
 .ctn-playlist.show-fixed-top .fixed-top {
   display: block;
@@ -390,12 +415,19 @@ textarea, .ctn {
   background-image: linear-gradient(to bottom, #D5DEE2, #AAB2B9);
 }
 
-@media (max-width: 979px) {
-  .ctn-fixed {
-    top: 51px;
+
+/* bootstrap 3 ui fixes */
+@media (min-width: 769px) {
+  .navbar-collapse .navbar-nav.navbar-right:last-child {
+    margin-right: 0px;
   }
-  
-  .ctn-playlist .fixed-top {
-    top: 51px;
-  }
+}
+
+.modal {
+  overflow: auto;
+}
+
+.navbar-text {
+  margin-right: 15px;
+  margin-left: 15px;
 }

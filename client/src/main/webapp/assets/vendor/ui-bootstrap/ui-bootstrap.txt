@@ -1,0 +1,2 @@
+modules = dialog,tooltip,dropdown-toggle
+version = 0.5.0

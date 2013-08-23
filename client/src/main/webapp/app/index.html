@@ -16,40 +16,62 @@
     <script src="../assets/vendor/require/require.js"></script>
     <script src="bootstrap.js"></script>
 
-    <base href="." />
+    <base href="." ws-base="ws://localhost:8080/" />
   </head>
   <body ng-controller="DefaultController" ng-cloak>
-    <div>
-      <div class="navbar navbar-fixed-top">
-        <div class="navbar-inner" ng-controller="NavigationController">
-          <div class="container-fluid">
-            <a class="brand" href="#/">
-              <span>silent disco</span>
-            </a>
-            <a title="Toggle mute" class="btn btn-small" ng-click="toggleMute()">
-              <i ng-class="{ 'icon-volume-up': !isMuted(), 'icon-volume-off': isMuted() }"></i>
-            </a>
-            <a title="Toggle desktop notifications" class="btn btn-small" ng-click="toggleNotifications()">
-              <i class="icon-comment" ng-class="{ 'disabled' : !isNotificationsEnabled() }"></i>
-            </a>
-            <ul class="nav">
-              <li>
-                <a href ng-class="{ active: aboutOpen }" ng-click="openAbout()">About</a>
-              </li>
-            </ul>
-            <ul class="nav pull-right">
-              <li><a target="_blank" href="https://github.com/Nikku/silent-disco/issues">Issues</a></li>
-            </ul>
-          </div>
-        </div>
+    <nav class="navbar navbar-default navbar-static-top" role="navigation">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex7-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#/">
+          silent disco
+        </a>
+        <p class="navbar-text navbar-room-name" title="#{{ roomId }}" ng-if="roomId">#{{ roomId }}</p>
       </div>
 
-      <!-- content view -->
-      <div ng-view>
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse navbar-ex7-collapse" ng-controller="NavigationController">
         
-      </div>
-    </div>
+        <ul class="nav navbar-nav">
+          <li>
+            <a href
+               data-toggle="tooltip" 
+               data-placement="bottom" 
+               title="{{ (isNotificationsEnabled() ? 'Disable' : 'Enable') + ' desktop notifications' }}"
+               ng-click="toggleNotifications()">
 
-    <div ng-include="'common/about.html'"></div>
+              <span class="glyphicon glyphicon-comment" ng-class="{ 'disabled' : !isNotificationsEnabled() }"></span>
+            </a>
+          </li>
+          <li>
+            <a href data-toggle="tooltip"
+                    data-placement="bottom"
+                    title="{{ (isMuted() ? 'Unmute' : 'Mute') + ' room' }}"
+                    ng-click="toggleMute()">
+              <span class="glyphicon" ng-class="{ 'glyphicon-volume-up': !isMuted(), 'glyphicon-volume-off': isMuted() }"></span>
+            </a>
+          </li>
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+          <li>
+            <a href ng-class="{ active: aboutOpen }" ng-click="openAbout()">About</a>
+          </li>
+          <li>
+            <a target="_blank" href="https://github.com/Nikku/silent-disco/issues">Issues</a>
+          </li>
+        </ul>
+      </div><!-- /.navbar-collapse -->
+    </nav>
+
+    <!-- content view -->
+    <div ng-view>
+      
+    </div>
   </body>
 </html>
