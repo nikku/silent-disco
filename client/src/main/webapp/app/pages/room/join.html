@@ -26,8 +26,11 @@
                      ng-pattern="word"
                      ng-model="data.name" />
               <span class="input-group-btn" ng-switch="open('jump')">
-                <button ng-disabled="data.joining || joinForm.$invalid" class="btn btn-primary btn-lg" type="submit">
+                <button ng-if="!data.joining" ng-disabled="joinForm.$invalid" class="btn btn-primary btn-lg" type="submit">
                   Enter Room
+                </button>
+                <button ng-if="data.joining" class="btn btn-default btn-lg" disabled>
+                  <span class="icon-loading"></span>
                 </button>
               </span>
             </div><!-- /input-group -->
