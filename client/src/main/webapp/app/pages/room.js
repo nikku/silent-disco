@@ -182,8 +182,8 @@ ngDefine('disco.pages', [
    * Controller that handles the input field and 
    * chat area.
    */
-  var ChatController = [ '$scope', '$filter', 'Sounds', 'Notifications', 
-                 function($scope, $filter, Sounds, Notifications) {
+  var ChatController = [ '$scope', '$filter', '$window', 'Sounds', 'Notifications', 
+                 function($scope, $filter, $window, Sounds, Notifications) {
 
     var room = $scope.room;
     var messages = $scope.messages = room.messages;
@@ -206,6 +206,12 @@ ngDefine('disco.pages', [
     };
 
     $scope.focusInput = function() {
+      var selection = $window.getSelection();
+
+      if (selection && selection.type == 'Range') {
+        return;
+      }
+
       $('#chat-input').focus();
     };
 
