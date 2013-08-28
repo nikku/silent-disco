@@ -1,9 +1,16 @@
-define(['disco/services/socket'], function() {
+define([
+  'angular',
+  './helper.js',
+  'disco/services/socket'
+], function(angular, helper) {
+
+  // extend current context with helper methods
+  angular.extend(this, helper);
 
   var ROOM_NAME = "test-room-" + Math.random();
   var WEBSOCKET_LOCATION = "localhost:8080/" + ROOM_NAME;
   
-  console.log("Using " + WEBSOCKET_LOCATION + " as backend websocket endpoint");
+  log("Using " + WEBSOCKET_LOCATION + " as backend websocket endpoint");
 
   var TRACK_1 = {
     id: '111', 
@@ -28,7 +35,7 @@ define(['disco/services/socket'], function() {
     var socket1, socket2, socket3;
 
     // configure test module
-  	beforeEach(function () {
+    beforeEach(function () {
       angular.module('testmodule', [ 'disco.services.socket' ]);
     });
 
@@ -37,112 +44,31 @@ define(['disco/services/socket'], function() {
     
     // close sockets after end of test
     afterEach(inject(function(socket) {
-      if (socket1) {
-        socket1.close();
-      }
-
-      if (socket2) {
-        socket2.close();
-      }
-
-      if (socket3) {
-        socket3.close();
-      }
+      closeAll([socket1, socket2, socket3]);
     }));
 
-    function createSocket(socket) {
-
-      var s = socket.createSocket(WEBSOCKET_LOCATION);
-      s.debugging = true;
-
-      var connected;
-
-      runs(function() {
-
-        s.on('__open', function() {
-          connected = true;
-        });
-      });
-
-      waitsFor(function() {
-        return connected;
-      }, "socket connected");
-
-      return s;
-    }
-
-    function connectToRoom(s, name, fn) {
-
-      var connected;
-
-      runs(function() {
-        s.emit('channelJoin', { participantName: name });
-        s.once('channelJoined', function(data) {
-
-          // tracks, room and time are defined
-          expect(data.tracks).toBeDefined();
-          expect(data.room).toBeDefined();
-          expect(data.room.name).toBe(ROOM_NAME);
-          expect(data.time).toBeDefined();
-
-          fn(data);
-          connected = true;
-        });
-      });
-
-      waitsFor(function() {
-        return connected;
-      }, "receive channelJoined on " + name);
-    }
-
-    function addTrack(socket, track, fn) {
-
-      var trackAdded1, trackAdded2;
-      
-      runs(function() {
-
-        socket1.emit('addTrack', { track: track });
-        socket1.once('trackAdded', function(message) {
-          trackAdded1 = message.track;
-        });
-
-        socket2.once('trackAdded', function(message) {
-          trackAdded2 = message.track;
-        });
-      });
-
-      waitsFor(function() {
-        return trackAdded1 && trackAdded2;
-      }, "track added received on both sockets");
-
-      runs(function() {
-        expect(trackAdded1).toEqual(trackAdded2);
-        fn(trackAdded1);
-      });
-    }
-
-    it("should not fail", inject(function(socket) {
+    it("should pass basic tests", inject(function(socket) {
 
 
       /////////////// create all sockets ///////////////////
 
       runs(function() {
-        socket1 = createSocket(socket);
+        socket1 = createSocket(socket, WEBSOCKET_LOCATION);
       });
 
       runs(function() {
-        socket2 = createSocket(socket);
+        socket2 = createSocket(socket, WEBSOCKET_LOCATION);
       });
 
       runs(function() {
-        socket3 = createSocket(socket);
+        socket3 = createSocket(socket, WEBSOCKET_LOCATION);
       });
 
 
       /////////////// connect sockets to room ///////////////////
 
       runs(function() {
-        connectToRoom(socket1, 'socket1', function(roomData) {
+        connectToRoom(socket1, 'socket1', ROOM_NAME, function(roomData) {
           var participants = roomData.participants, 
               tracks = roomData.tracks,
               room = roomData.room,
@@ -155,7 +81,7 @@ define(['disco/services/socket'], function() {
       });
 
       runs(function() {
-        connectToRoom(socket2, 'socket2', function(roomData) {
+        connectToRoom(socket2, 'socket2', ROOM_NAME, function(roomData) {
           var participants = roomData.participants, 
               tracks = roomData.tracks,
               room = roomData.room,
@@ -178,7 +104,7 @@ define(['disco/services/socket'], function() {
 
       runs(function() {
 
-        addTrack(socket1, TRACK_1, function(track) {
+        addTrack(socket1, [socket1, socket2], TRACK_1, function(track) {
 
           // update some fields so that equality works
           TRACK_1.trackId = track.trackId;
@@ -197,7 +123,7 @@ define(['disco/services/socket'], function() {
       ////// add second track ///////
 
       runs(function() {
-        addTrack(socket2, TRACK_2, function(track) {
+        addTrack(socket2, [socket1, socket2], TRACK_2, function(track) {
           
           // update some fields so that equality works
           TRACK_2.trackId = track.trackId;
@@ -262,7 +188,7 @@ define(['disco/services/socket'], function() {
           participantJoined2 = data.user.id;
         });
         
-        connectToRoom(socket3, 'socket3', function(roomData) {
+        connectToRoom(socket3, 'socket3', ROOM_NAME, function(roomData) {
           var participants = roomData.participants, 
               tracks = roomData.tracks,
               room = roomData.room,
