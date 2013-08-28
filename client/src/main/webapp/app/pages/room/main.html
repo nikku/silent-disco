@@ -6,7 +6,7 @@
     <div class="messages ctn-scroll" ng-click="focusInput()">
       <div class="controls">
         <a href title="Clear messages" ng-click="clearMessages()">
-          <i class="icon-remove"></i>
+          <span class="glyphicon glyphicon-remove"></i>
         </a>
       </div>
 
@@ -37,7 +37,9 @@
 
     <form ng-submit="send(input)">
       <textarea ng-model="input" id="chat-input" placeholder="Type message or song url" ng-keydown="isEnter($event) && send(input, $event)"></textarea>
-      <div class="note">
+      <div
+        class="note"
+        title="Messages will be sent to all members of this room. Links to songs or playlists on SoundCloud will be resolved and added to the room.">
         Messages will be sent to all members of this room. 
         Links to songs or playlists on <a target="_blank" tabindex="-1" href="https://soundcloud.com">SoundCloud</a> will be resolved and added to the room.
       </div>
@@ -107,18 +109,28 @@
 
   <!-- participants list -->
   <div class="participants" ng-controller="ParticipantListController">
-    <div class="participant" ng-class="{ 'sc-user': user.sc }" ng-repeat="user in participants">
-      <img ng-if="user.sc" ng-src="{{ user.avatar_url }}"/>
-      <img ng-if="!user.sc" src="../assets/img/app/no_avatar.png" />
+    <div class="participant box" ng-class="{ 'sc-user': user.sc }" ng-repeat="user in participants">
 
-      <span>
-        {{ user.name }}
-        <span ng-if="user.sc">(<a target="_blank" ng-href="{{ user.permalink_url }}">{{ user.username }}</a>)</span>
+      <img ng-if="!user.sc"
+           src="../assets/img/app/no_avatar.png"
+           title="{{ user.name }}" />
+      
+      <a ng-if="user.sc"
+         ng-href="{{ user.permalink_url }}"
+         target="_blank"
+         title="Soundcloud profile of {{ user.name }} áka {{ user.username }}">
+        <img ng-src="{{ user.avatar_url }}"/>
+      </a>
+      
+      <span class="name">
+        <div>
+          {{ user.name }}
+        </div>
       </span>
 
       <div class="btn-group options">
         <a class="dropdown-toggle" toggle="dropdown">
-          <i class="icon-user"></i>
+          <span class="glyphicon glyphicon-user"></span>
         </a>
         <ul class="dropdown-menu pull-right">
           <li ng-if="user.sc"><a href ng-click="addFavorites(user)">Add Favorites</a></li>

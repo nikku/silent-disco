@@ -19,7 +19,7 @@
     <base href="." ws-base="ws://localhost:8080/" />
   </head>
   <body ng-controller="DefaultController" ng-cloak>
-    <nav class="navbar navbar-default navbar-static-top" role="navigation">
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
       <!-- Brand and toggle get grouped for better mobile display -->
       <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex7-collapse">
@@ -40,8 +40,6 @@
         <ul class="nav navbar-nav">
           <li>
             <a href
-               data-toggle="tooltip" 
-               data-placement="bottom" 
                title="{{ (isNotificationsEnabled() ? 'Disable' : 'Enable') + ' desktop notifications' }}"
                ng-click="toggleNotifications()">
 
@@ -49,10 +47,10 @@
             </a>
           </li>
           <li>
-            <a href data-toggle="tooltip"
-                    data-placement="bottom"
-                    title="{{ (isMuted() ? 'Unmute' : 'Mute') + ' room' }}"
-                    ng-click="toggleMute()">
+            <a href 
+               title="{{ (isMuted() ? 'Unmute' : 'Mute') + ' room' }}"
+               ng-click="toggleMute()">
+              
               <span class="glyphicon" ng-class="{ 'glyphicon-volume-up': !isMuted(), 'glyphicon-volume-off': isMuted() }"></span>
             </a>
           </li>

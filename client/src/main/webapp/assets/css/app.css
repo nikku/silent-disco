@@ -35,10 +35,9 @@ html, body {
   min-height: 100%;
 }
 
-textarea, .ctn {
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-}
+/*********************
+ * Scrollable
+ *********************/
 
 .ctn-scroll::-webkit-scrollbar{width:8px;height:8px;}
 .ctn-scroll::-webkit-scrollbar-button:start:decrement,
@@ -80,39 +79,6 @@ textarea, .ctn {
   border-color: rgba(173, 73, 0, .7) rgba(255, 255, 255, .15) #AD4900;
 }
 
-.swap-switch-container {
-  position:relative;
-  height: 50px;
-}
-
-.swap-switch-animation.ng-enter,
-.swap-switch-animation.ng-leave {
-  -webkit-transition:0.25s linear all;
-  -moz-transition:0.25s linear all;
-  -o-transition:0.25s linear all;
-  transition:0.25s linear all;
-  position:absolute;
-  top: 0;
-}
-
-.swap-switch-animation.btn.ng-enter,
-.swap-switch-animation.btn.ng-leave {
-  top: 1px;
-}
-
-.swap-switch-animation.ng-enter {
-  opacity: 0.0;
-}
-
-.swap-switch-animation.ng-leave,
-.swap-switch-animation.ng-enter.ng-enter-active {
-  opacity: 1.0;
-}
-
-.swap-switch-animation.ng-leave.ng-leave-active {
-  opacity: 0.0;
-}
-
 .ctn-main {
   width: 50%;
 }
@@ -132,6 +98,16 @@ textarea, .ctn {
   width: 35%;
   position: relative;
   float: right;
+}
+
+@media (max-width: 1150px) {
+  .ctn-site {
+    width: 20%;
+  }
+
+  .ctn-main {
+    width: 45%;
+  }
 }
 
 .chat {
@@ -164,6 +140,12 @@ textarea, .ctn {
   font-size: 0.83em;
   color: #AAA;
   margin-bottom: 10px;
+}
+
+.chat .note {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .jumbotron .note {
@@ -217,39 +199,59 @@ textarea, .ctn {
   opacity: 0.8;
 }
 
-/**
- * Participant column
- */
+/**********************
+ * participant column
+ **********************/
+
+.participants {
+  padding: 10px;
+}
+
 .participant {
-  position: relative;
-  margin: 10px;
-  border: solid 1px;
-  border-color: #CCC;
-  border-radius: 4px;
+  margin-bottom: 10px;
   padding: 0;
+  border: solid 1px #CCC;
+  border-radius: 4px;
+
+  line-height: 34px;
 }
 
 .participant .options {
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  width: 20px;
   cursor: pointer;
-  border: 1px #CCC;
+  border-left: solid 1px white;
 }
 
-.participant .options:hover {
-  border-left-style: solid;
+.participant .name {
+  width: 100%;
+  padding: 0 10px;
 }
 
-.participant img, .participant .options {
-  padding: 1px;
+.participant .name > div {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  width: 60px;
+}
+
+.participant .options:hover, 
+.participant .options.open {
+  border-left-color:  #CCC;
+}
+
+.participant .options > a {
+  display: inline-block;
+  width: 100%;
+  padding: 0 5px;
+}
+
+.participant img {
   height: 36px;
+  width: 36px;
+  padding: 1px;
 }
 
 .participant .options {
-  padding-left: 8px;
+  width: 25px;
   border-radius: 0 3px 3px 0;
 }
 
@@ -264,10 +266,19 @@ textarea, .ctn {
 
 .disabled { opacity: 0.2; }
 
+@media (max-width: 768px) {
+  .participant .name {
+    display: none;
+  }
 
-/**
- * Track column
- */
+  .participant .options {
+    width: 100%;
+  }
+}
+
+/********************
+ * track column
+ ********************/
 
 .tracks {
   height: 100%;
@@ -304,12 +315,12 @@ textarea, .ctn {
   padding-right: 5px;
 }
 
-.track .box {
+.box {
   width: 100%;
   display: table;
 }
 
-.track .box > * {
+.box > * {
   display: table-cell;
   vertical-align: top;
 }
@@ -393,14 +404,6 @@ textarea, .ctn {
   z-index: 10;
   display: none;
 }
-/*
-.ctn-playlist.show-fixed-top .tracks .track.active {
-  opacity: 0.1;
-}
-
-.ctn-playlist.show-fixed-top {
-  padding-top: 51px;
-}*/
 
 .ctn-playlist.show-fixed-top .fixed-top {
   display: block;
@@ -416,7 +419,48 @@ textarea, .ctn {
 }
 
 
-/* bootstrap 3 ui fixes */
+/*****************************
+ * landing page
+ *****************************/
+
+.swap-switch-container {
+  position:relative;
+  height: 50px;
+}
+
+.swap-switch-animation.ng-enter,
+.swap-switch-animation.ng-leave {
+  -webkit-transition:0.25s linear all;
+  -moz-transition:0.25s linear all;
+  -o-transition:0.25s linear all;
+  transition:0.25s linear all;
+  position:absolute;
+  top: 0;
+}
+
+.swap-switch-animation.btn.ng-enter,
+.swap-switch-animation.btn.ng-leave {
+  top: 1px;
+}
+
+.swap-switch-animation.ng-enter {
+  opacity: 0.0;
+}
+
+.swap-switch-animation.ng-leave,
+.swap-switch-animation.ng-enter.ng-enter-active {
+  opacity: 1.0;
+}
+
+.swap-switch-animation.ng-leave.ng-leave-active {
+  opacity: 0.0;
+}
+
+
+/*****************************
+ * bootstrap 3 ui fixes
+ *****************************/
+
 @media (min-width: 769px) {
   .navbar-collapse .navbar-nav.navbar-right:last-child {
     margin-right: 0px;
