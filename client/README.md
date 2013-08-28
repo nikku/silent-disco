@@ -22,11 +22,19 @@ Deploy `src/main/webapp` directory to a webserver (i.e. Apache2 / asdf).
 Test
 ----
 
-> Requires [NodeJS](http://nodejs.org/) and [karma](http://karma-runner.github.com).
->
-> Install karma `npm -g install karma@canary` + dependencies `npm update --dev`.
+> Requires [NodeJS](http://nodejs.org/) and [karma](http://karma-runner.github.com) `>= 0.9`.
 >
 > Additionally paths to browser runtimes may need to be defined in environment variables:
 > <code>PHANTOMJS_BIN</code>, <code>FIREFOX_BIN</code>, <code>CHROME_BIN</code>.
 
-Run unit tests via `karma start src/test/javascript/config/karma.unit.js`.
+
+### Unit Tests
+
+Run via `karma start src/test/javascript/config/karma.unit.js`.
+
+
+### Backend Integration Tests
+
+Run via `karma start src/test/javascript/config/karma.backend.js`.
+
+> Currently fails on PhantomJS.
