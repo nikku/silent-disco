@@ -9,7 +9,7 @@
 
     paths: {
       'ngDefine' : 'main/webapp/assets/vendor/requirejs-angular-define/ngDefine',
-      'jquery' : 'main/webapp/assets/vendor/jquery/jquery-1.9.1.min',
+      'jquery' : 'main/webapp/assets/vendor/jquery/jquery-1.10.2.min',
       'ui-bootstrap' : 'main/webapp/assets/vendor/ui-bootstrap/ui-bootstrap-tpls-0.5.0',
       'jquery-ui' : 'main/webapp/assets/vendor/jquery-ui/js/jquery-ui-1.10.3.custom',
       'bootstrap' : 'main/webapp/assets/vendor/bootstrap/js/bootstrap',

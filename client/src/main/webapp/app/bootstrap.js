@@ -4,7 +4,7 @@
 
 (function(document, require) {
 
-  var PROD = false;
+  var PROD = true;
   var MINIFIED = PROD ? '.min' : '';
   var APP_NAME = 'disco';
 
@@ -12,7 +12,7 @@
     baseUrl: '../',
     paths: {
       'ngDefine' : 'assets/vendor/requirejs-angular-define/ngDefine',
-      'jquery' : 'assets/vendor/jquery/jquery-1.9.1.min',
+      'jquery' : 'assets/vendor/jquery/jquery-1.10.2.min',
       'ui-bootstrap' : 'assets/vendor/ui-bootstrap/ui-bootstrap-tpls-0.5.0' + MINIFIED,
       'jquery-ui' : 'assets/vendor/jquery-ui/js/jquery-ui-1.10.3.custom' + MINIFIED,
       'bootstrap' : 'assets/vendor/bootstrap/js/bootstrap' + MINIFIED,
