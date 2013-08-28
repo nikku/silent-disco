@@ -1,9 +1,11 @@
-define(['disco/services/main'], function() {
+define(['disco/services/socket'], function() {
 
   var ROOM_NAME = "test-room-" + Math.random();
   var WEBSOCKET_LOCATION = "localhost:8080/" + ROOM_NAME;
+  
+  console.log("Using " + WEBSOCKET_LOCATION + " as backend websocket endpoint");
 
-  var TRACK_1 = { 
+  var TRACK_1 = {
     id: '111', 
     artwork_url: '', 
     permalink_url: '', 
@@ -27,7 +29,7 @@ define(['disco/services/main'], function() {
 
     // configure test module
   	beforeEach(function () {
-      angular.module('testmodule', [ 'disco.services' ]);
+      angular.module('testmodule', [ 'disco.services.socket' ]);
     });
 
     // load test module

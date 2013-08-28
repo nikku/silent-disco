@@ -16,7 +16,7 @@ module.exports = function(config) {
       'test/javascript/config/require-unit-bootstrap.js'
     ],
 
-    browsers: ["Chrome"], // "PhantomJS", "Firefox"
+    browsers: ['Chrome', 'Firefox'], // 'Chrome', 'Firefox', 'PhantomJS'
 
     autoWatch: true,
 

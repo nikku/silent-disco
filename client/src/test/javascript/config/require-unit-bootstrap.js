@@ -9,27 +9,29 @@
 
     paths: {
       'ngDefine' : 'main/webapp/assets/vendor/requirejs-angular-define/ngDefine',
-      'domReady' : 'main/webapp/assets/vendor/require/domReady',
       'jquery' : 'main/webapp/assets/vendor/jquery/jquery-1.9.1.min',
+      'ui-bootstrap' : 'main/webapp/assets/vendor/ui-bootstrap/ui-bootstrap-tpls-0.5.0',
       'jquery-ui' : 'main/webapp/assets/vendor/jquery-ui/js/jquery-ui-1.10.3.custom',
-      'bootstrap' : 'main/webapp/assets/vendor/bootstrap/js/bootstrap-modal',
+      'bootstrap' : 'main/webapp/assets/vendor/bootstrap/js/bootstrap',
       'angular' : 'main/webapp/assets/vendor/angular/angular',
-      'angular-resource' : 'main/webapp/assets/vendor/angular/angular-resource',
+      'angular-animate' : 'main/webapp/assets/vendor/angular/angular-animate',
+      'angular-route' : 'main/webapp/assets/vendor/angular/angular-route',
       'angular-sanitize' : 'main/webapp/assets/vendor/angular/angular-sanitize',
-      'angular-bootstrap' : 'main/webapp/assets/vendor/angular/angular-bootstrap',
-      'angular-mocks': 'test/javascript/lib/angular/angular-mocks',
+      'angular-mocks' : 'test/javascript/lib/angular/angular-mocks',
+      'angular-touch' : 'main/webapp/assets/vendor/angular/angular-touch',
       'sound-cloud' : 'http://connect.soundcloud.com/sdk',
       'sound-cloud-client' : 'main/webapp/app/soundcloud/client'
     },
     shim: {
       'angular' : { deps: [ 'jquery' ], exports: 'angular' },
-      'angular-resource': { deps: [ 'angular' ] },
-      'angular-bootstrap': { deps: [ 'angular' ] },
-      'angular-sanitize': { deps: [ 'angular' ] },
+      'angular-animate': { deps: [ 'angular' ] },
+      'angular-route': { deps: [ 'angular' ] },
+      'angular-touch': { deps: [ 'angular' ] },
       'angular-mocks': { deps: [ 'angular' ] },
+      'angular-sanitize': { deps: [ 'angular' ] },
       'sound-cloud': { exports: 'SC' },
       'jquery-ui' : { deps: [ 'jquery' ] },
-      'bootstrap' : { deps: [ 'jquery' ] }
+      'ui-bootstrap' : { deps: [ 'jquery' ] }
     },
     packages: [
       { name: 'disco', location: 'main/webapp/app', main: 'disco' },
@@ -48,11 +50,9 @@
   require([
     'angular',
     'angular-mocks',
-    'ngDefine',
-    'bootstrap',
-    'sound-cloud-client' 
+    'ngDefine'
   ], function(angular) {
-
+    
     window._jQuery = $;
     window._jqLiteMode = false;
 
