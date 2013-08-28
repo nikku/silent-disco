@@ -28,7 +28,7 @@ ngDefine('disco.services.socket', [
 
       function debug(direction, type, data) {
         if (self.debugging) {
-          console.log("socket #" + id + " SEND " + type);
+          console.log("socket #" + id + " " + direction + " " + type);
         }
       }
 
@@ -47,7 +47,7 @@ ngDefine('disco.services.socket', [
       }
 
       function receiveMessage(type, message, e) {
-        debug(receive, type, message);
+        debug("RECEIVE", type, message);
 
         var typeCallbacks = getCallbacks(type);
 

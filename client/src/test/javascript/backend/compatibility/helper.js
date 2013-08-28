@@ -10,6 +10,42 @@ define(function() {
     window.console.log.apply(window.console, toArray(arguments));
   }
 
+  function expectAllEqual(array) {
+    var reference = array[0];
+
+    for (var i = 1; i < array.length; i++) {
+      expect(array[i]).toEqual(reference);
+    }
+  }
+
+  function collectResponses(sockets, message, transformFn) {
+
+    var responses = new Array(sockets.length);
+
+    for (var i = 0, s; !!(s = sockets[i]); i++) {
+      (function(socket, idx) {
+        socket.once(message, function(response) {
+          responses[idx] = transformFn ? transformFn(response) : response;
+        });
+      })(s, i);
+    }
+
+    return responses;
+  }
+
+  function all(array, fn) {
+    var match = true;
+
+    for (var i = 0; i < array.length; i++) {
+      if (!fn(array[i])) {
+        match = false;
+        break;
+      }
+    }
+
+    return match;
+  }
+
   //////////////// test helpers /////////////////
   
   function closeAll(sockets) {
@@ -72,40 +108,77 @@ define(function() {
 
   function addTrack(socket, allSockets, track, fn) {
 
-    var trackAdded = new Array(allSockets.length);
+    var trackAdded;
     
     runs(function() {
 
       socket.emit('addTrack', { track: track });
 
-      for (var i = 0, s; !!(s = allSockets[i]); i++) {
-        (function(socket, idx) {
-          socket.once('trackAdded', function(message) {
-            trackAdded[idx] = message.track;
-          });
-        })(s, i);
-      }
+      trackAdded = collectResponses(allSockets, 'trackAdded', function(result) { return result.track });
     });
 
     waitsFor(function() {
-      var allAdded = true;
-
-      for (var i = 0; i < allSockets.length; i++) {
-        if (!trackAdded[i]) {
-          allAdded = false;
-          break;
-        }
-      }
-
-      return allAdded;
+      return all(trackAdded, function(e) { return !!e; });
     }, "track added received on both sockets");
 
     runs(function() {
       var reference = trackAdded[0];
       
-      for (var i = 1; i < allSockets.length; i++) {
-        expect(trackAdded[i]).toEqual(reference);
+      expectAllEqual(trackAdded);
+
+      if (fn) {
+        fn(reference);
       }
+    });
+  }
+
+  function startTrack(socket, allSockets, message, fn) {
+
+    var trackStarted;
+
+    var startTrack = message;
+
+    trackStarted = collectResponses(allSockets, 'trackStarted');
+
+    runs(function() {
+      socket.emit('startTrack', startTrack);
+    });
+
+    waitsFor(function() {
+      return all(trackStarted, function(e) { return !!e; });
+    }, "track started received from all sockets");
+
+    runs(function() {
+      var reference = trackStarted[0];
+      
+      expectAllEqual(trackStarted);
+
+      if (fn) {
+        fn(reference);
+      }
+    });
+  }
+
+  function removeTrack(socket, allSockets, trackId, fn) {
+
+    var trackRemoved;
+
+    var removeTrack = { trackId: trackId };
+
+    trackRemoved = collectResponses(allSockets, 'trackRemoved');
+
+    runs(function() {
+      socket.emit('removeTrack', removeTrack);
+    });
+
+    waitsFor(function() {
+      return all(trackRemoved, function(e) { return !!e; });
+    }, "track removed received from all sockets");
+
+    runs(function() {
+      var reference = trackRemoved[0];
+      
+      expectAllEqual(trackRemoved);
 
       if (fn) {
         fn(reference);
@@ -120,6 +193,8 @@ define(function() {
     closeAll: closeAll,
     connectToRoom: connectToRoom, 
     addTrack: addTrack, 
+    startTrack: startTrack,
+    removeTrack: removeTrack,
     createSocket: createSocket
   };
 });

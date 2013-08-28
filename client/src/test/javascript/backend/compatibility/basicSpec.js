@@ -146,24 +146,12 @@ define([
 
       runs(function() {
 
-        var trackStarted;
-
         startTrackPosition = { trackId: TRACK_2.trackId, position: 2000 };
-
-        socket2.once('trackStarted', function(data) {
+        
+        startTrack(socket1, [ socket2 ], startTrackPosition, function(data) {
           expect(data.trackId).toEqual(startTrackPosition.trackId);
           expect(data.position).toEqual(startTrackPosition.position);
-
-          trackStarted = data;
         });
-
-        runs(function() {
-          socket1.emit('startTrack', startTrackPosition);
-        });
-
-        waitsFor(function() {
-          return trackStarted;
-        }, "trackStarted to be received");
       });
 
       /////////////// third participant joins ///////////////////
