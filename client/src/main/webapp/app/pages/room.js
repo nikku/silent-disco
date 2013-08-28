@@ -15,6 +15,7 @@ ngDefine('disco.pages', [
   };
 
   var WORD_REGEXP = /^[\w-]+$/;
+  var WORD_WITH_SPACES_REGEXP = /^[\w- ]+$/;
 
   /**
    * Root controller of a room
@@ -570,6 +571,7 @@ ngDefine('disco.pages', [
     };
 
     $scope.word = WORD_REGEXP;
+    $scope.wordWithSpaces = WORD_WITH_SPACES_REGEXP;
 
     $scope.toggle = function(button) {
       var form;
