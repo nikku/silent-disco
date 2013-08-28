@@ -73,9 +73,31 @@ public class RoomAwareHandler extends SimpleChannelInboundHandler<Base> {
 
     String roomId = ctx.channel().attr(ROOM_ID).get();
     if (roomId == null) {
-      throw new RuntimeException("No room id set");
+      // channel leave may be sent out of order
+      // (e.g. when a timeout occurs)
+      if (message instanceof ChannelLeave) {
+        handleOutOfOrderChannelLeave(ctx, (ChannelLeave) message);
+      } else {
+        throw new RuntimeException("No room id set");
+      }
+
+      // nothing to do
+      return;
     }
 
+    handleRoomMessage(roomId, ctx, message);
+  }
+
+  protected void handleOutOfOrderChannelLeave(ChannelHandlerContext ctx, ChannelLeave message) {
+
+    Set<Room> connectedRooms = rooms.getByChannel(ctx.channel());
+    for (Room connectedRoom: connectedRooms) {
+      RoomContextImpl roomContext = new RoomContextImpl(connectedRoom.getId(), ctx, connectedRoom);
+      roomHandler.handleMessage(roomContext, message);
+    }
+  }
+
+  protected void handleRoomMessage(String roomId, ChannelHandlerContext ctx, Base message) {
     Room room = rooms.get(roomId);
 
     RoomContextImpl roomContext = new RoomContextImpl(roomId, ctx, room);
@@ -117,7 +139,22 @@ public class RoomAwareHandler extends SimpleChannelInboundHandler<Base> {
   ///////// helper stuff ////////////////////////////////////////
 
   protected interface Rooms {
+
+    /**
+     * Get room with the specified id
+     *
+     * @param key
+     * @return
+     */
     public Room get(Object key);
+
+    /**
+     * Returns all rooms a channel is associated with
+     *
+     * @param channel
+     * @return
+     */
+    Set<Room> getByChannel(Channel channel);
   }
 
   private static class RoomsImpl extends ConcurrentSkipListMap<String, Room> implements Rooms {
@@ -126,18 +163,47 @@ public class RoomAwareHandler extends SimpleChannelInboundHandler<Base> {
     public Room get(Object key) {
       Room room = super.get(key);
 
+      String id = (String) key;
+
       if (room == null) {
-        room = new RoomImpl();
-        put((String) key, room);
+        room = new RoomImpl(id);
+        put(id, room);
       }
 
       return room;
+    }
+
+    /**
+     * Returns all rooms a channel is associated with
+     *
+     * @param channel
+     * @return
+     */
+    public Set<Room> getByChannel(Channel channel) {
+      Set<Room> result = new HashSet<Room>();
+
+      for (Room room : values()) {
+        if (room.channels().contains(channel)) {
+          result.add(room);
+        }
+      }
+      return result;
     }
   }
 
   private static class RoomImpl extends ConcurrentSkipListMap<Channel, String> implements de.nixis.web.disco.room.Room {
 
     private final AttributeMap attributes = new DefaultAttributeMap();
+
+    private final String id;
+
+    public RoomImpl(String id) {
+      this.id = id;
+    }
+
+    public String getId() {
+      return id;
+    }
 
     public Map<Channel, String> channelMap() {
       return this;

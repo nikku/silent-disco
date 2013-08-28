@@ -13,6 +13,8 @@ import io.netty.util.AttributeKey;
  */
 public interface Room {
 
+  public String getId();
+
   public Map<Channel, String> channelMap();
 
   public Set<String> participantIds();
