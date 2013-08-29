@@ -13,7 +13,7 @@
     paths: {
       'ngDefine' : 'assets/vendor/requirejs-angular-define/ngDefine',
       'jquery' : 'assets/vendor/jquery/jquery-1.10.2.min',
-      'ui-bootstrap' : 'assets/vendor/ui-bootstrap/ui-bootstrap-tpls-0.5.0' + MINIFIED,
+      'ui-bootstrap' : 'assets/vendor/ui-bootstrap/ui-bootstrap-tpls-0.5.0', // with fix for bs3 !!!
       'jquery-ui' : 'assets/vendor/jquery-ui/js/jquery-ui-1.10.3.custom' + MINIFIED,
       'bootstrap' : 'assets/vendor/bootstrap/js/bootstrap' + MINIFIED,
       'angular' : 'assets/vendor/angular/angular' + MINIFIED,
