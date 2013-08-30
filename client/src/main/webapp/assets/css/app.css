@@ -90,8 +90,6 @@ html, body {
 
 .ctn-side {
   width: 15%;
-  z-index: 5;
-  overflow: visible;
 }
 
 .ctn-playlist {
@@ -101,7 +99,7 @@ html, body {
 }
 
 @media (max-width: 1150px) {
-  .ctn-site {
+  .ctn-side {
     width: 20%;
   }
 
