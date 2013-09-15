@@ -3,7 +3,7 @@ ngDefine('disco.services.socket', [
   'module:common.web.uri:web-common/services/uri'
 ], function(module, angular) {
 
-  module.factory('socket', function($rootScope, Uri) {
+  module.factory('socket', [ '$rootScope', 'Uri', function($rootScope, Uri) {
 
     var nextId = 0;
     var debug = debug;
@@ -79,12 +79,17 @@ ngDefine('disco.services.socket', [
 
       function initSocket(socket, connection) {
 
+        function tryDigest() {
+          try {
+            $rootScope.$digest();
+          } catch (e) {}
+        }
+
         connection.onopen = function(e) {
           opened = true;
 
-          $rootScope.$apply(function() {
-            receiveMessage('__open', { }, e);
-          });
+          receiveMessage('__open', { }, e);
+          tryDigest();
 
           while (outgoing.length) {
             var envelope = outgoing.shift();
@@ -92,11 +97,10 @@ ngDefine('disco.services.socket', [
           }
         };
 
-        // Log errors
+        // log errors
         connection.onerror = function(e) {
-          $rootScope.$apply(function() {
-            receiveMessage('__error', { }, e);
-          });
+          receiveMessage('__error', { }, e);
+          tryDigest();
         };
 
         connection.onclose = function(e) {
@@ -105,16 +109,14 @@ ngDefine('disco.services.socket', [
 
           opened = false;
 
-          $rootScope.$apply(function() {
-            receiveMessage(closed ? '__close' : '__openTimeout', {}, e);
-          });
+          receiveMessage(closed ? '__close' : '__openTimeout', {}, e);
+          tryDigest();
         };
 
         // Log messages from the server
         connection.onmessage = function (e) {
-          $rootScope.$apply(function() {
-            receive(e.data);
-          });
+          receive(e.data);
+          tryDigest();
         };
       }
 
@@ -139,11 +141,9 @@ ngDefine('disco.services.socket', [
          * @param message {Object} the message
          */
         fire: function(type, message) {
-          setTimeout(function() {
-            $rootScope.$apply(function() {
-              receiveMessage(type, message);
-            });
-          }, 0);
+          $rootScope.$evalAsync(function() {
+            receiveMessage(type, message);
+          });
         },
 
         /**
@@ -210,7 +210,18 @@ ngDefine('disco.services.socket', [
         },
 
         close: function () {
-          connection.close();
+          if (connection) {
+            connection.close();
+          }
+
+          connection = null;
+        }, 
+
+        reconnect: function() {
+          this.close();
+
+          connection = createWebSocket(uri);
+          initSocket(this, connection);
         }
       });
     };
@@ -237,5 +248,5 @@ ngDefine('disco.services.socket', [
         }
       }
     };
-  });
+  }]);
 });

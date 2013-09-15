@@ -20,9 +20,8 @@ ngDefine('disco.pages', [
   /**
    * Root controller of a room
    */
-  var RoomController = [ '$scope', '$filter', '$location', '$timeout', 'socket', 'Sounds', 'room',
-                 function($scope, $filter, $location, $timeout, socket, Sounds, room) {
-
+  var RoomController = [ '$scope', '$filter', '$location', '$log', '$timeout', 'socket', 'Sounds', 'room',
+                 function($scope, $filter, $location, $log, $timeout, socket, Sounds, room) {
 
     $scope.room = room;
 
@@ -36,7 +35,9 @@ ngDefine('disco.pages', [
       Sounds.stop(null);
 
       socket.closeSocket(room.id);
+      
       room.socket = null;
+      room.connected = false;
     });
 
     $scope.addTrack = function(track) {
@@ -117,20 +118,21 @@ ngDefine('disco.pages', [
     }
 
     room.socket.on('__open', function() {
-
-      console.log('SOCKET OPENED');
+      $log.info('SOCKET OPENED');
     });
 
     room.socket.on('__openTimeout', function() {
-      console.log('OPEN TIMED OUT');
+      $log.info('OPEN TIMED OUT');
     });
 
     room.socket.on('__close', function() {
-      console.log('SOCKET CLOSED');
+      $log.info('SOCKET CLOSED');
     });
 
-    room.socket.on('__error', function(e) {
-      console.log('SOCKET ERROR', e);
+    room.socket.on('__error', function(error, event) {
+      $log.info('SOCKET ERROR', event);
+
+      room.messages.push({ message: 'Connection to room lost' });
     });
 
     room.socket.on('channelJoined', function(data) {
@@ -520,7 +522,7 @@ ngDefine('disco.pages', [
   /**
    * Controller that handles the list of participants
    */
-  var ParticipantListController = [ '$scope', function ParticipantListController($scope) {
+  var ParticipantListController = [ '$scope', '$log', function ParticipantListController($scope, $log) {
 
     var room = $scope.room;
     var participants = $scope.participants = room.participants;
@@ -535,7 +537,7 @@ ngDefine('disco.pages', [
           angular.extend(user, usr, { sc: true });
         }
 
-        $scope.$apply();
+        $scope.$digest();
       });
     };
 
@@ -544,7 +546,7 @@ ngDefine('disco.pages', [
         room.messages.push({ message: 'Adding ' + favorites.length + ' favorites of ' + user.username });
 
         if (error) {
-          console.log('error occured', error);
+          $log.info('error occured', error);
           return;
         }
 
