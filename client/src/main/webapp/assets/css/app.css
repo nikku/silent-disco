@@ -175,33 +175,36 @@ html, body {
   bottom: 90px;
 }
 
-.messages .controls {
+.chat .controls {
   position: absolute;
-  top: -5px;
-  right: 0;
+  
+  top: 5px;
+  right: 20px;
 
   display: none;
   opacity: 0.2;
+  
+  z-index: 5;
 }
 
-.messages:hover .controls {
+.chat:hover .controls {
   display: block;
 }
 
-.messages .controls:hover {
+.chat .controls:hover {
   opacity: 1.0;
 }
 
-.messages .controls a {
+.chat .controls a {
   display: inline-block;
   padding: 5px;
 }
 
-.message i {
+.chat i {
   opacity: 0.3;
 }
 
-.message:hover i {
+.chat:hover i {
   opacity: 0.8;
 }
 
