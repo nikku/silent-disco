@@ -26,9 +26,7 @@
           <a sound-cloud-user="message.track.user" /> - 
           <a sound-cloud-track="message.track" />
         </span>
-        <span ng-switch-default>
-          <span ng-bind-html="message.message | linky:'_blank'"></span>
-        </span>
+        <span ng-switch-default class="muted" ng-bind-html="message.message | linky:'_blank'"></span>
         <a href title="Undo action" ng-if="message.undo" ng-click="undoAction(message)" class="undo">
           <span class="glyphicon glyphicon-share-alt"></span>
         </a>

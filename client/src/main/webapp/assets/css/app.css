@@ -35,6 +35,10 @@ html, body {
   min-height: 100%;
 }
 
+.muted {
+  color: #777;
+}
+
 /*********************
  * Scrollable
  *********************/
