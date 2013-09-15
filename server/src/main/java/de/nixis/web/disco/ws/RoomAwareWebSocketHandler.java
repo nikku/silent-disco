@@ -1,9 +1,7 @@
 package de.nixis.web.disco.ws;
 
-import java.util.List;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 
 /**
@@ -38,10 +36,10 @@ public class RoomAwareWebSocketHandler extends WebSocketServerProtocolHandler {
   }
 
   @Override
-  protected void decode(ChannelHandlerContext ctx, WebSocketFrame frame, List<Object> out) throws Exception {
-    super.decode(ctx, frame, out);
+  public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    super.channelRead(ctx, msg);
 
-    if (frame instanceof CloseWebSocketFrame) {
+    if (msg instanceof CloseWebSocketFrame) {
       ctx.fireUserEventTriggered(ChannelEvent.CLOSE);
     }
   }

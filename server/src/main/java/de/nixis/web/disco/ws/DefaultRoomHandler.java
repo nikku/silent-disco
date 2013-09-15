@@ -11,7 +11,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import de.nixis.web.disco.db.Disco;
 import de.nixis.web.disco.db.entity.Position;
 import de.nixis.web.disco.db.entity.Position.Status;
@@ -21,6 +23,7 @@ import de.nixis.web.disco.dto.AddTrack;
 import de.nixis.web.disco.dto.Base;
 import de.nixis.web.disco.dto.ChannelJoin;
 import de.nixis.web.disco.dto.ChannelLeave;
+import de.nixis.web.disco.dto.ChannelOpen;
 import de.nixis.web.disco.dto.MoveTrack;
 import de.nixis.web.disco.dto.ParticipantJoined;
 import de.nixis.web.disco.dto.ParticipantLeft;
@@ -38,8 +41,6 @@ import de.nixis.web.disco.dto.TrackRemoved;
 import de.nixis.web.disco.dto.UndoRemoveTrack;
 import de.nixis.web.disco.room.RoomContext;
 import io.netty.channel.Channel;
-import io.netty.util.Attribute;
-import io.netty.util.AttributeKey;
 
 /**
  *
@@ -47,7 +48,13 @@ import io.netty.util.AttributeKey;
  */
 public class DefaultRoomHandler extends AbstractRoomHandler<Base> {
 
-  private static final AttributeKey<Map<String, Participant>> PARTICIPANTS = new AttributeKey<Map<String, Participant>>("Participants");
+  private static final Logger LOGGER = Logger.getLogger(DefaultRoomHandler.class.getName());
+
+//  static {
+//    Logger rootLogger = Logger.getLogger("");
+//    rootLogger.setLevel(Level.ALL);
+//    rootLogger.addHandler(new ConsoleHandler());
+//  }
 
   @Override
   public void handleMessage(RoomContext ctx, Base message) {
@@ -55,6 +62,16 @@ public class DefaultRoomHandler extends AbstractRoomHandler<Base> {
     Map<Channel, String> channels = ctx.channelMap();
 
     String participantId = channels.get(ctx.channel());
+
+    if (participantId == null &&
+      !(message instanceof ChannelJoin) &&
+      !(message instanceof ChannelOpen)) {
+
+      LOGGER.log(Level.FINER, "Ignoring out of order message: {0}", message);
+      return;
+    }
+
+    LOGGER.log(Level.FINER, "Handling message: {0}", message);
 
     if (message instanceof ChannelJoin) {
       ChannelJoin join = (ChannelJoin) message;
@@ -65,7 +82,7 @@ public class DefaultRoomHandler extends AbstractRoomHandler<Base> {
         handleMessage(ctx, new ChannelLeave());
       }
 
-      String roomName = ctx.getRoomName();
+      String roomName = ctx.room().id();
 
       String participantName = findFreeName(ctx, join.getParticipantName());
 
@@ -74,7 +91,7 @@ public class DefaultRoomHandler extends AbstractRoomHandler<Base> {
       Room room = Disco.getRoom(roomName);
       List<Track> tracks = Disco.getTracks(roomName);
 
-      Map<String, Participant> participantsMap = getParticipants(ctx);
+      Map<String, Participant> participantsMap = ctx.room().participantsMap();
       List<Participant> oldParticipants = new ArrayList<Participant>(participantsMap.values());
 
       participantsMap.put(newParticipant.getId(), newParticipant);
@@ -88,10 +105,12 @@ public class DefaultRoomHandler extends AbstractRoomHandler<Base> {
       channels.remove(ctx.channel());
 
       if (participantId != null) {
-        getParticipants(ctx).remove(participantId);
-      }
+        Participant participant = ctx.room().participantsMap().remove(participantId);
 
-      sendAll(ctx, new ParticipantLeft(participantId));
+        if (participant != null) {
+          sendAll(ctx, new ParticipantLeft(participantId));
+        }
+      }
     } else
     if (message instanceof Text) {
       Text text = (Text) message;
@@ -107,7 +126,7 @@ public class DefaultRoomHandler extends AbstractRoomHandler<Base> {
 
       track.setAdded(new Date());
 
-      Disco.addTrack(track, ctx.getRoomName(), position);
+      Disco.addTrack(track, ctx.room().id(), position);
 
       sendAll(ctx, new TrackAdded(track, position, participantId));
     } else
@@ -161,19 +180,12 @@ public class DefaultRoomHandler extends AbstractRoomHandler<Base> {
         position.setStatus(Status.PLAYING);
       }
 
-      Disco.updatePlaylistPosition(ctx.getRoomName(), position);
+      Disco.updatePlaylistPosition(ctx.room().id(), position);
     }
   }
 
-  private Map<String, Participant> getParticipants(RoomContext ctx) {
-    Attribute<Map<String, Participant>> participantsAttr = ctx.attr(PARTICIPANTS);
-    participantsAttr.setIfAbsent(new ConcurrentSkipListMap<String, Participant>());
-
-    return participantsAttr.get();
-  }
-
   private String findFreeName(RoomContext ctx, String baseName) {
-    Map<String, Participant> participantsMap = getParticipants(ctx);
+    Map<String, Participant> participantsMap = ctx.room().participantsMap();
 
     Collection<Participant> participants = participantsMap.values();
 
@@ -196,5 +208,11 @@ public class DefaultRoomHandler extends AbstractRoomHandler<Base> {
     } while (!available);
 
     return name;
+  }
+
+  @Override
+  public void handleWriteFailure(RoomContext ctx) {
+    LOGGER.info("Write failure from channel");
+    handleMessage(ctx, new ChannelLeave("Timeout"));
   }
 }

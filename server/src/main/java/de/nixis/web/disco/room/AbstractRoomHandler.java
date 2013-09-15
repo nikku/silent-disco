@@ -1,6 +1,8 @@
 package de.nixis.web.disco.room;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 
 /**
  *
@@ -12,10 +14,21 @@ public abstract class AbstractRoomHandler<T> implements RoomHandler<T> {
     sendAll(ctx, null, msg);
   }
 
-  protected void send(RoomContext ctx, final Channel channel, final T msg) {
+  protected void send(final RoomContext ctx, final Channel channel, final T msg) {
     ctx.executor().execute(new Runnable() {
+      
       public void run() {
-        channel.writeAndFlush(msg);
+        ChannelFuture future = channel.writeAndFlush(msg);
+
+        future.addListener(new ChannelFutureListener() {
+
+          public void operationComplete(ChannelFuture f) throws Exception {
+            if (!f.isSuccess()) {
+              RoomContext newCtx = ctx.forChannel(channel);
+              handleWriteFailure(newCtx);
+            }
+          }
+        });
       }
     });
   }
@@ -31,14 +44,11 @@ public abstract class AbstractRoomHandler<T> implements RoomHandler<T> {
         continue;
       }
 
-      ctx.executor().execute(new Runnable() {
-        public void run() {
-
-          channel.writeAndFlush(msg);
-        }
-      });
+      send(ctx, channel, msg);
     }
   }
+
+  public abstract void handleWriteFailure(RoomContext ctx);
 
   public abstract void handleMessage(RoomContext ctx, T message);
 }

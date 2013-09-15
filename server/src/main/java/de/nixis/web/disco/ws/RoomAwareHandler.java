@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import de.nixis.web.disco.dto.Base;
 import de.nixis.web.disco.dto.ChannelLeave;
 import de.nixis.web.disco.dto.ChannelOpen;
+import de.nixis.web.disco.dto.Participant;
 import de.nixis.web.disco.room.Room;
 import de.nixis.web.disco.room.RoomHandler;
 import de.nixis.web.disco.room.impl.RoomContextImpl;
@@ -92,7 +93,7 @@ public class RoomAwareHandler extends SimpleChannelInboundHandler<Base> {
 
     Set<Room> connectedRooms = rooms.getByChannel(ctx.channel());
     for (Room connectedRoom: connectedRooms) {
-      RoomContextImpl roomContext = new RoomContextImpl(connectedRoom.getId(), ctx, connectedRoom);
+      RoomContextImpl roomContext = new RoomContextImpl(ctx, connectedRoom);
       roomHandler.handleMessage(roomContext, message);
     }
   }
@@ -100,7 +101,7 @@ public class RoomAwareHandler extends SimpleChannelInboundHandler<Base> {
   protected void handleRoomMessage(String roomId, ChannelHandlerContext ctx, Base message) {
     Room room = rooms.get(roomId);
 
-    RoomContextImpl roomContext = new RoomContextImpl(roomId, ctx, room);
+    RoomContextImpl roomContext = new RoomContextImpl(ctx, room);
 
     roomHandler.handleMessage(roomContext, message);
   }
@@ -191,9 +192,11 @@ public class RoomAwareHandler extends SimpleChannelInboundHandler<Base> {
     }
   }
 
-  private static class RoomImpl extends ConcurrentSkipListMap<Channel, String> implements de.nixis.web.disco.room.Room {
+  private static class RoomImpl implements de.nixis.web.disco.room.Room {
 
     private final AttributeMap attributes = new DefaultAttributeMap();
+
+    private final Map channelMap = new ConcurrentSkipListMap<Channel, String>();
 
     private final String id;
 
@@ -201,24 +204,33 @@ public class RoomAwareHandler extends SimpleChannelInboundHandler<Base> {
       this.id = id;
     }
 
-    public String getId() {
+    public String id() {
       return id;
     }
 
     public Map<Channel, String> channelMap() {
-      return this;
+      return channelMap;
     }
 
     public Set<String> participantIds() {
-      return new HashSet<String>(this.values());
+      return new HashSet<String>(channelMap.values());
     }
 
     public Set<Channel> channels() {
-      return this.keySet();
+      return channelMap.keySet();
     }
 
     public <T> Attribute<T> attr(AttributeKey<T> key) {
       return attributes.attr(key);
+    }
+
+    private static final AttributeKey<Map<String, Participant>> PARTICIPANTS = new AttributeKey<Map<String, Participant>>("Participants");
+
+    public Map<String, Participant> participantsMap() {
+      Attribute<Map<String, Participant>> participantsAttr = attr(PARTICIPANTS);
+      participantsAttr.setIfAbsent(new ConcurrentSkipListMap<String, Participant>());
+
+      return participantsAttr.get();
     }
   }
 }
