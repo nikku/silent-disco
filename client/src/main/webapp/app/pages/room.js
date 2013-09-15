@@ -127,6 +127,8 @@ ngDefine('disco.pages', [
 
     room.socket.on('__close', function() {
       $log.info('SOCKET CLOSED');
+
+      room.messages.push({ message: 'Connection to room closed by server' });
     });
 
     room.socket.on('__error', function(error, event) {
@@ -500,6 +502,10 @@ ngDefine('disco.pages', [
 
       return !isScrolledIntoView(element, parent);
     };
+
+    $scope.$on('sounds.loadtimeout', function(e, track) {
+      room.messages.push({ message: 'Failed to start track ' + track.title + '. Not found?' });
+    });
 
     $scope.$on('sounds.finished', function(e, track) {
 

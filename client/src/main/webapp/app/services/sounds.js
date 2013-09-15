@@ -121,7 +121,15 @@ ngDefine('disco.services', [
 
         var options = {
 
-          onloaded: function() { },
+          onload: function(success) {
+            $rootScope.$apply(function() {
+              if (success) {
+                $rootScope.$broadcast('sounds.loaded', track);
+              } else {
+                $rootScope.$broadcast('sounds.loadtimeout', track);
+              }
+            });
+          },
 
           whileplaying: function() {
             var stream = this;
@@ -131,6 +139,10 @@ ngDefine('disco.services', [
             try {
               $rootScope.$digest();
             } catch (e) { /* YEA */ }
+          },
+
+          ontimeout: function() {
+            $rootScope.$broadcast('sounds.timeout', track);
           },
 
           onfinish: function() {
